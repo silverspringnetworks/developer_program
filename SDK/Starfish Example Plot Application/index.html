@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- Copyright (c) Silver Spring Networks, Inc.
+
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the ""Software""), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Except as contained in this notice, the name of Silver Spring Networks, Inc.
+shall not be used in advertising or otherwise to promote the sale, use or other
+dealings in this Software without prior written authorization from Silver
+Spring Networks, Inc.
+/-->
+<html>
+  <head>
+    <script src="starfish-sdk.js" type="text/javascript" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="app.js" type="text/javascript" ></script>
+    <link href="styles.css" type="text/css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="sidebar-content">
+        <h1>Starfish JS SDK</h1>
+        <h2>Reference App</h2>
+        <form action="#" class="js-form">
+          <div class="form-group">
+            <label for="clientId">Client Id:</label>
+            <input type="text" name="clientId" id="clientId" required />
+          </div>
+          <div class="form-group">
+            <label for="clientSecret">Client Secret:</label>
+            <input type="text" name="clientSecret" id="clientSecret" required />
+          </div>
+          <div class="form-group">
+            <label for="solution">Solution:</label>
+            <input type="text" name="solution" id="solution" value="sandbox"/>
+          </div>
+          <button id="connect">Connect</button>
+        </form>
+        <table class="device-table" id="deviceTable">
+          <thead><tr><th>DeviceType</th><th>MacAddress</th></tr></thead>
+          <tbody id="device-table-body">
+          </tbody>
+        </table>
+        <div class="msg-container">
+          <div class="message message-default is-showing">
+            <h3>click 'connect' to populate</h3>
+          </div>
+          <div class="message error error-no-devices">
+            <h3>no devices found</h3>
+          </div>
+          <div class="message error error-bad-request">
+            <h3>bad request</h3>
+          </div>
+          <div class="message error error-other">
+            <h3>something went wrong</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="main">
+       <canvas id="observations" />
+    </div>
+  </body>
+</html>
