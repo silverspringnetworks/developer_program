@@ -1,0 +1,157 @@
+/* Copyright (c) Silver Spring Networks, Inc.
+ *
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the ""Software""), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ *
+ * Except as contained in this notice, the name of Silver Spring Networks, Inc.
+ * shall not be used in advertising or otherwise to promote the sale, use or
+ * other dealings in this Software without prior written authorization from
+ * Silver Spring Networks, Inc.
+ */
+
+table {
+  margin-bottom: 20px;
+  border-collapse: collapse;
+}
+table, th, td{
+  border: 1px solid #cdcdcd;
+}
+table th, table td{
+  padding: 10px;
+  text-align: left;
+}
+
+body {
+  margin: 0;
+  overflow: auto;
+}
+
+.sidebar, .main {
+  display: inline-block;
+  float: left;
+}
+
+.sidebar {
+  width: 370px;
+  background-color:#FAFAFA;
+  min-height: 100vh;
+}
+
+.sidebar-content {
+  padding: 0px 15px 15px 15px;
+}
+
+.main {
+  width: calc(100% - 393px);
+  margin: 30px 0 0 20px;
+}
+
+.form-group {
+  margin: 10px 0px;
+}
+
+.form-group input {
+  display: block;
+  min-width: 280px;
+  padding: 8px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.msg-container {
+  text-align: center;
+}
+
+.message {
+  border: 1px solid #4bc0c0;
+  display: none;
+}
+
+.message.is-showing {
+  display: block;
+}
+
+thead th:nth-child(1) {
+  min-width: 98px;
+}
+
+thead th:nth-child(2) {
+  min-width: 200px;
+}
+
+tr td{
+  font-family: monospace;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+thead {
+  background-color: #F0F0F0;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #FAFAFA;
+}
+
+table tbody tr:hover {
+  background-color: #bde4e4;
+}
+table tbody tr{
+  transition: background-color 0.3s ease-in-out;
+}
+table tbody tr.active  {
+  background-color: #4bc0c0;
+}
+
+h1, h2, h3, label, input, th {
+  font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+}
+
+.table-message td {
+  cursor: default;
+  text-align: center;
+}
+
+table tbody .table-message:hover {
+  background-color: transparent;
+}
+
+#connect {
+  padding: 6px 12px;
+  border: 1px solid #4bc0c0;
+  border-radius: 5px;
+  background-color: #4bc0c0;
+  color: #FFFFFF;
+  transition: background-color 0.3s ease-in-out;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+#connect:focus {
+  outline: none;
+
+}
+
+#connect:hover {
+  background-color: #bde4e4;
+}
