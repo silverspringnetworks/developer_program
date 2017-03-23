@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Silver Spring Networks Starfish JS SDK Reference APP
 
 To run this application, just open `index.html` in the browser.
@@ -20,8 +19,3 @@ Observations must be of format:
   ]
 }
 ```
-=======
-#Silver Spring Networks Developer Repository
-
-Needs to be filled out
->>>>>>> open/master
