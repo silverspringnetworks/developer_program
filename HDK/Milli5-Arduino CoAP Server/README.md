@@ -16,6 +16,7 @@ utils | The Utils library containing logging and buffer management
 
 1. Download the remaining four folders to the following location
 	e.g.`C:\Users\<user>\Documents\Arduino\libraries`
+
 	**Note**: Replace `<user>` with your username
 
 1. Download and install Arduino IDE 1.8.2
