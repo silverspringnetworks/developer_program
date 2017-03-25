@@ -15,8 +15,8 @@ utils | The Utils library containing logging and buffer management
 1. Download the folder mshield to your local machine and save it at your preferred location e.g.`C:\mshield`
 
 1. Download the remaining four folders to the following location
-   e.g.`C:\Users\<user>\Documents\Arduino\libraries`
-   	**Note**: Replace `<user>` with your username
+	e.g.`C:\Users\<user>\Documents\Arduino\libraries`
+	**Note**: Replace `<user>` with your username
 
 1. Download and install Arduino IDE 1.8.2
    https://www.arduino.cc/en/Main/Software
