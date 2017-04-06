@@ -28,11 +28,6 @@ Networks, Inc.
 */
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
-
 #include "log.h"
 #include "hbuf.h"
 #include "coapextif.h"

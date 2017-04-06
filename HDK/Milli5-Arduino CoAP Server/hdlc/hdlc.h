@@ -31,6 +31,8 @@ Networks, Inc.
 #ifndef _HDLC_H
 #define _HDLC_H
 
+#include <HardwareSerial.h>
+
 #define HDLC_FLAG           (0x7e)
 /* Supported header dimensions:
  * Min: format(2) dst(1) src(1) ctrl(1) hcs(2)  - 7 bytes
@@ -81,6 +83,9 @@ Networks, Inc.
 #define HDLC_ERROR_RSP_UNEXPECTED   (HDLC_ERROR_BASE + 11)
 #define HDLC_ERROR_RX_OVERRUN       (HDLC_ERROR_BASE + 12)
 #define HDLC_ERROR_UNKNOWN_STATE    (HDLC_ERROR_BASE + 13)
+
+/* Set pointer to Serial object */
+void hdlc_init( HardwareSerial * pUART );
 
 /* Frame / data parsers used by send/recv implementers */
 struct hdlc_hdr_fields {

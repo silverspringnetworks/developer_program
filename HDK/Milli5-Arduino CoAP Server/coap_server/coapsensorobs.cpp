@@ -27,17 +27,8 @@ Networks, Inc.
 
 */
 
-#include <unistd.h>
-#include <assert.h>
-#include <sys/types.h>
-#include <sys/errno.h>
-#include <sys/queue.h>
-#include <libgen.h>
-#include <signal.h>
 
-#include <RTCZero.h>
-
-#include "mshield.h"
+#include <arduino.h>
 #include "errors.h"
 #include "hbuf.h"
 #include "log.h"
@@ -49,6 +40,7 @@ Networks, Inc.
 #include "temp_sensor.h"
 #include "resrc_coap_if.h"
 #include "arduino_pins.h"
+#include "arduino_time.h"
 
 // ISR
 boolean coap_observe_flag = false;
@@ -75,9 +67,6 @@ void do_observe()
 // TODO: Don't know yet how it is used
 static uint32_t start_sn; 
 
-// Arduino time library
-extern RTCZero rtc;
-
 // Register for Observe
 error_t coap_obs_reg()
 {
@@ -102,7 +91,7 @@ error_t coap_obs_reg()
 // De-register for Observe
 error_t coap_obs_dereg()
 {
-	Serial.println("De-register for Observe");
+	print_buf("De-register for Observe");
 	
 	// Disable alarm
 	rtc.disableAlarm();

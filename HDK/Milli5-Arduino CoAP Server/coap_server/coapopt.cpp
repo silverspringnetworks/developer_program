@@ -27,12 +27,8 @@ Networks, Inc.
 
 */
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/queue.h>
+
+#include <arduino.h>
 
 #include "hbuf.h"
 #include "log.h"

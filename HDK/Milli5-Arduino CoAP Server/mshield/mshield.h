@@ -1,10 +1,3 @@
-#include <arduino_pins.h>
-#include <bufutil.h>
-#include <errors.h>
-#include <hbuf.h>
-#include <includes.h>
-#include <log.h>
-
 /*
 
 Copyright (c) Silver Spring Networks, Inc. 
@@ -41,21 +34,31 @@ Networks, Inc.
 
 #if defined(ARDUINO_ARCH_SAMD)
   // Use SerialUSB for Serial on Zero based boards
-  #define Serial SerialUSB
+  #define Serial 						SerialUSB
 #endif
+
+#if defined(ARDUINO_ARCH_SAM)
+  //#define Serial						SerialUSB
+#endif
+
+// Specify Serial object used to access the UART for the HDLC connection
+// NOTE: the baud rate of the HDLC connection is fixed
+#define SerialUART	         			Serial1
+
+// UART between Arduino and MilliShield
+#define UART_TIMEOUT_IN_MILLISECONDS	2000
+
+// Specify baud rate for the debug console
+#define CONSOLE_BAUD_RATE     			115200
 
 // Local time zone relative to UTC; Examples PST: -8, MST: -7, Central: -6, EST: -5
 #define LOCAL_TIME_ZONE					(-8)
 
-// UART between Arduino and MilliShield
-#define UART_BAUD_RATE        			38400
-#define UART_TIMEOUT_IN_MILLISECONDS	2000
-
 // LED parameters
-#define LED_BLINK_SLOW_PERIOD			800
-#define LED_BLINK_SLOW_COUNT			7
-#define LED_BLINK_FAST_PERIOD			100
-#define LED_BLINK_FAST_COUNT			50
+#define LED_PIN_NUMBER					4
+#define LED_BLINK_DURATION_IN_SECONDS	5
+#define LED_BLINK_SLOW_PERIOD_MS		800
+#define LED_BLINK_FAST_PERIOD_MS		100
 
 // Max-Age, see Section 5.10.5 of rfc7252
 #define COAP_MSG_MAX_AGE_IN_SECONDS		90

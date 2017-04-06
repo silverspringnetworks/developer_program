@@ -30,6 +30,8 @@ Networks, Inc.
 #ifndef _INC_MBUF_H
 #define _INC_MBUF_H
 
+#include <arduino.h>
+
 #define MBUF_LITE   (1)
 
 /* No bigger than PROXY_BUF_SIZE, code constraint. Extra 16 for header. */

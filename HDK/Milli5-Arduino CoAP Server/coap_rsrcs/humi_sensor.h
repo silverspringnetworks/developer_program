@@ -30,6 +30,7 @@ Networks, Inc.
 #ifndef HUMI_SENSOR_H_
 #define HUMI_SENSOR_H_
 
+#include <arduino.h>
 #include "errors.h"
 
 /******************************************************************************/

@@ -30,6 +30,7 @@ Networks, Inc.
 #ifndef LED_H_
 #define LED_H_
 
+#include <arduino.h>
 #include "errors.h"
 
 typedef enum
@@ -43,6 +44,17 @@ typedef enum
 	
 } led_state_t;
 
+typedef struct
+{
+	uint32_t 	led_pin;
+	uint32_t	led_delay;
+	uint32_t	led_slow;
+	uint32_t	led_fast;
+	led_state_t	led_state;
+	boolean 	actuate_flag;
+	
+} led_config_t;
+
 /******************************************************************************/
 /*                      Public Methods                                        */
 /******************************************************************************/
@@ -54,18 +66,26 @@ typedef enum
 error_t crled( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it );
 
 /**
- * led_init
  *
- * @brief Init LED
+ * @brief Config LED
+ *
+ * @param[in] state Desired LED state
+ * @return error_t
  *
  */
-error_t led_init( uint32_t de, uint32_t count );
+void led_config( uint32_t led_pin, uint32_t blink_seconds, uint32_t ms_slow, uint32_t ms_fast );
+
+/**
+ *
+ * @brief Blink LED
+ *
+ *
+ */
+error_t led_blink();
 
 /**
  * @brief Put LED state
  *
- * @param[in] state Desired LED state
- * @return error_t
  */
 error_t arduino_put_led_state( led_state_t state );
 

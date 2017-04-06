@@ -33,7 +33,7 @@ Networks, Inc.
 #include <DHT.h>
 #include <DHT_U.h>
 
-#include "mshield.h"
+
 #include "log.h"
 #include "bufutil.h"
 #include "exp_coap.h"
@@ -236,6 +236,11 @@ DHT_Unified dht( A4, DHT_TYPE );
 
 error_t arduino_temp_sensor_init()
 {
+	// Set pointer to Serial object
+	// pS is a static declared in log.h
+	// Serial is defined in log.h
+	pS = log_get_serial();
+	
 	// Initialize temperature/humidity sensor
 	dht.begin();
 

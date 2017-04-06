@@ -27,7 +27,7 @@ Networks, Inc.
 
 */
 
-#include "mshield.h"
+#include "bufutil.h"
 
 uint16_t
 buf_be16(const void *buf, int idx)

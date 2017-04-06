@@ -28,7 +28,7 @@ Networks, Inc.
 */
 #include <string.h>
 
-#include "mshield.h"
+
 #include "log.h"
 #include "bufutil.h"
 #include "exp_coap.h"
@@ -36,6 +36,7 @@ Networks, Inc.
 #include "coappdu.h"
 #include "resrc_coap_if.h"
 #include "xyz_sensor.h"
+
 
 
 /******************************************************************************/
@@ -217,6 +218,11 @@ Analog input 5 I2C SCL
 
 error_t arduino_xyz_sensor_init()
 {
+	// Set pointer to Serial object
+	// pS is a static declared in log.h
+	// Serial is defined in log.h
+	pS = log_get_serial();
+
 	// Enable
 	arduino_enab_xyz();
 	

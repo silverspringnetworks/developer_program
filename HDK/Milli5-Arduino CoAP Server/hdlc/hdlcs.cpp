@@ -27,34 +27,9 @@ Networks, Inc.
 
 */
 
-
-/*
- *
- * $Id: hdlcs.cpp abuvarp $
- *
- * Copyright SilverSpring Networks 2015.
- * All rights reserved.
-
- * $Id: hdlcs.c 107598 2017-02-09 08:03:12Z dcecil $
- *
- * Implements HDLC secondary station state machine.
- * Used by simple meter/sensor servers.
- * - rx/tx window size fixed 1
- * - packet size is not negotiated, secondary expects primary to accept
- * 
- */
-
-
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <getopt.h>
 #include <assert.h>
-#include <sys/types.h>
+#include <arduino.h>
 
-#include "mshield.h"
 #include "hbuf.h"
 #include "hdlcs.h"
 #include "hdlc.h"
@@ -123,17 +98,30 @@ hdlcs_get_buf(int size)
 }
 
 
-/* initialize state machine */
-error_t hdlcs_open( HardwareSerial * pSerial )
+
+
+// Time-out period in ms of the UART
+static uint32_t uart_timeout_ms = 0;
+
+/* Initialize state machine */
+error_t hdlcs_open( HardwareSerial * pUART, uint32_t timeout_ms )
 {
     if (hss.open) 
 	{
         /* already open - err */
         return ERR_FAIL;
     }
+	
+	// Set pointer to Serial object
+	// pS is a static declared in log.h
+	// Serial is defined in log.h
+	pS = log_get_serial();
+	
+	// Init HDLC UART
+	hdlc_init(pUART);
 
-	// Set baud rate for the mShield UART
-	(*pSerial).begin(UART_BAUD_RATE);
+	// Set the time-out period of the UART
+	uart_timeout_ms = timeout_ms;
     
     /* set up base state */
     memset(&hss, 0, sizeof(hss));
@@ -185,7 +173,7 @@ int hdlcs_run(void)
     int rc;
 
     /* Check for HDLC frame */
-    rc = hdlc_rx( hdr, hss.recv->data, hss.recv->size, UART_TIMEOUT_IN_MILLISECONDS );  
+    rc = hdlc_rx( hdr, hss.recv->data, hss.recv->size, uart_timeout_ms );  
 	if ( rc <= 0 )
 	{
         return 0;

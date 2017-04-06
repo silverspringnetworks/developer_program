@@ -33,31 +33,18 @@ Networks, Inc.
 #include "hbuf.h"
 #include "coap_server.h"
 
+/** 
+ * @brief Primary CoAP process function.
+ * Set up REQ and RSP contexts.
+ * Parse the REQ.
+ * Deal with special case messages or errors, or hand off for URI servicing.
+ * Enable or disable observe, as appropriate.
+ * Build a response PDU based on the RSP context, and return the mbuf.
+ * @param[out] m pointer to mbuf
+ * @return mbuf
+ */
+mbuf_ptr_t coap_s_proc( mbuf_ptr_t m );
 
 
-/*! \class CoAP
-    \brief The main CoAP Server class
-
-    The main CoAP Server class that contains the function used by the Arduino sketch
-*/
-
-class CoAP_Server
-{
-
-public:
-
-	/** 
-	 * Primary CoAP process function.
-	 * Set up REQ and RSP contexts.
-	 * Parse the REQ.
-	 * Deal with special case messages or errors, or hand off for URI servicing.
-	 * Enable or disable observe, as appropriate.
-	 * Build a response PDU based on the RSP context, and return the mbuf.
-	 * @param[out] m pointer to mbuf
-	 * @return mbuf
-	 */
-	mbuf_ptr_t s_proc( mbuf_ptr_t m );
-
-}; // class CoAP
 
 #endif /* INC_COAP_SERVER_H */

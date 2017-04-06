@@ -26,52 +26,53 @@ dealings in this Software without prior written authorization from Silver Spring
 Networks, Inc.
 
 */
+#ifndef ARDUINO_PINS_H_
+#define ARDUINO_PINS_H_
 
-#ifndef _COAP_RESOURCE_IF_H_
-#define _COAP_RESOURCE_IF_H_
-
-#include "coapmsg.h"
-#include "errors.h"
-
-// Arduino sensors
-#define L_URI_ARDUINO "arduino"
-#define CLA_ARDUINO   "if=" "\"" L_URI_ARDUINO "\"" ";title=\"Arduino Sensors\";ct=42;"
+#include <arduino.h>
 
 /**
- * @brief CoAP Server Request/Response callback function
+ * @brief Defines for Arduino analog inputs
  *
- * @param[in] req CoAP Request
- * @param[in] rsp CoAP Response
- * @return error_t
+ * @enum arduino_analog_in_t
+ *
  */
-error_t crarduino(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
+typedef enum
+{
+	A0_RESERVED	= A0,
+	A1_RESERVED = A1,
+	A2_RESERVED = A2,
+	LIGHT_PIN	= A3,
+	DHT_PIN		= A4,
+	A5_RESERVED = A5,
+	NUM_ANALOG_IN = 6
+	
+} arduino_analog_in_t;
 
 /**
- * @brief Create a CoAP Response message
+ * @brief Defines for Arduino digital pins
  *
- * @return error_t
- */
-error_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading, const char * unit );
-
-/**
- * @brief Init the Arduino resources such as sensors, LEDs etc.
+ * @enum arduino_digital_pin_t
  *
- * @return error_t
  */
-error_t arduino_init_resources();
+typedef enum
+{
+	PIN0_RESERVED,		// Pin 0
+	PIN1_RESERVED,		// Pin 1
+	PIN2_RESERVED,		// Pin 2
+	MNIC_WAKEUP_PIN,	// Connected to MILLI_5_WAKEUP/GPIO_7
+	PIN4_RESERVED,		// Pin 4
+	PIN5_RESERVED,
+	PIN6_RESERVED,
+	PIN7_RESERVED,
+	PIN8_RESERVED,
+	PIN9_RESERVED,
+	PIN10_RESERVED,
+	PIN11_RESERVED,
+	PIN12_RESERVED,
+	ONBOARD_LED = LED_BUILTIN,
+	DIGITAL_PINS_COUNT
+	
+} arduino_digital_pin_t;
 
-/**
- * @brief Enable Arduino sensors
- *
- * @return error_t
- */
-error_t arduino_enab_sensors(void);
-
-/**
- * @brief Disable Arduino sensors
- *
- * @return error_t
- */
-error_t arduino_disab_sensors(void);
-
-#endif /* _COAP_RESOURCE_IF_H_ */
+#endif /* ARDUINO_PINS_H_ */

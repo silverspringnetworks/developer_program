@@ -151,6 +151,13 @@ error_t coap_con_add(uint16_t mid, coap_ack_cb_info_t *cbi);
 /* Notify callback when ACK rxed. */
 error_t coap_ack_rx(uint16_t mid, struct mbuf *m);
 
+/**
+ * @brief Set Max-Age Option 14
+ * 
+ *
+ */ 
+void coap_set_max_age( uint32_t max_age );
+
 /******************************************************************************
  * Memory pool code, NIC only.
  *****************************************************************************/

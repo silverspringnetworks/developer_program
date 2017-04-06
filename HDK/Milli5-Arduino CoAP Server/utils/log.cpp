@@ -27,16 +27,8 @@ Networks, Inc.
 
 */
 
-#include <inttypes.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <sys/time.h>
 #include <assert.h>
 #include <stdarg.h>
-
-#include "mshield.h"
-#include "uart.h"
 #include "log.h"    
 #include "arduino_time.h"
 
@@ -51,6 +43,32 @@ static FILE *log_fp;
 static const char *label[] = {"EMRG", "ALRT", "CRIT", "ERR", "WARN", 
                               "NOTE", "INFO", "DEBG"};
 static const int numlevels = sizeof (label) / sizeof(label[0]);
+
+
+/* Init logging */
+void log_init( Serial_ * pSerial, uint32_t baud )
+{
+	// pS and Serial is defined in log.h
+	// This is the only location pS is assigned a value
+	pS = pSerial;
+	Serial.begin(baud);
+
+} // log_init
+
+/**
+* @brief
+* Get pointer to Serial
+* NOTE: log_init() must be called before this function
+*
+* @return Serial_ pointer to Serial object used for printing to console
+*
+*/
+Serial_ * log_get_serial()
+{
+	assert(pS);
+	return pS;
+	
+} // log_get_serial
 
 void dlog_level(int level)
 {
@@ -153,7 +171,7 @@ void log_msg(const char *label, const void *data, int datalen, int eol)
 uint8_t capture_buf[1024];
 uint16_t cap_count = 0;
 
-void print_number( char * label, int d )
+void print_number( const char * label, int d )
 {
 	char str[256];
 	
@@ -164,6 +182,12 @@ void print_number( char * label, int d )
 	Serial.println(str);
 	
 } // print_number
+
+void print_buf( const char * buf )
+{
+	Serial.println(buf);
+	
+} // print_buf
 
 void capture( uint8_t ch )
 {
