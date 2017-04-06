@@ -30,6 +30,7 @@ Networks, Inc.
 #ifndef XYZ_SENSOR_H_
 #define XYZ_SENSOR_H_
 
+#include <arduino.h>
 #include "errors.h"
 
 typedef struct xyz_sensor_cfg_struct

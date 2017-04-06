@@ -26,7 +26,7 @@ dealings in this Software without prior written authorization from Silver Spring
 Networks, Inc.
 
 */
-#include "mshield.h"
+
 #include "log.h"
 #include "hbuf.h"
 #include "exp_coap.h"
@@ -125,7 +125,7 @@ error_t crarduino( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp )
 
 
 // Assemble a CoAP response message; {Timestamp,Value(s),Unit}
-error_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading, char * unit )
+error_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading, const char * unit )
 {
     uint8_t 	l;
 	char 		rsp_buf[256];
@@ -192,9 +192,15 @@ error_t arduino_init_resources()
 {
     error_t rc = ERR_OK;
 	
+	// Set pointer to Serial object
+	// pS is a static declared in log.h
+	// Serial is defined in log.h
+	pS = log_get_serial();
+
 	// Init and blink LED
 	// Delays enough for Tera Term to re-connect to the Native port
-	led_init( 200, 10 );
+	arduino_put_led_state(LED_BLINK_FAST);
+	arduino_led_actuate();
 
 	// Init RTC time object
 	rtc_time_init();	

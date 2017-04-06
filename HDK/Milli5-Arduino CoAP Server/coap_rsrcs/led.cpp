@@ -26,9 +26,9 @@ dealings in this Software without prior written authorization from Silver Spring
 Networks, Inc.
 
 */
-#include <string.h>
 
-#include "mshield.h"
+
+
 #include "log.h"
 #include "bufutil.h"
 #include "coapmsg.h"
@@ -36,6 +36,7 @@ Networks, Inc.
 #include "resrc_coap_if.h"
 #include "led.h"
 #include "arduino_pins.h"
+
 
 /******************************************************************************/
 /*                      Public Methods                                        */
@@ -198,35 +199,81 @@ err:
 } // crled
 
 
+// LED Configuration
+static led_config_t led_conf;
 
-// State of external LED
-static led_state_t led_state = LED_OFF;
-static boolean actuate_flag = LOW;
-
-error_t led_init( uint32_t de, uint32_t count )
+/**
+ *
+ * @brief Config LED
+ *
+ *
+ */
+void led_config( uint32_t led_pin, uint32_t blink_seconds, uint32_t ms_slow, uint32_t ms_fast )
 {
+	// Set pointer to Serial object
+	// pS is a static declared in log.h
+	// Serial is defined in log.h
+	pS = log_get_serial();
+
+	// Set configuration parameters
+	led_conf.led_pin	= led_pin;
+	led_conf.led_delay	= 1000*blink_seconds;
+	led_conf.led_slow	= ms_slow;
+	led_conf.led_fast	= ms_fast;
+	
+} // led_config
+
+
+
+/**
+ *
+ * @brief Blink LED
+ *
+ *
+ */
+error_t led_blink()
+{
+	uint32_t pin = led_conf.led_pin;
+	uint32_t period;
 	uint32_t ix;
+	uint32_t count;
+	
+	// Check state
+	if ( led_conf.led_state == LED_BLINK_SLOW )
+	{
+		// Long blinking period
+		period = led_conf.led_slow;
+	}
+	else
+	{
+		// Short blinking period
+		period = led_conf.led_fast;
+		
+	} // if-else
+	
+	// Compute number of loops; each loop takes {2 x period} ms
+	count = led_conf.led_delay / (2*period);
 	
 	// Configure built-in LED pin as output
 	pinMode( ONBOARD_LED, OUTPUT );
 
 	// Configure external LED pin for output
-	pinMode( LED_PIN, OUTPUT );
+	pinMode( pin, OUTPUT );
 
 	// Blick N times
 	for( ix = 0; ix < count; ix++ )
 	{
-		digitalWrite(LED_PIN,HIGH);
-		delay(de);
-		digitalWrite(LED_PIN,LOW);
-		delay(de);
+		digitalWrite(pin,HIGH);
+		delay(period);
+		digitalWrite(pin,LOW);
+		delay(period);
 
 	} // for
 	
 	// Set the LED state to off
-	led_state = LED_OFF;
+	led_conf.led_state = LED_OFF;
   
-} // led_init
+} // led_blink
 
 /*
  * arduino_get_led_state()
@@ -235,6 +282,7 @@ error_t led_init( uint32_t de, uint32_t count )
  */
 error_t arduino_get_led_state( struct mbuf *m, uint8_t *len )
 {
+	led_state_t	led_state = led_conf.led_state;
 	uint32_t count = 0;
 	char p[16];
 
@@ -295,8 +343,8 @@ error_t arduino_get_led_state( struct mbuf *m, uint8_t *len )
 error_t arduino_put_led_state( led_state_t state )
 {
 	// Save the desired state
-	led_state = state;
-	actuate_flag = HIGH;
+	led_conf.led_state = state;
+	led_conf.actuate_flag = HIGH;
 }
 
 /*
@@ -304,12 +352,15 @@ error_t arduino_put_led_state( led_state_t state )
  */
 error_t arduino_led_actuate()
 {
+	led_state_t	led_state = led_conf.led_state;
+	uint32_t	pin = led_conf.led_pin;
+	
 	// Only do this function if actuate_flag is HIGH
-	if (!actuate_flag)
+	if (!led_conf.actuate_flag)
 	{
 		return ERR_OK;
 	}
-	actuate_flag = LOW;
+	led_conf.actuate_flag = LOW;
 
 	// Check the desired state
 	switch(led_state)
@@ -317,30 +368,30 @@ error_t arduino_led_actuate()
 		case LED_OFF:
 		
 			// Turn off LED
-			digitalWrite(LED_PIN,LOW);
+			digitalWrite(pin,LOW);
 			break;
 			
 		case LED_ON:
 		
 			// Turn on LED
-			digitalWrite(LED_PIN,HIGH);
+			digitalWrite(pin,HIGH);
 			break;
 			
 		case LED_BLINK_SLOW:
 		
 			// Slow blinking LED
-			led_init(800,7);
+			led_blink();
 			break;
 			
 		case LED_BLINK_FAST:
 		
 			// Fast blinking LED
-			led_init(100,50);
+			led_blink();
 			break;
 			
 		case LED_DISABLE:
 			// Turn off LED
-			digitalWrite(LED_PIN,LOW);
+			digitalWrite(pin,LOW);
 			break;
 			
 		default:

@@ -30,10 +30,11 @@ Networks, Inc.
 #ifndef _INC_HDLC_SECONDARY_H_
 #define _INC_HDLC_SECONDARY_H_
 
+#include <HardwareSerial.h>
 #include "errors.h"
 
 /* initialize state machine */
-error_t hdlcs_open( HardwareSerial * pSerial );
+error_t hdlcs_open( HardwareSerial * pSerial, uint32_t timeout_ms );
 
 /* shut down state machine */
 int hdlcs_close(void);

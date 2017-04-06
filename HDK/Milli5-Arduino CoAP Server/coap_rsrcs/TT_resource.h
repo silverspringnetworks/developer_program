@@ -29,6 +29,7 @@ Networks, Inc.
 #ifndef TEMPLATE_COAP_RESOURCE_H_
 #define TEMPLATE_COAP_RESOURCE_H_
 
+#include <arduino.h>
 #include "errors.h"
 #include "hbuf.h"
 

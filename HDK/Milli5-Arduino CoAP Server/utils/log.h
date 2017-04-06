@@ -53,7 +53,7 @@ Networks, Inc.
 #ifndef INC_LOG_H
 #define INC_LOG_H
 
-#include <stdint.h>
+#include <arduino.h>
 
 #define PRINTF_LEN		256
 
@@ -66,7 +66,33 @@ Networks, Inc.
 #define LOG_INFO        (6)         /* informational */
 #define LOG_DEBUG       (7)         /* debug-level messages */
 
+// Serial should only have been defined by mshield.h
+// In your .ino file, make sure log.h is included after mshield.h
+// This makes sure we done define Serial here in case of the .ino file
+#ifndef Serial
+	// Pointer to Serial
+	static Serial_ * pS = NULL;
+	#define Serial (*pS)
+#endif
 
+/**
+* @brief
+* Init logging
+*
+* @param Serial_ pointer to Serial object used for printing to console
+* @param baun The baud rate for printing to console
+*
+*/
+void log_init( Serial_ * pSerial, uint32_t baud );
+
+/**
+* @brief
+* Get pointer to Serial
+*
+* @return Serial_ pointer to Serial object used for printing to console
+*
+*/
+Serial_ * log_get_serial();
 
 /**
 * @brief
@@ -106,14 +132,22 @@ extern void ddump(int level, const char *label, const void *data, int len);
 
 /**
 * @brief
-* Output an debug message to serial port
+* Print label and number to serial port
 *
-* @param fmt format string to output
-* @param ... any number of variables
-* @return int
+* @param label text string
+* @param d an integer
 *
 */
-int dbg_printf(const char *fmt, ...);
+void print_number( const char * label, int d );
+
+/**
+* @brief
+* Print buffer
+*
+* @param buf text string
+*
+*/
+void print_buf( const char * buf );
 
 /**
 * @brief

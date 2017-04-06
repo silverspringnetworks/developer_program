@@ -43,21 +43,9 @@ Networks, Inc.
  *
  */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <unistd.h>
-#include <getopt.h>
 
-#include <sys/types.h>
-#include <sys/errno.h>
-#include <assert.h>
+#include <arduino.h>
 
-#include <unistd.h>
-
-#include "mshield.h"
 #include "hdlc.h"
 #include "bufutil.h"
 #include "crc_xmodem.h"
@@ -66,7 +54,27 @@ Networks, Inc.
 
 #define HDLC_SINGLE_BYTE_ADDR_ONLY
 
+// This number is fixed for the Milli Arduino Shield
+#define UART_BAUD_RATE 38400
 
+// Pointer to Serial console and UART
+static HardwareSerial * pU;
+#define uart (*pU)
+void hdlc_init( HardwareSerial * pUART )
+{
+	// Set pointer to UART object
+	pU = pUART;
+
+	// Set baud rate for the mShield UART
+	// NOTE: This baud rate is fixed and cannot be changed
+	uart.begin(UART_BAUD_RATE);
+
+	// Set pointer to Serial object for printing to the console
+	// pS is a static declared in log.h
+	// Serial is defined in log.h
+	pS = log_get_serial();
+
+} // hdlc_set_serial
 
 struct hdlcstat hdlc_stats;
 
@@ -468,12 +476,12 @@ int hdlc_send_frame( const uint8_t *hdr, const uint8_t *info, int infolen )
     log_msg("HDLC send frame", hdr, HDLC_HDR_SIZE, 0);
 
 	// Send frame delimiter
-    Serial1.write(fs);
+    uart.write(fs);
 
 	// Send header
     /* TODO: Is this a problem on Arduino? */
 	/* Need to know why the first char is dropped on uart */
-	rc = Serial1.write( hdr, HDLC_HDR_SIZE );
+	rc = uart.write( hdr, HDLC_HDR_SIZE );
     if (rc != HDLC_HDR_SIZE) 
 	{
 		dlog(LOG_DEBUG, "Error: hdlc_send_frame() did not send %d bytes as required\n", HDLC_HDR_SIZE );
@@ -483,7 +491,7 @@ int hdlc_send_frame( const uint8_t *hdr, const uint8_t *info, int infolen )
     if (info && infolen > 0) 
 	{
 		// Write payload info
-        rc = Serial1.write(info, infolen);
+        rc = uart.write(info, infolen);
 		if (rc != infolen) 
 		{
 			dlog(LOG_DEBUG, "Error: hdlc_send_frame() did not send %d bytes as required\n", infolen );
@@ -491,7 +499,7 @@ int hdlc_send_frame( const uint8_t *hdr, const uint8_t *info, int infolen )
 		}
 
 		// Write CRC-16
-        rc = Serial1.write(fcs, HDLC_CRC_SIZE);
+        rc = uart.write(fcs, HDLC_CRC_SIZE);
 		if (rc != HDLC_CRC_SIZE) 
 		{
 			dlog(LOG_DEBUG, "Error: hdlc_send_frame() did not send %d bytes as required\n", HDLC_CRC_SIZE );
@@ -504,7 +512,7 @@ int hdlc_send_frame( const uint8_t *hdr, const uint8_t *info, int infolen )
     }
 
     /* closing with FS.  Not shown in log */
-    Serial1.write(fs);
+    uart.write(fs);
     log_msg(NULL, NULL, 0, 1);  /* EOL */
 
     return 0;
@@ -718,14 +726,14 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
     memset( pHUX, 0x0, sizeof(hctx.hux) );
 
 	// Read UART for maximum 100 ms
-	Serial1.setTimeout(READ_BUF_TIMEOUT);	 
+	uart.setTimeout(READ_BUF_TIMEOUT);	 
 
 	// Wait for incoming HDLC frame
 	elapsed = 0;
 	while( elapsed++ < hdlc_frame_timeout ) 
 	{
 		// Check if there is nothing at the UART
-		if (!Serial1.available())
+		if (!uart.available())
 		{
 			// Check if it is time to send Observe response message
 			do_observe();
@@ -737,7 +745,7 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
 		} // if
 		
 		// Read the HDLC frame until time-out
-		cnt = Serial1.readBytes( RxBuf, RX_BUF_LEN );
+		cnt = uart.readBytes( RxBuf, RX_BUF_LEN );
 		print_number( "readBytes() count: ", cnt );
 		capture_dump( RxBuf, cnt );
 

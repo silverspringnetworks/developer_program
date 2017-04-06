@@ -26,10 +26,9 @@ dealings in this Software without prior written authorization from Silver Spring
 Networks, Inc.
 
 */
-#include <string.h>
-#include <RTCZero.h>
 
-#include "mshield.h"
+
+
 #include "log.h"
 #include "bufutil.h"
 #include "coapmsg.h"
@@ -37,9 +36,17 @@ Networks, Inc.
 #include "arduino_time.h"
 #include "resrc_coap_if.h"
 
-// Arduino time library
+
+#if defined(ARDUINO_ARCH_SAMD)
 RTCZero rtc;
-#define SECONDS_RELATIVE_UTC  (LOCAL_TIME_ZONE*60*60)
+#endif
+
+#if defined(ARDUINO_ARCH_SAM)
+RTCDue rtc(XTAL);
+#endif
+
+// Time relative UTC
+static int32_t seconds_relative_utc = 0;
 
 /*
  * crtime
@@ -83,7 +90,7 @@ error_t crtime(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
 		print_number( "Epoch:", epoch );
 		
 		// Convert to the local time zone
-		epoch += SECONDS_RELATIVE_UTC;
+		epoch += seconds_relative_utc;
 		rtc.setEpoch(epoch);
 		
 		// Print time/date
@@ -158,13 +165,28 @@ err:
     
 } // crtime
 
+/**
+ * @brief Set time zone
+ *
+ */
+error_t set_time_zone( int32_t zone )
+{
+	seconds_relative_utc = zone*60*60;
+	
+} // set_time_zone
+
 /*
- * rtc_time_init
  *
  * @brief Init the RTC time
+ *
  */
 error_t rtc_time_init()
 {
+	// Set pointer to Serial object
+	// pS is a static declared in log.h
+	// Serial is defined in log.h
+	pS = log_get_serial();
+	
 	// Init RTC time
 	rtc.begin();
 	rtc.setTime(0,0,0);
@@ -202,7 +224,7 @@ void print_current_time(void)
 	b = rtc.getMinutes();
 	c = rtc.getHours();
 	sprintf( buffer, "Time: %02d:%02d:%02d [hr:min:sec]", c, b, a );
-	Serial.println(buffer);
+	print_buf(buffer);
 	
 } // print_current_time
 
@@ -222,6 +244,6 @@ void print_current_date(void)
 	b = rtc.getDay();
 	c = rtc.getMonth();
 	sprintf( buffer, "Date: %02d:%02d:%d [mon:day:year]", c, b, a );
-	Serial.println(buffer);
+	print_buf(buffer);
 	
 } // print_current_date

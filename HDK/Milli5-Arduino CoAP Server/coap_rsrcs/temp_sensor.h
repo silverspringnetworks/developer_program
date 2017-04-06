@@ -30,6 +30,7 @@ Networks, Inc.
 #ifndef TEMP_SENSOR_H_
 #define TEMP_SENSOR_H_
 
+#include <arduino.h>
 #include "errors.h"
 
 typedef enum

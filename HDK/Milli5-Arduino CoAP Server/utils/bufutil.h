@@ -30,6 +30,8 @@ Networks, Inc.
 #ifndef UTIL_BUF_H
 #define UTIL_BUF_H
 
+#include <arduino.h>
+
 uint16_t buf_le16(const void *buf, int idx);
 uint32_t buf_le32(const void *buf, int idx);
 uint64_t buf_le48(const void *buf, int idx);

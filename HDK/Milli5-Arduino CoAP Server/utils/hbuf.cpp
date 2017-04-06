@@ -39,8 +39,6 @@ Networks, Inc.
  */
 
 #include <assert.h>
-
-#include "mshield.h"
 #include "hbuf.h"
 
 int malloc_cnt;

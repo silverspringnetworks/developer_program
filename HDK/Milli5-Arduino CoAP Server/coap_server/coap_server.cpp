@@ -27,13 +27,7 @@ Networks, Inc.
 
 */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <sys/stat.h>
-#include <time.h>
+#include <arduino.h>
 
 #include "hbuf.h"
 #include "log.h"
@@ -76,7 +70,7 @@ Networks, Inc.
  * Enable or disable observe, as appropriate.
  * Build a response PDU based on the RSP context, and return the mbuf.
  */
-mbuf_ptr_t CoAP_Server::s_proc( mbuf_ptr_t m )
+mbuf_ptr_t coap_s_proc( mbuf_ptr_t m )
 {
     struct coap_msg_ctx cc, rcc;
     void *clt = NULL;   /* Not used on sensor, 1 HDLC connection. */

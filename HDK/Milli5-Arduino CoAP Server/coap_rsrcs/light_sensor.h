@@ -30,6 +30,7 @@ Networks, Inc.
 #ifndef _LIGHT_SENSOR_H_
 #define _LIGHT_SENSOR_H_
 
+#include <arduino.h>
 #include "errors.h"
 #include "hbuf.h"
 

@@ -27,7 +27,7 @@ Networks, Inc.
 
 */
 
-#include "mshield.h"
+
 #include "log.h"
 #include "exp_coap.h"
 #include "coapmsg.h"
@@ -77,6 +77,11 @@ error_t arduino_disab_TT()
  */
 error_t arduino_init_TT()
 {
+	// Set pointer to Serial object
+	// pS is a static declared in log.h
+	// Serial is defined in log.h
+	pS = log_get_serial();
+
 } // arduino_init_TT
 
 /**

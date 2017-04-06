@@ -34,7 +34,6 @@ Networks, Inc.
  * $Id: crc_xmodem.c 102877 2016-10-11 21:35:02Z zkiss $
  */
 
-#include <stdint.h>
 #include "crc_xmodem.h"
 
 /*

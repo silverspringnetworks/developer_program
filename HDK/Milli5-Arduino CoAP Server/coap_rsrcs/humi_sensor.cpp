@@ -26,13 +26,12 @@ dealings in this Software without prior written authorization from Silver Spring
 Networks, Inc.
 
 */
-#include <string.h>
 
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <DHT_U.h>
 
-#include "mshield.h"
+
 #include "log.h"
 #include "bufutil.h"
 #include "exp_coap.h"
@@ -223,10 +222,16 @@ error_t arduino_disab_humi()
     return rc;
 }
 
+
 extern DHT_Unified dht;
 
 error_t arduino_humi_sensor_init()
 {
+	// Set pointer to Serial object
+	// pS is a static declared in log.h
+	// Serial is defined in log.h
+	pS = log_get_serial();
+
 	// Enable temp sensor
 	arduino_enab_humi();
 	

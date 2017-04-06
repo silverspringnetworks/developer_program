@@ -27,13 +27,8 @@ Networks, Inc.
 
 */
 
-#include <stdint.h>
-#include <assert.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/errno.h>
+#include <arduino.h>
 
-#include "mshield.h"
 #include "hbuf.h"
 #include "log.h"
 #include "coapmsg.h"
@@ -60,6 +55,8 @@ struct intrct_cb_t {
 struct intrct_cb_t intrct_cb_q[MID_CB_Q_SZ];
 uint8_t intrct_cb_q_ind;   /* index to add next entry */
 
+/* Max-Age in seconds */
+uint32_t coap_max_age_in_seconds = 0;
 
 /*
  * Add entry to the queue at the next (oldest slot). Not threadsafe, so
@@ -934,7 +931,7 @@ coap_msg_response(struct coap_msg_ctx *ctx)
                             NULL)) != NULL) {
 				op->ov = &opt_val;
                 dopt = *op;  /* copy original but make type the delta */
-				opt_val = COAP_MSG_MAX_AGE_IN_SECONDS;
+				opt_val = coap_max_age_in_seconds;
 				opt_val = co_uint32_h2n(&dopt);
                 dopt.ot = COAP_OPTION_MAXAGE - onum;
                 onum = COAP_OPTION_MAXAGE;
@@ -969,3 +966,14 @@ coap_msg_response(struct coap_msg_ctx *ctx)
 done:
     return rc;
 }
+
+/**
+ * @brief Set Max-Age Option 14
+ * 
+ *
+ */ 
+void coap_set_max_age( uint32_t max_age )
+{
+	coap_max_age_in_seconds = max_age;
+	
+} // coap_set_max_age

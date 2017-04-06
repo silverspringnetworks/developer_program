@@ -30,10 +30,22 @@ Networks, Inc.
 #ifndef ARDUINO_TIME_H_
 #define ARDUINO_TIME_H_
 
+#include <arduino.h>
 #include "errors.h"
 
+#if defined(ARDUINO_ARCH_SAMD)
+#include <RTCZero.h>
+extern RTCZero rtc;
+#endif
+
+#if defined(ARDUINO_ARCH_SAM)
+#include <RTCDue.h>
+extern RTCDue rtc;
+#define getEpoch unixtime
+#define setEpoch setClock
+#endif
+
 /**
- * crtime
  *
  * @brief CoAP Resource Arduino time
  *
@@ -41,16 +53,21 @@ Networks, Inc.
 error_t crtime( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it );
 
 /**
- * rtc_time_init
+ * @brief Set time zone
  *
+ */
+error_t set_time_zone( int32_t zone );
+
+/**
  * @brief
+ *
  */
 error_t rtc_time_init();
 
 /**
- * get_rtc_epoch
  *
- * @brief
+ * @brief Get RTC epoch
+ *
  */
 time_t get_rtc_epoch();
 
