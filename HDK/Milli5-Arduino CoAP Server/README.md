@@ -1,4 +1,4 @@
-# Silver Spring Networks - Arduino MilliShied Software
+# Silver Spring Networks - Arduino MilliShield Software
 
 The Milli5-Arduino CoAP Server consists of five sub-folders:
 
