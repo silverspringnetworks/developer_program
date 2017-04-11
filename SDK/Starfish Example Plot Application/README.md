@@ -1,4 +1,4 @@
-#Starfish Data Platform Reference App
+# Starfish Data Platform Reference App
 
 To run this application, just open `index.html` in the browser.
 
