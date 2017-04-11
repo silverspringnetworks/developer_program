@@ -1,4 +1,4 @@
-# Silver Spring Networks Starfish JS SDK Reference APP
+# Starfish Data Platform Reference App
 
 To run this application, just open `index.html` in the browser.
 
@@ -7,6 +7,12 @@ This sample application demonstrates how to use `Starfish JS SDK` to build a sim
 To use the sample application you will need clientId/secret issued by *Starfish Data Platform*.
 
 Fill in clientId/secret and click on 'Connect' to fetch devices and choose a device to plot temperature observations for that device.
+
+Fill in  the solution name as either `StudioSimulation` or `sandbox`
+
+Solutions are a logical grouping of devices and their associated data. Solutions are created automatically when a device is created using that solution.
+* Devices created via studio simulation will be part of the solution named `StudioSimulation`
+* Devices purchased via the development portal will be part of the solution named `sandbox`
 
 Observations must be of format:
 ```json

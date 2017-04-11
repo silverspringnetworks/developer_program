@@ -29,6 +29,8 @@
 table {
   margin-bottom: 20px;
   border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
 }
 table, th, td{
   border: 1px solid #cdcdcd;
@@ -41,6 +43,14 @@ table th, table td{
 body {
   margin: 0;
   overflow: auto;
+}
+
+.col-deviceid {
+  width:47%;
+}
+
+.col-macaddress {
+  width:53%;
 }
 
 .sidebar, .main {

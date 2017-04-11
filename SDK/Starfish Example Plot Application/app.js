@@ -92,14 +92,14 @@ function handleConnect(event) {
       var tbl = document.getElementById("device-table-body")
       result.forEach( function(device) {
         var row = tbl.insertRow(-1)
-        var typeCell = row.insertCell(0)
+        var idCell = row.insertCell(0)
         var macAddressCell = row.insertCell(1)
         row.onclick = function(e) {
           $("#device-table-body tr").removeClass("active");
           $(e.currentTarget).addClass("active");
           selectDevice(device);
         }
-        typeCell.innerHTML = device.deviceType;
+        idCell.innerHTML = device.id;
         macAddressCell.innerHTML = "<em>Unknown</em>"
         if(device.provisioningInfo && device.provisioningInfo.ssniMacAddress) {
           macAddressCell.innerHTML = device.provisioningInfo.ssniMacAddress;
