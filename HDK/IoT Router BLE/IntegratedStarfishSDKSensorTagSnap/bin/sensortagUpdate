@@ -1,0 +1,9 @@
+#!/bin/sh
+sensortag --all -n $1 -t $2 -f $4 $3 > $5 2>&1
+CheckException=$(cat $5 | grep -i "bluepy.btle.BTLEException" | cut --d=":" -f 1)
+if [ "$CheckException" = "bluepy.btle.BTLEException" ]; then
+ echo "Error!! Either SensorTag is PowerOff or Bluetooth Connectivity is Off"
+ rm $5
+ exit 0
+fi
+
