@@ -1,0 +1,8 @@
+{
+  "name": "nodeapp",
+  "version": "1.0.0",
+  "description": "Javascript wrapper for Starfish API",
+  "license": "",
+  "private": true,
+  "bin": "./main.js"
+}
