@@ -12,13 +12,14 @@ ssni_coap_server | The SSNI COAP Server Library
 1. Download the folder `mshield` to your local machine and save it at your preferred location e.g.`C:\mshield`
 
 1. Download the folder `ssni_coap_server` to this location:
+
 	e.g.`C:\Users\<user>\Documents\Arduino\libraries`
 
 	**Note**: Replace `<user>` with your username
 
 1. Download and install the Arduino IDE 1.8.2 from one of the below locations depending on your Arduino hardware:
 	* https://www.arduino.cc/en/Main/Software
-	* https://www.arduino.org/downloads
+	* http://www.arduino.org/downloads
 
 1. Click on `mshield.ino` located in the `mshield` folder
 
