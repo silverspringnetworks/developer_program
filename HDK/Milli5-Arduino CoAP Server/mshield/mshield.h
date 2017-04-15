@@ -31,36 +31,89 @@ Networks, Inc.
 #define _MSHIELD_H_
 
 #include "Arduino.h"
+#include "coap_server.h"
+#include "coappdu.h"
+#include "coapmsg.h"
+#include "temp_sensor.h"
+#include "log.h"
+#include "arduino_time.h"
 
+
+
+/******************************************************************************/
+
+//
+// List of sensors defined using strings, which will be part of the CoAP URI
+//
+
+// The default sensor for this Reference App is a temperature sensor (DHT11)
+// To access this sensor, the URI is /sensor/arduino/temp
+#define TEMP_SENSOR           			"temp"
+
+/* Add your own sensors here using a string of max 22 characters               */
+/* Avoid using characters such as ,.;:{}-+*&%$#@!?<>|\[]~`                     */
+/* The string below will be part of the CoAP URI used to access this sensor    */
+/* If the string is e.g. "humi", the complete URI will be /sensor/arduino/humi */
+#define MY_SENSOR             			"a_sensor"
+
+/******************************************************************************/
+
+// It's possible to do a CoAP Observe on one sensor
+// Once a minute, your CoAP Client will receive a response message  
+// containing sensor data with timestamp and unit
+//
+// Pick one sensor from the sensors above
+#define OBS_SENSOR_NAME     			TEMP_SENSOR
+#define OBS_FUNC_PTR        			&arduino_get_temp
+
+/******************************************************************************/
+
+
+// Specify Serial object used for printing to serial monitor
+#undef Serial
 #if defined(ARDUINO_ARCH_SAMD)
   // Use SerialUSB for Serial on Zero based boards
-  #define Serial 						SerialUSB
+  #define SER_MON_PTR					&SerialUSB
 #endif
 
 #if defined(ARDUINO_ARCH_SAM)
-  //#define Serial						SerialUSB
+  #define SER_MON_PTR					&SerialUSB
 #endif
+
+/******************************************************************************/
 
 // Specify Serial object used to access the UART for the HDLC connection
 // NOTE: the baud rate of the HDLC connection is fixed
-#define SerialUART	         			Serial1
+#define UART_PTR        				&Serial1
+
+/******************************************************************************/
+
+// Turn logging on or off
+// HIGH means logging is turned on
+// LOW  means logging is turned off
+
+#define LOG_LEVEL						HIGH // LOW
+
+/******************************************************************************/
 
 // UART between Arduino and MilliShield
-#define UART_TIMEOUT_IN_MILLISECONDS	2000
+#define UART_TIMEOUT_IN_MS				2000
+
+/******************************************************************************/
 
 // Specify baud rate for the debug console
 #define CONSOLE_BAUD_RATE     			115200
 
+/******************************************************************************/
+
 // Local time zone relative to UTC; Examples PST: -8, MST: -7, Central: -6, EST: -5
 #define LOCAL_TIME_ZONE					(-8)
 
-// LED parameters
-#define LED_PIN_NUMBER					4
-#define LED_BLINK_DURATION_IN_SECONDS	5
-#define LED_BLINK_SLOW_PERIOD_MS		800
-#define LED_BLINK_FAST_PERIOD_MS		100
+/******************************************************************************/
 
 // Max-Age, see Section 5.10.5 of rfc7252
-#define COAP_MSG_MAX_AGE_IN_SECONDS		90
+#define COAP_MSG_MAX_AGE_IN_SECS		90
+
+/******************************************************************************/
 
 #endif /* _MSHIELD_H_ */
