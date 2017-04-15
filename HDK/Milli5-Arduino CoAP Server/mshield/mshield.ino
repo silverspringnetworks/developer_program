@@ -61,7 +61,6 @@ Networks, Inc.
  
 #include "mshield.h"
 
-
 /*
  * This function handles the URI prior to the query
  * Add your own URI here
@@ -114,7 +113,7 @@ void setup()
   // Print debug messages to the Serial Monitor
   // The pointer to the serial object is defined in mshield.h
   // NOTE: it takes a few seconds before you can start printing
-  log_init( SER_MON_PTR, CONSOLE_BAUD_RATE, LOG_LEVEL );
+  log_init( SER_MON_PTR, SER_MON_BAUD_RATE, LOG_LEVEL );
 
   // Init the clock and set the local time zone
   rtc_time_init(LOCAL_TIME_ZONE);

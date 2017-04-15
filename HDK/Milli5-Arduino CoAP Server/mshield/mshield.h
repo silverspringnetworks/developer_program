@@ -39,9 +39,7 @@ Networks, Inc.
 #include "arduino_time.h"
 
 
-
 /******************************************************************************/
-
 //
 // List of sensors defined using strings, which will be part of the CoAP URI
 //
@@ -50,29 +48,43 @@ Networks, Inc.
 // To access this sensor, the URI is /sensor/arduino/temp
 #define TEMP_SENSOR           			"temp"
 
-/* Add your own sensors here using a string of max 22 characters               */
-/* Avoid using characters such as ,.;:{}-+*&%$#@!?<>|\[]~`                     */
-/* The string below will be part of the CoAP URI used to access this sensor    */
-/* If the string is e.g. "humi", the complete URI will be /sensor/arduino/humi */
+/* Add your own sensors here using a string of max 22 characters              */
+/* Avoid using characters such as ,.;:{}-+*&%$#@!?<>|\/[]~`                   */
+/* The string below will be part of the CoAP URI used to access this sensor   */
+/* If the string is "humi", the complete URI will be /sensor/arduino/humi     */
 #define MY_SENSOR             			"a_sensor"
+#define MY_SECOND_SENSOR       			"another_sensor"
+
 
 /******************************************************************************/
-
+//
 // It's possible to do a CoAP Observe on one sensor
 // Once a minute, your CoAP Client will receive a response message  
 // containing sensor data with timestamp and unit
 //
-// Pick one sensor from the sensors above
+
+// Pick one sensor from the sensors above to make it an "observable" sensor:
 #define OBS_SENSOR_NAME     			TEMP_SENSOR
-#define OBS_FUNC_PTR        			&arduino_get_temp
+
+// Specify the function that reads the sensor and assembles the 
+// CoAP Observe response message:
+#define OBS_FUNC_PTR        			&arduino_get_temp 
+
 
 /******************************************************************************/
+//
+// CoAP Observe Max-Age, see Section 5.10.5 of rfc7252
+//
+#define COAP_MSG_MAX_AGE_IN_SECS		90
 
 
-// Specify Serial object used for printing to serial monitor
-#undef Serial
+/******************************************************************************/
+//
+// Specify a pointer to the Serial object used for printing to the Serial Monitor
+//
+
 #if defined(ARDUINO_ARCH_SAMD)
-  // Use SerialUSB for Serial on Zero based boards
+  // Use SerialUSB for Serial Monitor on Zero based boards
   #define SER_MON_PTR					&SerialUSB
 #endif
 
@@ -81,38 +93,42 @@ Networks, Inc.
 #endif
 
 /******************************************************************************/
-
-// Specify Serial object used to access the UART for the HDLC connection
-// NOTE: the baud rate of the HDLC connection is fixed
-#define UART_PTR        				&Serial1
+//
+// Specify baud rate for the Serial Monitor
+//
+#define SER_MON_BAUD_RATE     			115200
 
 /******************************************************************************/
+//
+// Specify a pointer to the Serial object used to access the UART for the HDLC 
+// connection
+//
+// NOTE: the baud rate of the HDLC connection is fixed
+//
+#define UART_PTR        				&Serial1
 
+
+/******************************************************************************/
+//
 // Turn logging on or off
-// HIGH means logging is turned on
-// LOW  means logging is turned off
+//   HIGH means logging is turned on
+//   LOW  means logging is turned off
 
 #define LOG_LEVEL						HIGH // LOW
 
-/******************************************************************************/
 
-// UART between Arduino and MilliShield
+/******************************************************************************/
+//
+// Set the time-out for the UART between Arduino and MilliShield
+//
 #define UART_TIMEOUT_IN_MS				2000
 
-/******************************************************************************/
-
-// Specify baud rate for the debug console
-#define CONSOLE_BAUD_RATE     			115200
 
 /******************************************************************************/
-
+//
 // Local time zone relative to UTC; Examples PST: -8, MST: -7, Central: -6, EST: -5
+//
 #define LOCAL_TIME_ZONE					(-8)
-
-/******************************************************************************/
-
-// Max-Age, see Section 5.10.5 of rfc7252
-#define COAP_MSG_MAX_AGE_IN_SECS		90
 
 /******************************************************************************/
 
