@@ -1,10 +1,10 @@
 # Silver Spring Networks - Arduino MilliShield Software
 
-This reference application consists of two sub-folders:
+This reference application consists of two folders:
 
 Folder Name | Content
 ----------- | -----------
-mshield | Contains an Arduino sketch that uses the MilliShield libraries
+mshield | The Arduino Sketch dependent on the Coap Server library
 ssni_coap_server | The SSNI COAP Server Library
 
 ## Installation Instructions:
@@ -13,7 +13,7 @@ ssni_coap_server | The SSNI COAP Server Library
 
 1. Download the folder `ssni_coap_server` to this location:
 
-	e.g.`C:\Users\<user>\Documents\Arduino\libraries`
+	`C:\Users\<user>\Documents\Arduino\libraries`
 
 	**Note**: Replace `<user>` with your username
 
