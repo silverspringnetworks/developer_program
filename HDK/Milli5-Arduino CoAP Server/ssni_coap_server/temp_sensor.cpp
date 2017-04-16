@@ -37,7 +37,7 @@ Networks, Inc.
 #include "log.h"
 #include "bufutil.h"
 #include "exp_coap.h"
-#include "coapmsg.h"
+#include "coap_rsp_msg.h"
 #include "coappdu.h"
 #include "coapobserve.h"
 #include "coapsensorobs.h"
@@ -234,36 +234,29 @@ temp_ctx_t temp_ctx;
 DHT_Unified dht( A4, DHT_TYPE );
 
 
-#define UNIT "*C"
+#define UNIT " *C"
 error_t arduino_temp_sensor_init()
 {
-	char buf[32];
-
-	// Set pointer to Serial object
-	// pS is a static declared in log.h
-	// Serial is defined in log.h
-	pS = log_get_serial();
-	
 	// Initialize temperature/humidity sensor
 	dht.begin();
 
 	// Enable temp sensor
 	arduino_enab_temp();
 	
-	print_buf("DHTxx Unified Sensor Example");
+	println("DHTxx Unified Sensor Example");
 
 	// Print temperature sensor details.
 	sensor_t sensor;
 	dht.temperature().getSensor(&sensor);
-	Serial.println("------------------------------------");
-	Serial.println("Temperature");
-	Serial.print  ("Sensor:       "); Serial.println(sensor.name);
-	Serial.print  ("Driver Ver:   "); Serial.println(sensor.version);
-	Serial.print  ("Unique ID:    "); Serial.println(sensor.sensor_id);
-	Serial.print  ("Max Value:    "); Serial.print(sensor.max_value); Serial.println(" *C");
-	Serial.print  ("Min Value:    "); Serial.print(sensor.min_value); Serial.println(" *C");
-	Serial.print  ("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" *C");  
-	Serial.println("------------------------------------");  
+	println("------------------------------------");
+	println("Temperature");
+	print  ("Sensor:       "); println(sensor.name);
+	print  ("Driver Ver:   "); printnum(sensor.version);    println("");
+	print  ("Unique ID:    "); printnum(sensor.sensor_id);  println("");
+	print  ("Max Value:    "); printnum(sensor.max_value);  println(UNIT);
+	print  ("Min Value:    "); printnum(sensor.min_value);  println(UNIT);
+	print  ("Resolution:   "); printnum(sensor.resolution); println(UNIT);  
+	println("------------------------------------");  
 	return ERR_OK;
 	
 } // arduino_temp_sensor_init()
@@ -369,12 +362,12 @@ error_t arduino_put_temp_cfg( temp_scale_t scale )
 	{
 	case CELSIUS_SCALE:
 		temp_scale = CELSIUS_SCALE;
-       	print_buf("Celsius scale set!");
+       	println("Celsius scale set!");
 		break;
 
 	case FAHRENHEIT_SCALE:
 		temp_scale = FAHRENHEIT_SCALE;
-       	print_buf("Fahrenheit scale set!");
+       	println("Fahrenheit scale set!");
 		break;
 
 	default:
@@ -425,7 +418,7 @@ error_t temp_sensor_read(float * p)
 
     if (temp_ctx.state == tsat_disabled)
     {
-		print_buf("Temp sensor disabled!");
+		println("Temp sensor disabled!");
         return ERR_OP_NOT_SUPP;
     }
 
@@ -436,7 +429,7 @@ error_t temp_sensor_read(float * p)
 	// Check for NaN
 	if (isnan(event.temperature)) 
 	{
-		print_buf("Error reading temperature!");
+		println("Error reading temperature!");
 		rc = ERR_FAIL;
 	}
 	else 

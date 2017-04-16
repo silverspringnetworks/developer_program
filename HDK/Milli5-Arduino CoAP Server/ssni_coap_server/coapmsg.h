@@ -31,6 +31,7 @@ Networks, Inc.
 #define INC_COAPMSG_H
 
 #include <sys/queue.h>
+#include <arduino.h>
 #include "coapextif.h"
 
 #define COAP_VER_VAL        (1)
@@ -158,22 +159,12 @@ error_t coap_ack_rx(uint16_t mid, struct mbuf *m);
  */ 
 void coap_set_max_age( uint32_t max_age );
 
-/**
- * @brief Make CoAP response message
- * 
- * @param [out] m		A buffer of type struct mbuf
- * @param [out] len		The length of the response
- * @param [in] count	The number of sensor readings
- * @param [in] reading	Pointer to an array of sensor readings or to one reading
- * @param [in] unit		A string containing the unit of measure e.g. "F" for Fahrenheit
- *
- */ 
- error_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading, const char * unit );
-
 
 /******************************************************************************
  * Memory pool code, NIC only.
  *****************************************************************************/
 void copt_pool_init(void);
+
+
 #endif /* INC_COAPMGS_H */
 

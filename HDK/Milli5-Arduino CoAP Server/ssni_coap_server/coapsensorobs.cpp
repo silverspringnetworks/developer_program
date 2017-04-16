@@ -99,7 +99,7 @@ error_t coap_obs_reg()
 // De-register for Observe
 error_t coap_obs_dereg()
 {
-	print_buf("De-register for Observe");
+	println("De-register for Observe");
 
 #if defined(ARDUINO_ARCH_SAMD)
 	// Disable alarm

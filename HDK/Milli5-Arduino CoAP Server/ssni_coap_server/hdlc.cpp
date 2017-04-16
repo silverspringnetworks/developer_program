@@ -69,11 +69,6 @@ void hdlc_init( HardwareSerial * pUART )
 	// NOTE: This baud rate is fixed and cannot be changed
 	uart.begin(UART_BAUD_RATE);
 
-	// Set pointer to Serial object for printing to the console
-	// pS is a static declared in log.h
-	// Serial is defined in log.h
-	pS = log_get_serial();
-
 } // hdlc_set_serial
 
 struct hdlcstat hdlc_stats;
@@ -803,8 +798,8 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
 		if ( frame_len != rx_len )
 		{
 			dlog( LOG_DEBUG, "The frame length doesn't match the number of received bytes" );
-			print_number( "frame_len: ", frame_len );
-			print_number( "rx_len: ", rx_len );
+			print("frame_len: ");	printnum(frame_len);	println("");
+			print("rx_len:    ");	printnum(rx_len);		println("");
 			return 0;
 			
 		} // if

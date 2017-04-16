@@ -66,14 +66,6 @@ Networks, Inc.
 #define LOG_INFO        (6)         /* informational */
 #define LOG_DEBUG       (7)         /* debug-level messages */
 
-// Serial should only have been defined by mshield.h
-// In your .ino file, make sure log.h is included after mshield.h
-// This makes sure we done define Serial here in case of the .ino file
-#ifndef Serial
-	// Pointer to Serial
-	static Serial_ * pS = NULL;
-	#define Serial (*pS)
-#endif
 
 /**
 * @brief
@@ -83,16 +75,8 @@ Networks, Inc.
 * @param baun The baud rate for printing to console
 *
 */
-void log_init( Serial_ * pSerial, uint32_t baud, boolean log_level );
+void log_init( Serial_ * pSerial, uint32_t baud, uint32_t log_level );
 
-/**
-* @brief
-* Get pointer to Serial
-*
-* @return Serial_ pointer to Serial object used for printing to console
-*
-*/
-Serial_ * log_get_serial();
 
 /**
 * @brief
@@ -130,6 +114,14 @@ extern void dlog (int level, const char *my_format, ...)
 */
 extern void ddump(int level, const char *label, const void *data, int len);
 
+/**
+* @brief Print buffer without newline
+*
+* @param[in] buf Pointer to text string to be printed
+*
+*/
+void print( const char * buf );
+
 
 /**
 * @brief Print buffer
@@ -137,17 +129,16 @@ extern void ddump(int level, const char *label, const void *data, int len);
 * @param[in] buf Pointer to text string to be printed
 *
 */
-void print_buf( const char * buf );
+void println( const char * buf );
 
 
 /**
 * @brief Print an integer
 *
-* @param[in] label A label to be printed
-* @param[in] d Integer to be printed
+* @param[in] n The integer to be printed
 *
 */
-void print_number( const char * label, int d );
+void printnum( int n );
 
 
 /**

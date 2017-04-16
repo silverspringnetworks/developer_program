@@ -27,13 +27,10 @@ Networks, Inc.
 
 */
 
-#include <arduino.h>
-
-#include "hbuf.h"
 #include "log.h"
 #include "coapmsg.h"
 #include "coappdu.h"
-#include "hdlc.h"
+//#include "hdlc.h"
 #include "coapsensoruri.h"
 #include "coapobserve.h"
 #include "coaputil.h"
@@ -979,64 +976,3 @@ void coap_set_max_age( uint32_t max_age )
 	
 } // coap_set_max_age
 
-
-
-// Assemble a CoAP response message; {Timestamp,Value(s),Unit}
-error_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading, const char * unit )
-{
-    uint8_t 	l;
-	char 		rsp_buf[256];
-	char		reading_buf[128];
-	char		unit_buf[32];
-	char * 		p;
-	time_t     	epoch;
-	uint32_t	ix;
-	
-	// Create string containing the UNIX epoch
-	epoch = get_rtc_epoch();
-	sprintf( rsp_buf, "%d", epoch );
-	
-	// Check if we have a sensor reading
-	if (reading)
-	{
-		// Get each value
-		for( ix = 0; ix < count; ix++ )
-		{
-			// Create string containing reading
-			sprintf( reading_buf, ",%.2f", *reading++ );
-
-			// Concatenate the reading
-			strcat( rsp_buf, reading_buf );
-			
-		} // for
-	} // if
-
-	// Check if we have a unit
-	if (unit)
-	{
-		// Concatenate the unit
-		sprintf( unit_buf, ",%s", unit );
-		strcat( rsp_buf, unit_buf );
-		
-	} // if
-
-	// Print message
-	dlog( LOG_INFO, rsp_buf );
-	
-	// Get length
-	l = strlen(rsp_buf);
-	
-	// Allocate memory
-	p = (char*) m_append(m,l);
-    if (!p) 
-    {
-        return ERR_NO_MEM;
-    }
-
-	// Store output
-	strcpy(p,rsp_buf);
-	*len = l;
-	
-    return ERR_OK;
-	
-} // rsp_msg()

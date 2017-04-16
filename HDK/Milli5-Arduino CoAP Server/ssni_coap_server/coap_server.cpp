@@ -83,11 +83,11 @@ void coap_s_init( HardwareSerial * pSerial, uint32_t max_age, uint32_t uart_time
 
 	// Print version number, time and date
 	sprintf( ver, "Arduino MilliShield Software Version Number: %s\n", VERSION_NUMBER );
-	print_buf(ver);
+	println(ver);
 	sprintf( ver, "Time: %s\n", __TIME__ );
-	print_buf(ver);
+	println(ver);
 	sprintf( ver, "Date: %s\n", __DATE__ );
-	print_buf(ver);
+	println(ver);
 
 } // coap_s_init()
 

@@ -112,11 +112,6 @@ error_t hdlcs_open( HardwareSerial * pUART, uint32_t timeout_ms )
         return ERR_FAIL;
     }
 	
-	// Set pointer to Serial object
-	// pS is a static declared in log.h
-	// Serial is defined in log.h
-	pS = log_get_serial();
-	
 	// Init HDLC UART
 	hdlc_init(pUART);
 
