@@ -255,16 +255,15 @@ error_t arduino_temp_sensor_init()
 	// Print temperature sensor details.
 	sensor_t sensor;
 	dht.temperature().getSensor(&sensor);
-	print_buf("------------------------------------");
-	print_buf("Temperature");
-	sprintf( buf, "Sensor:       %s", sensor.name ); print_buf(buf);
-	print_number("Driver Ver:   ", sensor.version );
-	print_number("Unique ID:    ", sensor.sensor_id );
-	sprintf( buf, "Max Value:    %d %s", sensor.max_value, UNIT ); print_buf(buf);
-	sprintf( buf, "Min Value:    %d %s", sensor.min_value, UNIT ); print_buf(buf);
-	sprintf( buf, "Resolution:   %d %s", sensor.resolution, UNIT ); print_buf(buf);
-	print_buf("------------------------------------");
-  
+	Serial.println("------------------------------------");
+	Serial.println("Temperature");
+	Serial.print  ("Sensor:       "); Serial.println(sensor.name);
+	Serial.print  ("Driver Ver:   "); Serial.println(sensor.version);
+	Serial.print  ("Unique ID:    "); Serial.println(sensor.sensor_id);
+	Serial.print  ("Max Value:    "); Serial.print(sensor.max_value); Serial.println(" *C");
+	Serial.print  ("Min Value:    "); Serial.print(sensor.min_value); Serial.println(" *C");
+	Serial.print  ("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" *C");  
+	Serial.println("------------------------------------");  
 	return ERR_OK;
 	
 } // arduino_temp_sensor_init()
