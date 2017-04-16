@@ -30,8 +30,8 @@ Networks, Inc.
 
 #include "log.h"
 #include "exp_coap.h"
-#include "coapmsg.h"
-#include "coappdu.h"
+#include "coap_rsp_msg.h"
+//#include "coappdu.h"
 #include "arduino_pins.h"
 #include "TT_resource.h"
 
@@ -76,11 +76,6 @@ error_t arduino_disab_TT()
  */
 error_t arduino_init_TT()
 {
-	// Set pointer to Serial object
-	// pS is a static declared in log.h
-	// Serial is defined in log.h
-	pS = log_get_serial();
-
 } // arduino_init_TT
 
 /**
@@ -169,7 +164,7 @@ error_t arduino_get_TT( struct mbuf * m, uint8_t *len )
 	rc = TT_read(&reading);
 	
 	// Assemble response based on the reading(s) and the Unit of Measure
-	// The function rsp_msg() is declared in coapmsg.h
+	// The function rsp_msg() is declared in coap_rsp_msg.h
 	rc = rsp_msg( m, len, count, &reading, unit );
     return rc;
 }

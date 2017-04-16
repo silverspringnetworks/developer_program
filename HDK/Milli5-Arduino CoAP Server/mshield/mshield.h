@@ -38,14 +38,13 @@ Networks, Inc.
 #include "log.h"
 #include "arduino_time.h"
 
-
 /******************************************************************************/
 //
 // List of sensors defined using strings, which will be part of the CoAP URI
 //
 
 // The default sensor for this Reference App is a temperature sensor (DHT11)
-// To access this sensor, the URI is /sensor/arduino/temp
+// To access this sensor from a CoAP Client, the URI is /sensor/arduino/temp
 #define TEMP_SENSOR           			"temp"
 
 /* Add your own sensors here using a string of max 22 characters              */
@@ -54,7 +53,6 @@ Networks, Inc.
 /* If the string is "humi", the complete URI will be /sensor/arduino/humi     */
 #define MY_SENSOR             			"a_sensor"
 #define MY_SECOND_SENSOR       			"another_sensor"
-
 
 /******************************************************************************/
 //
@@ -80,41 +78,40 @@ Networks, Inc.
 
 /******************************************************************************/
 //
-// Specify a pointer to the Serial object used for printing to the Serial Monitor
+// 1. Specify a pointer to the printing Serial object (for Serial Monitor)
+// 2. Specify a pointer to the UART Serial object (for the HDLC connection)
 //
 
 #if defined(ARDUINO_ARCH_SAMD)
   // Use SerialUSB for Serial Monitor on Zero based boards
-  #define SER_MON_PTR					&SerialUSB
+	#define SER_MON_PTR					  &SerialUSB
+	#define UART_PTR        			&Serial1
 #endif
 
 #if defined(ARDUINO_ARCH_SAM)
-  #define SER_MON_PTR					&SerialUSB
+	#define SER_MON_PTR					  &SerialUSB
+	#define UART_PTR        			&Serial
 #endif
+
 
 /******************************************************************************/
 //
 // Specify baud rate for the Serial Monitor
+// TODO: Does this matter for Serial Monitor???  Originally used for TeraTerm
 //
+
 #define SER_MON_BAUD_RATE     			115200
 
-/******************************************************************************/
-//
-// Specify a pointer to the Serial object used to access the UART for the HDLC 
-// connection
-//
-// NOTE: the baud rate of the HDLC connection is fixed
-//
-#define UART_PTR        				&Serial1
-
 
 /******************************************************************************/
 //
-// Turn logging on or off
-//   HIGH means logging is turned on
-//   LOW  means logging is turned off
+// This define sets the logging level
+// The available values are defined in log.h
+// If you specify LOG_EMERG, all logging in the library is turned off
+// If you specify LOG_INFO, you'll get some printing to the Serial Monitor
+// If you specify LOG_DEBUG, a lot of messages will be printed
 
-#define LOG_LEVEL						HIGH // LOW
+#define LOG_LEVEL						      LOG_DEBUG
 
 
 /******************************************************************************/
@@ -126,7 +123,8 @@ Networks, Inc.
 
 /******************************************************************************/
 //
-// Local time zone relative to UTC; Examples PST: -8, MST: -7, Central: -6, EST: -5
+// Local time zone relative to UTC
+// Examples: Pacific: -8, Eastern: -5, London: 0, Paris: +1, Sydney: +10
 //
 #define LOCAL_TIME_ZONE					(-8)
 
