@@ -31,3 +31,6 @@ ssni_coap_server | The SSNI COAP Server Library
       1. If yes, use `Manage Libraries` to locate and install the following:
 			* Adafruit Unified Sensor
 			* DHT Sensor Library
+1. In the IDE, go `Tools/Board/Boards Manager` and the Boards Manager window should appear.
+   1. Use the search bar to locate your board e.g. M0 Pro
+   1. If your board is an Arduino M0, M0 Pro, Arduino/Genuino Zero or ZERO Pro; use the drop-down menu, select board support package 1.6.14 and click Install
