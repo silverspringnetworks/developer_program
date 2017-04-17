@@ -62,7 +62,7 @@ error_t set_time_zone( int32_t zone );
  * @brief
  *
  */
-error_t rtc_time_init();
+error_t rtc_time_init( int32_t zone );
 
 /**
  *

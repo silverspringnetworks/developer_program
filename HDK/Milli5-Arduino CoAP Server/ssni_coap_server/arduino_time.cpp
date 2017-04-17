@@ -31,10 +31,10 @@ Networks, Inc.
 
 #include "log.h"
 #include "bufutil.h"
+#include "coap_rsp_msg.h"
 #include "coapmsg.h"
 #include "coappdu.h"
 #include "arduino_time.h"
-#include "resrc_coap_if.h"
 
 
 #if defined(ARDUINO_ARCH_SAMD)
@@ -87,7 +87,7 @@ error_t crtime(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
 
 		// UTC time
 		epoch = (time_t) atoi(p);
-		print_number( "Epoch:", epoch );
+		print("Epoch: "); printnum(epoch); println("");
 		
 		// Convert to the local time zone
 		epoch += seconds_relative_utc;
@@ -180,17 +180,15 @@ error_t set_time_zone( int32_t zone )
  * @brief Init the RTC time
  *
  */
-error_t rtc_time_init()
+error_t rtc_time_init( int32_t zone )
 {
-	// Set pointer to Serial object
-	// pS is a static declared in log.h
-	// Serial is defined in log.h
-	pS = log_get_serial();
-	
 	// Init RTC time
 	rtc.begin();
 	rtc.setTime(0,0,0);
 	rtc.setDate(0,0,0);
+	
+	// Set the timezone
+	set_time_zone(zone);
 	
 } // rtc_time_init()
 
@@ -224,7 +222,7 @@ void print_current_time(void)
 	b = rtc.getMinutes();
 	c = rtc.getHours();
 	sprintf( buffer, "Time: %02d:%02d:%02d [hr:min:sec]", c, b, a );
-	print_buf(buffer);
+	println(buffer);
 	
 } // print_current_time
 
@@ -244,6 +242,6 @@ void print_current_date(void)
 	b = rtc.getDay();
 	c = rtc.getMonth();
 	sprintf( buffer, "Date: %02d:%02d:%d [mon:day:year]", c, b, a );
-	print_buf(buffer);
+	println(buffer);
 	
 } // print_current_date

@@ -28,9 +28,8 @@ Networks, Inc.
 */
 
 
-#include <arduino.h>
+
 #include "errors.h"
-#include "hbuf.h"
 #include "log.h"
 #include "coappdu.h"
 #include "coapmsg.h"
@@ -38,7 +37,6 @@ Networks, Inc.
 #include "coapextif.h"
 #include "coapsensorobs.h"
 #include "temp_sensor.h"
-#include "resrc_coap_if.h"
 #include "arduino_pins.h"
 #include "arduino_time.h"
 
@@ -70,13 +68,23 @@ static uint32_t start_sn;
 // Register for Observe
 error_t coap_obs_reg()
 {
+#if defined(ARDUINO_ARCH_SAMD)
 	// Set timer for interrupt at whole minutes
 	rtc.setAlarmSeconds(0);
 	rtc.enableAlarm(RTCZero::MATCH_SS);
 
-	// Set callback
+	// Set ISR
 	rtc.attachInterrupt((voidFuncPtr)coap_observe_isr);
-	
+#endif
+
+#if defined(ARDUINO_ARCH_SAM)
+  // Set timer for interrupt at whole minutes
+  rtc.setAlarmTime(0,0,0);
+
+  // Set callback
+  rtc.attachAlarm((voidFuncPtr)coap_observe_isr);
+#endif
+
 	// Set mNIC wake-up pin to HIGH, so that we can toggle it 0 -> 1
 	pinMode(MNIC_WAKEUP_PIN,OUTPUT);
 	digitalWrite(MNIC_WAKEUP_PIN,HIGH);
@@ -91,13 +99,24 @@ error_t coap_obs_reg()
 // De-register for Observe
 error_t coap_obs_dereg()
 {
-	print_buf("De-register for Observe");
-	
+	println("De-register for Observe");
+
+#if defined(ARDUINO_ARCH_SAMD)
 	// Disable alarm
 	rtc.disableAlarm();
 
-	// Remove callback
+	// Remove ISR
 	rtc.detachInterrupt();
+#endif
+
+#if defined(ARDUINO_ARCH_SAM)
+  // Disable alarm
+  rtc.disableAlarmTime();
+
+  // Remove callback
+  rtc.detachAlarm();
+#endif
+
 
 	// Set mNIC wake-up pin to LOW
 	digitalWrite(MNIC_WAKEUP_PIN,LOW);
@@ -138,6 +157,23 @@ error_t observe_rx_ack( void *cbctx, struct mbuf *m )
  */
 struct mbuf *pending_rsp;
 
+#define MAX_OBSERVE_URI_LENGTH 32
+// This array will contain the URI used to obtain Token etc for the response
+static char 			obs_uri[MAX_OBSERVE_URI_LENGTH];
+// This function will be used to read a sensor and obtain the response message
+static ObsFuncPtr		pObsFunc;
+
+// This function assmebles an URI and sets the function used to read a sensor
+void set_observer( const char * uri, ObsFuncPtr p )
+{
+	// Assemble the URI, e.g. "/arduino/temp"
+	sprintf( obs_uri, "/arduino/%s", uri );
+	
+	// Set the pointer to the Observe function
+	pObsFunc = p;
+
+} // set_observer()
+
 // Generate Observe response message
 error_t coap_observe_rsp()
 {
@@ -155,8 +191,8 @@ error_t coap_observe_rsp()
 	// Init CoAP options
     copt_init((sl_co*)&(rsp.oh));
 	
-	// TODO: What is this?
-	rc = get_obs_by_uri( "/arduino/temp", &(rsp.tkl), rsp.token, &(rsp.client), &nxt);
+	// Get token etc.
+	rc = get_obs_by_uri( obs_uri, &(rsp.tkl), rsp.token, &(rsp.client), &nxt);
     if (rc)
     {
         dlog(LOG_ERR, "get_obs_by_uri failed\n");
@@ -175,7 +211,7 @@ error_t coap_observe_rsp()
     m_prepend( m, COAP_OBS_HDR_SZ );
 
     // Get temperature reading
-	rc = arduino_get_temp(m,&len);
+	rc = (*pObsFunc)(m,&len);
     if (rc) 
 	{
         m_free(m);

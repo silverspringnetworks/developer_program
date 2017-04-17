@@ -27,51 +27,59 @@ Networks, Inc.
 
 */
 
-#ifndef _COAP_RESOURCE_IF_H_
-#define _COAP_RESOURCE_IF_H_
+#ifndef INC_COAP_SENSOR_OBS_H
+#define INC_COAP_SENSOR_OBS_H
 
-#include "coapmsg.h"
+#include "arduino.h"
 #include "errors.h"
+#include "hbuf.h"
 
-// Arduino sensors
-#define L_URI_ARDUINO "arduino"
-#define CLA_ARDUINO   "if=" "\"" L_URI_ARDUINO "\"" ";title=\"Arduino Sensors\";ct=42;"
 
 /**
- * @brief CoAP Server Request/Response callback function
+ * @brief A function pointer to set the sensor function used during Observe
  *
- * @param[in] req CoAP Request
- * @param[in] rsp CoAP Response
- * @return error_t
+ * 
  */
-error_t crarduino(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
+typedef error_t (*ObsFuncPtr)( struct mbuf *, uint8_t * );
 
 /**
- * @brief Create a CoAP Response message
+ * @brief Set the URI used for obtaining token etc in CoAP Observe response msg
  *
- * @return error_t
+ * 
  */
-error_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading, const char * unit );
+void set_observer( const char * uri, ObsFuncPtr p );
 
 /**
- * @brief Init the Arduino resources such as sensors, LEDs etc.
+ * @brief If the ISR has run, create a CoAP Observe response
  *
- * @return error_t
+ * @return boolean
  */
-error_t arduino_init_resources();
+void do_observe();
 
 /**
- * @brief Enable Arduino sensors
+ * @brief CoAP Register for Observe
  *
  * @return error_t
  */
-error_t arduino_enab_sensors(void);
+error_t coap_obs_reg();
 
 /**
- * @brief Disable Arduino sensors
+ * @brief CoAP De-egister for Observe
  *
  * @return error_t
  */
-error_t arduino_disab_sensors(void);
+error_t coap_obs_dereg();
 
-#endif /* _COAP_RESOURCE_IF_H_ */
+/**
+ * Handle CoAP ACK received.
+ */
+error_t observe_rx_ack( void *cbctx, struct mbuf *m );
+
+/**
+ * @brief CoAP Observe response
+ *
+ * @return error_t
+ */
+error_t coap_observe_rsp();
+
+#endif

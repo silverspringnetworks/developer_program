@@ -27,42 +27,40 @@ Networks, Inc.
 
 */
 
-#ifndef INC_COAP_SENSOR_OBS_H
-#define INC_COAP_SENSOR_OBS_H
+#ifndef INC_COAP_SERVER_H
+#define INC_COAP_SERVER_H
 
-#include "errors.h"
+#include "hbuf.h"
+#include "coapsensorobs.h"
+
 
 /**
- * @brief If the ISR has run, create a CoAP Observe response
+ * @brief Init HDLCS and the CoAP Server 
  *
- * @return boolean
  */
-void do_observe();
+void coap_s_init(  HardwareSerial * pSerial, uint32_t max_age, uint32_t uart_timeout_ms, const char * uri, ObsFuncPtr p );
+
+
 
 /**
- * @brief CoAP Register for Observe
+ * @brief Run HDLCS and the CoAP Server 
  *
- * @return error_t
  */
-error_t coap_obs_reg();
+void coap_s_run();
 
-/**
- * @brief CoAP De-egister for Observe
- *
- * @return error_t
+
+/** 
+ * @brief Primary CoAP process function.
+ * Set up REQ and RSP contexts.
+ * Parse the REQ.
+ * Deal with special case messages or errors, or hand off for URI servicing.
+ * Enable or disable observe, as appropriate.
+ * Build a response PDU based on the RSP context, and return the mbuf.
+ * @param[out] m pointer to mbuf
+ * @return mbuf
  */
-error_t coap_obs_dereg();
+mbuf_ptr_t coap_s_proc( mbuf_ptr_t m );
 
-/**
- * Handle CoAP ACK received.
- */
-error_t observe_rx_ack( void *cbctx, struct mbuf *m );
 
-/**
- * @brief CoAP Observe response
- *
- * @return error_t
- */
-error_t coap_observe_rsp();
 
-#endif
+#endif /* INC_COAP_SERVER_H */

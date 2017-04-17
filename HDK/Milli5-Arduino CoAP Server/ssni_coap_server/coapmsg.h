@@ -31,6 +31,7 @@ Networks, Inc.
 #define INC_COAPMSG_H
 
 #include <sys/queue.h>
+#include <arduino.h>
 #include "coapextif.h"
 
 #define COAP_VER_VAL        (1)
@@ -158,9 +159,12 @@ error_t coap_ack_rx(uint16_t mid, struct mbuf *m);
  */ 
 void coap_set_max_age( uint32_t max_age );
 
+
 /******************************************************************************
  * Memory pool code, NIC only.
  *****************************************************************************/
 void copt_pool_init(void);
+
+
 #endif /* INC_COAPMGS_H */
 

@@ -66,14 +66,6 @@ Networks, Inc.
 #define LOG_INFO        (6)         /* informational */
 #define LOG_DEBUG       (7)         /* debug-level messages */
 
-// Serial should only have been defined by mshield.h
-// In your .ino file, make sure log.h is included after mshield.h
-// This makes sure we done define Serial here in case of the .ino file
-#ifndef Serial
-	// Pointer to Serial
-	static Serial_ * pS = NULL;
-	#define Serial (*pS)
-#endif
 
 /**
 * @brief
@@ -83,16 +75,8 @@ Networks, Inc.
 * @param baun The baud rate for printing to console
 *
 */
-void log_init( Serial_ * pSerial, uint32_t baud );
+void log_init( Serial_ * pSerial, uint32_t baud, uint32_t log_level );
 
-/**
-* @brief
-* Get pointer to Serial
-*
-* @return Serial_ pointer to Serial object used for printing to console
-*
-*/
-Serial_ * log_get_serial();
 
 /**
 * @brief
@@ -131,23 +115,31 @@ extern void dlog (int level, const char *my_format, ...)
 extern void ddump(int level, const char *label, const void *data, int len);
 
 /**
-* @brief
-* Print label and number to serial port
+* @brief Print buffer without newline
 *
-* @param label text string
-* @param d an integer
+* @param[in] buf Pointer to text string to be printed
 *
 */
-void print_number( const char * label, int d );
+void print( const char * buf );
+
 
 /**
-* @brief
-* Print buffer
+* @brief Print buffer
 *
-* @param buf text string
+* @param[in] buf Pointer to text string to be printed
 *
 */
-void print_buf( const char * buf );
+void println( const char * buf );
+
+
+/**
+* @brief Print an integer
+*
+* @param[in] n The integer to be printed
+*
+*/
+void printnum( int n );
+
 
 /**
 * @brief
@@ -160,10 +152,26 @@ void print_buf( const char * buf );
 * @return void
 *
 */
-extern void log_msg(const char *label, const void *data, int datalen, int eol);
+void log_msg(const char *label, const void *data, int datalen, int eol);
 
+/**
+* @brief Store one character in a Capture Buffer
+*
+* @param[in] ch The character to be stored in the Capture Buffer
+*
+*/
 void capture( uint8_t ch );
+
+
+/**
+* @brief Dump the contect of the Capture Buffer
+*
+* @param[in] p Pointer to buffer to be dumped; if this is NULL, 'capture_buf' will be used
+* @param[in] count The number of characters to print
+*
+*/
 void capture_dump( uint8_t * p, int count );
-void print_number( char * label, int d );
+
+
 
 #endif /* INC_LOG_H */

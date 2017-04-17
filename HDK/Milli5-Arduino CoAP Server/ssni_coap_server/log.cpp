@@ -38,45 +38,35 @@ static int log_level = LOG_DEBUG;
 
 // default LOG_ERROR, -v WARN, -vv NOTICE, -vvv INFO, -vvvv DEBUG
 
-static FILE *log_fp;
-
 static const char *label[] = {"EMRG", "ALRT", "CRIT", "ERR", "WARN", 
                               "NOTE", "INFO", "DEBG"};
 static const int numlevels = sizeof (label) / sizeof(label[0]);
 
+// Pointer to Serial class used for printing
+static Serial_ * pSerMon = NULL;
+#define SerMon (*pSerMon)
 
 /* Init logging */
-void log_init( Serial_ * pSerial, uint32_t baud )
+void log_init( Serial_ * pSerial, uint32_t baud, uint32_t log_level )
 {
-	// pS and Serial is defined in log.h
-	// This is the only location pS is assigned a value
-	pS = pSerial;
-	Serial.begin(baud);
+	// Assign pointer used for printing
+	pSerMon = pSerial;
+
+	// Start the Native serial port
+	SerMon.begin(baud);
+ 
+	// Wait for the port to connect
+	while(!SerMon);
+	
+	// Set the logging level
+	dlog_level(log_level);
 
 } // log_init
 
-/**
-* @brief
-* Get pointer to Serial
-* NOTE: log_init() must be called before this function
-*
-* @return Serial_ pointer to Serial object used for printing to console
-*
-*/
-Serial_ * log_get_serial()
-{
-	assert(pS);
-	return pS;
-	
-} // log_get_serial
+
 
 void dlog_level(int level)
 {
-    /* init */
-    if (!log_fp) {
-        log_fp = stdout;
-    }
-
     /* force level bounds */
     level = level >= numlevels ? numlevels - 1 : level;
     level = level < 0 ? 0 : level;
@@ -90,7 +80,8 @@ void dlog(int level, const char *format, ...)
 	char buffer[PRINTF_LEN];
    
     // Check debug log
-    if (level > log_level) {
+    if (level > log_level) 
+	{
         return;
     }
 
@@ -100,7 +91,7 @@ void dlog(int level, const char *format, ...)
 	// Print to serial port using the format
 	va_start( args, format );
 	vsprintf( buffer,format, args );
-	Serial.println(buffer);
+	SerMon.println(buffer);
 	va_end(args);
 
 } // dlog
@@ -111,7 +102,8 @@ void ddump(int level, const char *label, const void *data, int datalen)
 	char buffer[PRINTF_LEN];
     int i;
 
-    if (level > log_level) {
+    if (level > log_level) 
+	{
         return;
     }
 
@@ -121,16 +113,16 @@ void ddump(int level, const char *label, const void *data, int datalen)
     if (label) 
 	{
 		sprintf( buffer, "%s:", label );
-        Serial.print(buffer);
+        SerMon.print(buffer);
     }
 
     for(i = 0; i < datalen; i++) 
 	{
 		sprintf( buffer, " %02x", b[i] );
-        Serial.print(buffer);
+        SerMon.print(buffer);
     }
     
-    Serial.println("");
+    SerMon.println("");
 
 } // ddump
 
@@ -140,6 +132,11 @@ void log_msg(const char *label, const void *data, int datalen, int eol)
     static char llabel[64];
     static int llen;
     static uint8_t line[256];
+
+    if ( LOG_DEBUG > log_level ) 
+	{
+        return;
+    }
 
     if ((!eol || llen) && (llen + datalen < sizeof(line))) {
         /* buffer if we can */
@@ -168,26 +165,42 @@ void log_msg(const char *label, const void *data, int datalen, int eol)
 } // log_msg
 
 
+void print( const char * buf )
+{
+    if ( LOG_DEBUG > log_level ) 
+	{
+        return;
+    }
+
+	SerMon.print(buf);
+	
+} // print
+
+
+void println( const char * buf )
+{
+    if ( LOG_DEBUG > log_level ) 
+	{
+        return;
+    }
+
+	SerMon.println(buf);
+	
+} // println
+
+void printnum( int n )
+{
+    if ( LOG_DEBUG > log_level ) 
+	{
+        return;
+    }
+
+	SerMon.print(n);
+	
+} // println
+
 uint8_t capture_buf[1024];
 uint16_t cap_count = 0;
-
-void print_number( const char * label, int d )
-{
-	char str[256];
-	
-	sprintf( str, "%s", label );
-	Serial.print(str);
-
-	sprintf( str, "%d", d );
-	Serial.println(str);
-	
-} // print_number
-
-void print_buf( const char * buf )
-{
-	Serial.println(buf);
-	
-} // print_buf
 
 void capture( uint8_t ch )
 {
@@ -200,6 +213,12 @@ void capture_dump( uint8_t * p, int count )
 	char str[6];
     uint8_t ch;
 	uint16_t ix;
+
+    // Check debug log
+    if ( LOG_DEBUG > log_level ) 
+	{
+        return;
+    }
 	
 	if (!p)
 	{
@@ -212,17 +231,17 @@ void capture_dump( uint8_t * p, int count )
 		
 	}
 	
-	Serial.println("======================================================");
+	SerMon.println("======================================================");
 	for( ix = 0; ix < count-1; ix++ )
 	{
 		ch = p[ix];
 		sprintf( str, "%02x,", ch );
-		Serial.print(str);
+		SerMon.print(str);
 
 	} // for
 	sprintf( str, "%02x", p[ix] );
-	Serial.println(str);
-	Serial.println("======================================================");
+	SerMon.println(str);
+	SerMon.println("======================================================");
 
 	// Reset the count
 	cap_count = 0;

@@ -69,11 +69,6 @@ void hdlc_init( HardwareSerial * pUART )
 	// NOTE: This baud rate is fixed and cannot be changed
 	uart.begin(UART_BAUD_RATE);
 
-	// Set pointer to Serial object for printing to the console
-	// pS is a static declared in log.h
-	// Serial is defined in log.h
-	pS = log_get_serial();
-
 } // hdlc_set_serial
 
 struct hdlcstat hdlc_stats;
@@ -681,14 +676,14 @@ void print_hctx_state()
 {
 	char buffer[256];
 	sprintf( buffer, "hctx.hu_state: %d", hctx.hu_state );
-    Serial.println(buffer);
+    dlog( LOG_INFO, buffer );
 }
 
 void print_hctx_pend()
 {
 	char buffer[256];
 	sprintf( buffer, "hctx.hu_pend: %d", hctx.hu_pend );
-    Serial.println(buffer);
+    dlog( LOG_INFO, buffer );
 }
 
 #define HDLC_FRAME_BASE         (0)
@@ -714,6 +709,7 @@ static int hframerecv;
 // Receive an HDLC frame
 int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
 {
+	char buffer[256];
     uint32_t cnt;
 	int rc;
     int elapsed;
@@ -746,7 +742,8 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
 		
 		// Read the HDLC frame until time-out
 		cnt = uart.readBytes( RxBuf, RX_BUF_LEN );
-		print_number( "readBytes() count: ", cnt );
+		sprintf( buffer, "readBytes() count: %d", cnt );
+		dlog( LOG_INFO, buffer );
 		capture_dump( RxBuf, cnt );
 
 		// Check for HDLC frame delimiters
@@ -801,8 +798,8 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
 		if ( frame_len != rx_len )
 		{
 			dlog( LOG_DEBUG, "The frame length doesn't match the number of received bytes" );
-			print_number( "frame_len: ", frame_len );
-			print_number( "rx_len: ", rx_len );
+			print("frame_len: ");	printnum(frame_len);	println("");
+			print("rx_len:    ");	printnum(rx_len);		println("");
 			return 0;
 			
 		} // if

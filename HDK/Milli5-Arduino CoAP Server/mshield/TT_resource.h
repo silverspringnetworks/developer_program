@@ -97,11 +97,11 @@ error_t arduino_get_TT_cfg(struct mbuf *m, uint8_t *len);
 
 
 /**
- * @brief Get sensor 
- *
- * @param[in] m Pointer to input mbuf
- * @param[in] len Length of input
+ * @brief A function that reads a sensor and assembles a return message
+ * @param[out] m Pointer to return message
+ * @param[out] len Length of return message
  * @return error_t
+ * 
  */
 error_t arduino_get_TT(struct mbuf *m, uint8_t *len);
 

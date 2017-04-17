@@ -32,134 +32,108 @@ Networks, Inc.
  *
  * \section intro_sec Introduction
  *
- * These Arduino MilliShield libraries were written and tested for Arduino M0 Pro <br>
+ * These Arduino MilliShield libraries were written and tested for Arduino ZERO Pro, M0 Pro, Zero and Due <br>
  * This code base consists of three Arduino libraries: <br>
  *
- * \subsection hdlc The HDLC library
  * \subsection coap_server The CoAP Server library
- * \subsection coap_rsrcs Library of CoAP resources; sensors, time, etc.
- * \subsection utils Logging, buffer management etc.
  *
  * The Arduino setup() and loop() functions are in the example sketch mshield.ino <br>
  *
  * \section install_sec Installation
  *
- * \subsection step1 Step 1: Copy the four libraries to C:\Users\<user>\Documents\Arduino\libraries
- * \subsection step2 Step 2: In the Arduino IDE, go to Sketch, Include Library, Contributed Libraries
- * \subsection step3 Step 3: Select hdlc
- * \subsection step4 Step 4: Repeat Step 3 for coap_server, coap_rsrcs and utils
- * \subsection step5 Step 5: In the IDE, go to Sketch/Include Library/Manage Libraries
- * \subsection step6 Step 6: In the search bar, search for RTCZero and install that library
- * \subsection step7 Step 7: Do you have the DHT11 sensor? 
- * \subsection step8 Step 7a: If yes, use Manage Libraries to locate and install the following libraries:
- * \subsection step9 Step 7b: Adafruit Unified Sensor and DHT Sensor Library
+ * \subsection step1  Step 1:  Download and install Arduino IDE 1.8.2 from https://www.arduino.cc/en/Main/Software or http://www.arduino.org/downloads depending on your Arduino hardware:
+ * \subsection step2  Step 2:  Copy the folder mshield to anywhere on your system e.g. c:\mshield
+ * \subsection step3  Step 3:  Copy the folder ssni_coap_sensor to C:\Users\<user>\Documents\Arduino\libraries  Replace <user> with your username.
+ * \subsection step4  Step 4:  In the folder mshield, click on mshield.ino and your Arduino IDE will launch
+ * \subsection step5  Step 5:  In the Arduino IDE, go to Sketch, Include Library, Contributed Libraries and select ssni_coap_server
+ * \subsection step6  Step 6a: In the IDE, go to Sketch/Include Library/Manage Libraries
+ * \subsection step7  Step 6b:   In the search bar, type RTCZero or RTCDue depending on what kind of hardware you have
+ * \subsection step8  Step 6c:   Click on "More info"
+ * \subsection step9  Step 6d:   In the drop-down menu, select v1.5.2 and click Install
+ * \subsection step10 Step 7a: Do you have the DHT11 sensor? 
+ * \subsection step11 Step 7b:   If yes, use Manage Libraries to locate and install the following libraries:
+ * \subsection step12 Step 7c:     Adafruit Unified Sensor v1.0.2
+ * \subsection step13 Step 7d:     Adafruit DHT Sensor v1.3.0
  *
  * \note {Replace <user> with your Windows user name.}
  *
  */
  
 #include "mshield.h"
-#include "coap_server.h"
-#include "hdlcs.h"
-#include "log.h"
-#include "resrc_coap_if.h"
-#include "coapsensoruri.h"
-#include "led.h"
-#include "arduino_time.h"
 
-#define VERSION_NUMBER "1.2.5"
+
+/*
+ * This function handles the URI prior to the query
+ * Add your own URI here
+ */
+error_t crarduino( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp )
+{
+    struct optlv *o;
+    void *it = NULL;
+
+    /* 
+     * No URI path beyond /arduino, except /temp is supported, so reject if present. 
+     * 
+     */
+    copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_PATH, &it);
+    if ((o = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_PATH, &it))) 
+    {
+        // This is the default URI
+        if (!coap_opt_strcmp( o, TEMP_SENSOR ))
+        {
+            return crtemperature( req, rsp, it );
+        }
+
+        
+        /* Below, replace MY_SENSOR with your own name of your particular sensor  */
+        /* Use the enclosed template (TT_resource.cpp and TT_resource.h) to       */
+        /* implement the crmysensor function and associated methods               */
+        //if (!coap_opt_strcmp( o, MY_SENSOR ))
+        //{
+        //    /* Replace mysensor below with a name for your sensor               */
+        //    /* The function 'crmysensor' is implemented in a new C++ file       */
+        //    return crmysensor( req, rsp, it );
+        //}
+        
+        rsp->code = COAP_RSP_404_NOT_FOUND;
+    
+    } // if            
+
+    rsp->plen = 0;
+
+    return ERR_OK;
+  
+} // crarduino
+
+/********************************************************************************/
 
 // The Arduino init function
 void setup()
 {
-  char ver[64];
-  int res;
-
   // Set-up serial port for logging output
-  // Print debug message via Native USB
+  // Print debug messages to the Serial Monitor
+  // The pointer to the serial object is defined in mshield.h
   // NOTE: it takes a few seconds before you can start printing
-  // The object Serial is defined in mshield.h
-  log_init(&Serial,CONSOLE_BAUD_RATE);
+  log_init( SER_MON_PTR, SER_MON_BAUD_RATE, LOG_LEVEL );
 
-  // Set local time zone
-  set_time_zone(LOCAL_TIME_ZONE);
-		
-	// Init CoAP registry
-	coap_registry_init();
+  // Init the clock and set the local time zone
+  rtc_time_init(LOCAL_TIME_ZONE);
 
-  /*
-   * Since coap_s_uri_proc only matches on the first path option, and it's
-   * against the whole path, registering L_URI_LOGISTICS guarantees a match
-   * or that URI, and its children. Putting it first means it's found faster.
-   * We will never match the subsequent L_URI_LOGISTICS paths due to the
-   * separation of the options but the concatenation of the path.
-   * TODO Optimise this so that only one URI is required to be registered
-   * while satisfying .well-known/core discovery.
-   */
-  coap_uri_register(L_URI_ARDUINO, crarduino, CLA_ARDUINO);
+  // Init the temp sensor
+  arduino_temp_sensor_init();
 
-  /* Set Max-Age; CoAP Server Response Option 14 */
-  coap_set_max_age(COAP_MSG_MAX_AGE_IN_SECONDS);
+  // Init the CoAP Server
+  coap_s_init( UART_PTR, COAP_MSG_MAX_AGE_IN_SECS, UART_TIMEOUT_IN_MS, OBS_SENSOR_NAME, OBS_FUNC_PTR );
+}
 
-  /* Configure LED */
-  led_config( LED_PIN_NUMBER, LED_BLINK_DURATION_IN_SECONDS, LED_BLINK_SLOW_PERIOD_MS, LED_BLINK_FAST_PERIOD_MS );
-  
-  // Init the Arduino resources such as sensors, LEDs etc.
-  // This will blink the external LED for a few seconds
-  // After this, you should be able to print to Serial
-  arduino_init_resources();
-  
-	// Open HDLCS
-  // The object SerialUART is defined in mshield.h
-  res = hdlcs_open( &SerialUART, UART_TIMEOUT_IN_MILLISECONDS );
-  if (res) 
-	{
-    dlog(LOG_ERR, "HDLC initialization failed");
-    
-  } // if
-
-  // Print version number, time and date
-  sprintf( ver, "Arduino MilliShield Software Version Number: %s\n", VERSION_NUMBER );
-  print_buf(ver);
-  sprintf( ver, "Time: %s\n", __TIME__ );
-  print_buf(ver);
-  sprintf( ver, "Date: %s\n", __DATE__ );
-  print_buf(ver);
-  
-} // setup
+/********************************************************************************/
 
 // The main loop
 void loop()
 {
-	struct mbuf *appd;
-	struct mbuf *arsp;
-  boolean is_con;
+  // Run CoAP Server
+  coap_s_run();
+}
 
-  /* Only actuate if disconnected */
-  is_con = hdlcs_is_connected();
-  if ( false == is_con )
-  {
-      // Actuate LED
-      arduino_led_actuate();
-      
-  } // if
-  
-	/* Run the secondary-station HDLC state machine */
-	hdlcs_run();
-	
-	/* Serve incoming request, if any */
-	appd = hdlcs_read();
-	if (appd) 
-	{
-    /* Run the CoAP server */
-		arsp = coap_s_proc(appd);
-		if (arsp) 
-		{
-      /* Send CoAP response, if any */
-		  hdlcs_write(arsp->data, arsp->len);
-     
-		} // if
-		
-	} // if
-} // loop
+/********************************************************************************/
 

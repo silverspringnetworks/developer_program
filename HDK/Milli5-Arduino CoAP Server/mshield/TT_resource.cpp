@@ -30,10 +30,9 @@ Networks, Inc.
 
 #include "log.h"
 #include "exp_coap.h"
-#include "coapmsg.h"
-#include "coappdu.h"
+#include "coap_rsp_msg.h"
+//#include "coappdu.h"
 #include "arduino_pins.h"
-#include "resrc_coap_if.h"
 #include "TT_resource.h"
 
 
@@ -77,11 +76,6 @@ error_t arduino_disab_TT()
  */
 error_t arduino_init_TT()
 {
-	// Set pointer to Serial object
-	// pS is a static declared in log.h
-	// Serial is defined in log.h
-	pS = log_get_serial();
-
 } // arduino_init_TT
 
 /**
@@ -146,18 +140,32 @@ error_t arduino_get_TT_cfg(struct mbuf *m, uint8_t *len)
 }
 
 
-/*
- * @brief Get config
- * @param[in] m Pointer to input mbuf
- * @param[in] len Length of input
+/**
+ * @brief A function that reads a sensor and assembles a return message
+ * @param[out] m Pointer to return message
+ * @param[out] len Length of return message
  * @return error_t
  * 
  */
-error_t arduino_get_TT( struct mbuf *m, uint8_t *len )
+error_t arduino_get_TT( struct mbuf * m, uint8_t *len )
 {
     error_t rc = ERR_OK;
-	float reading;
+	const uint32_t count = 1; 	// Number of readings; if more than 1, supply 
+								// pointer to an array in the call to rsp_msg() below
+	float reading;				// The sensor reading
+								// If the sensor returns more than one value,
+								// declare this as an array of floats
+	char unit[2] = "F";			// The measurement unit e.g. "F" (Fahrenheit)
+								// NOTE: you need to allocate space for string termination \0 character
+								// In this case that means you need two characters;
+								// one for the unit F and one for \0
+	// Read the sensor
+	// The return value is stored in the variable 'reading'
 	rc = TT_read(&reading);
+	
+	// Assemble response based on the reading(s) and the Unit of Measure
+	// The function rsp_msg() is declared in coap_rsp_msg.h
+	rc = rsp_msg( m, len, count, &reading, unit );
     return rc;
 }
 
@@ -193,6 +201,8 @@ error_t TT_disable(void)
  */
 error_t TT_read( float * p )
 {
+	// Add code to read the sensor here and assign a value to where p is pointing
+	// *p = 
     error_t rc = ERR_OK;
     return rc;
 }

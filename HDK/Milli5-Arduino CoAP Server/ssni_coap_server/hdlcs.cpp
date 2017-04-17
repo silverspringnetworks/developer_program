@@ -112,11 +112,6 @@ error_t hdlcs_open( HardwareSerial * pUART, uint32_t timeout_ms )
         return ERR_FAIL;
     }
 	
-	// Set pointer to Serial object
-	// pS is a static declared in log.h
-	// Serial is defined in log.h
-	pS = log_get_serial();
-	
 	// Init HDLC UART
 	hdlc_init(pUART);
 
@@ -222,11 +217,11 @@ int hdlcs_run(void)
     case HSS_NORM:
         /* normal mode processing */
         if (hc.type == HDLC_SNRM) {
-            Serial.println("HDLC_SNRM");
+            dlog( LOG_DEBUG, "HDLC_SNRM" );
             rc = hdlcs_snrm();
         }
         else if (hc.type == HDLC_I) {
-            Serial.println("HDLC_I");
+            dlog( LOG_DEBUG, "HDLC_I" );
             /* update seqnums */
             if (hc.ns != hss.vr) {
                 dlog(LOG_ERR, "Unexpected seqnum N(S) = %d  V(R) = %d", 
@@ -238,14 +233,14 @@ int hdlcs_run(void)
             rc = hdlcs_i(hss.recv);
         }
         else if (hc.type == HDLC_RR) {
-            Serial.println("HDLC_RR");
+            dlog( LOG_DEBUG, "HDLC_RR" );
             /* process seqnum - retransmit if necessary */
             dlog(LOG_DEBUG, "hc.nr: %d, hss.vs: %d", hc.nr, hss.vs);
             rc = hdlcs_rr();
         }
 
         else if (hc.type == HDLC_DISC) {
-            Serial.println("HDLC_DISC");
+            dlog( LOG_DEBUG, "HDLC_DISC" );
             m_free(pending_rsp);
             pending_rsp = NULL;
             dlog(LOG_DEBUG, "%s:%d Cleared pending_rsp", __FUNCTION__, __LINE__);

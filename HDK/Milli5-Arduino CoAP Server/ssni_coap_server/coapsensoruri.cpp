@@ -37,6 +37,18 @@ Networks, Inc.
 #include "coapsensorobs.h"
 #include "arduino_time.h"
 
+
+/*! @brief
+ * Access is serialised via events, only one client too. Only need to handle
+ * one observe per sensor. We have 3 sensors.
+ * To keep memory usage down, only support 1 callback function.
+ */
+#define NUM_ARDUINO_RESOURCES   (crdt_max_sens - crdt_min_sens + 1)
+static void *coap_hdl[NUM_ARDUINO_RESOURCES] = { NULL };
+static uint8_t hdr_rsv_bytes;
+struct coap_stats coap_stats;
+
+
 static error_t crtitle(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
 static error_t crwellknown(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
 static error_t crsystem(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
@@ -106,6 +118,12 @@ static error_t crsystem(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
 #define L_LOG_URI_Q_CFG_GLBL    L_URI_Q_CFG "=glbl"
 #define L_LOG_URI_Q_NON         "non="
 
+
+// Arduino URI sensors
+#define L_URI_ARDUINO "arduino"
+#define CLA_ARDUINO   "if=" "\"" L_URI_ARDUINO "\"" ";title=\"Arduino Sensors\";ct=42;"
+
+
 /* 
  * TODO CLA_LOGISTICS: Check ct, and see if format above can/should be
  * optimised. See https://tools.ietf.org/html/rfc6690.
@@ -147,7 +165,10 @@ error_t coap_uri_register(const char *path, coap_cb cbfunc, const char *corelink
     return ERR_OK;
 }
 
+// Implemented in the Sketch
+error_t crarduino( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp );
 
+// Init the CoAP registry
 void coap_registry_init(void)
 {
 	/* Clear the registry */
@@ -159,7 +180,20 @@ void coap_registry_init(void)
 
     /* basic resources from the NIC */
     (void)coap_uri_register(S_URI_SYSTEM, crsystem, CLA_SYSTEM);
-}
+	
+	/*
+	* Since coap_s_uri_proc only matches on the first path option, and it's
+	* against the whole path, registering L_URI_LOGISTICS guarantees a match
+	* or that URI, and its children. Putting it first means it's found faster.
+	* We will never match the subsequent L_URI_LOGISTICS paths due to the
+	* separation of the options but the concatenation of the path.
+	* TODO Optimise this so that only one URI is required to be registered
+	* while satisfying .well-known/core discovery.
+	*/
+	(void)coap_uri_register(L_URI_ARDUINO, crarduino, CLA_ARDUINO);
+	
+} // coap_registry_init()
+
 
 /*** Dispatch request to registered handler ***/
 error_t coap_s_uri_proc(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)

@@ -30,6 +30,7 @@ Networks, Inc.
 #include <arduino.h>
 
 #include "hbuf.h"
+#include "hdlcs.h"
 #include "log.h"
 #include "errors.h"
 #include "coappdu.h"
@@ -41,6 +42,7 @@ Networks, Inc.
 #include "coap_server.h"
 
 
+#define VERSION_NUMBER "1.3.0"
 
 /* 
  * Use environment variable COAP_DATA_ROOT to set server data root dir 
@@ -52,10 +54,43 @@ Networks, Inc.
  */
 
 
-//extern char *coap_data_root;
-//extern char *id;
 
-//struct coap_stats coap_stats;
+
+
+// CoAP Server initialization
+void coap_s_init( HardwareSerial * pSerial, uint32_t max_age, uint32_t uart_timeout_ms, const char * uri, ObsFuncPtr pObsFuncPtr )
+{
+	char ver[64];
+	int res;
+	
+	// Init CoAP registry
+	coap_registry_init();
+
+	/* Set Max-Age; CoAP Server Response Option 14 */
+	coap_set_max_age(max_age);
+	
+	/* Set the URI used for obtaining token etc in CoAP Observe response msg */
+	set_observer( uri, pObsFuncPtr );
+
+	// Open HDLCS
+	// The object SerialUART is defined in mshield.h
+	res = hdlcs_open( pSerial, uart_timeout_ms );
+	if (res) 
+	{
+		dlog(LOG_ERR, "HDLC initialization failed");
+
+	} // if
+
+	// Print version number, time and date
+	sprintf( ver, "Arduino MilliShield Software Version Number: %s\n", VERSION_NUMBER );
+	println(ver);
+	sprintf( ver, "Time: %s\n", __TIME__ );
+	println(ver);
+	sprintf( ver, "Date: %s\n", __DATE__ );
+	println(ver);
+
+} // coap_s_init()
+
 
 /*** limited to static data and time ***/
 
@@ -223,3 +258,29 @@ done:
 } // coap_s_proc
 
 
+
+// Run HDLCS and the CoAP Server 
+void coap_s_run()
+{
+	struct mbuf *appd;
+	struct mbuf *arsp;
+	
+	/* Run the secondary-station HDLC state machine */
+	hdlcs_run();
+	
+	/* Serve incoming request, if any */
+	appd = hdlcs_read();
+	if (appd) 
+	{
+		/* Run the CoAP server */
+		arsp = coap_s_proc(appd);
+		if (arsp) 
+		{
+			/* Send CoAP response, if any */
+			hdlcs_write(arsp->data, arsp->len);
+     
+		} // if
+		
+	} // if	
+
+} // coap_s_run()

@@ -27,13 +27,10 @@ Networks, Inc.
 
 */
 
-#include <arduino.h>
-
-#include "hbuf.h"
 #include "log.h"
 #include "coapmsg.h"
 #include "coappdu.h"
-#include "hdlc.h"
+//#include "hdlc.h"
 #include "coapsensoruri.h"
 #include "coapobserve.h"
 #include "coaputil.h"
@@ -833,6 +830,7 @@ coap_msg_response(struct coap_msg_ctx *ctx)
     int idx = 4;
     struct mbuf *n;
 
+
     coap_msg_log(ctx);
 
     b[0] = COAP_VER | COAP_T_VAL2PDU(ctx->type);
@@ -977,3 +975,4 @@ void coap_set_max_age( uint32_t max_age )
 	coap_max_age_in_seconds = max_age;
 	
 } // coap_set_max_age
+
