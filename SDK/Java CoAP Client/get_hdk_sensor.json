@@ -1,0 +1,18 @@
+{
+  "proxyHost": "74.121.23.204",
+  "proxyPort": "5683",
+  "clientPort": "6000",
+  "method" : "GET",
+  "timeout": "30",
+  "clientId": "52a19a7012db269e412f6596efcdc0e808cc0b29bd98241",
+  "clientSecret": "850136671",
+  "devices": [
+    {
+      "deviceId": "f969e33e-f334-49c9-99ee-15febc40cbed",
+      "deviceHost": "SSN00135005003cb8e1.TEAM-ATS-23X-INSTALL.ENG.SSNSGS.NET",
+      "devicePort": "5683",
+      "devicePath": "/sensor/arduino/temp",
+      "deviceQuery": "sens"
+    }
+  ]
+}
