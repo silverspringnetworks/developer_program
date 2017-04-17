@@ -1,0 +1,14 @@
+{
+  "clientPort": "6000",
+  "method" : "POST",
+  "timeout": "30",
+  "devices": [
+    {
+      "deviceId": "gateway",
+      "deviceHost": "74.121.23.204",
+      "devicePort": "5683",
+      "devicePath": "/sessions",
+      "deviceQuery" : "user=bluben&pass=2Doll@r$&security=none&sticky=true"
+    }
+  ]
+}

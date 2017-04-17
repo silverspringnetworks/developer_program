@@ -1,0 +1,15 @@
+{
+  "clientPort": "6000",
+  "method" : "POST",
+  "timeout": "30",
+  "clientId": "52a19a7012db269e412f6596efcdc0e808cc0b29bd98241",
+  "clientSecret": "850136671",
+  "devices": [
+    {
+      "deviceId": "gateway",
+      "deviceHost": "74.121.23.204",
+      "devicePort": "5683",
+      "devicePath": "/sessions"
+    }
+  ]
+}
