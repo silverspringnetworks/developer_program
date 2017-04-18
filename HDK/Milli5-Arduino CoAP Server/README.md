@@ -1,5 +1,7 @@
 # Silver Spring Networks - Arduino MilliShield Software
 
+**Note: The only version of Arduino IDE supported is for Windows 7, 8 and 10**
+
 This reference application consists of two folders:
 
 Folder Name | Content
