@@ -31,7 +31,7 @@ ssni_coap_server | The SSNI COAP Server Library
    1. In the search bar, search for RTCZero and install that library
    1. Do you have the DHT11 sensor?
       1. If yes, use `Manage Libraries` to locate and install the following:
-			* Unified Sensor Library
+			* Adafruit Unified Sensor
 			* DHT Sensor Library
 1. In the IDE, go `Tools/Board/Boards Manager` and the Boards Manager window should appear.
    1. Use the search bar to locate your board e.g. M0 Pro
