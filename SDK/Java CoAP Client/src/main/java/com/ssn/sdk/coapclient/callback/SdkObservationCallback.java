@@ -26,7 +26,6 @@ public class SdkObservationCallback extends SdkCallback {
     private Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
     private AtomicInteger responseCounter;
-    private int maxNotifications;
     private OptionsArgumentsWrapper arguments;
 
     /**
@@ -35,10 +34,9 @@ public class SdkObservationCallback extends SdkCallback {
      * @param arguments the number of update notifications to be received until the
      *                                            observation is automatically stopped
      */
-    public SdkObservationCallback(OptionsArgumentsWrapper arguments )
+    public SdkObservationCallback(OptionsArgumentsWrapper arguments)
     {
         this.responseCounter = new AtomicInteger(0);
-        this.maxNotifications = arguments.getMaxNotifications();
         this.arguments = arguments;
     }
 
@@ -52,7 +50,7 @@ public class SdkObservationCallback extends SdkCallback {
     public void processCoapResponse(CoapResponse coapResponse)
     {
         int value = responseCounter.incrementAndGet();
-        log.info("Received #{}: CoAP: {}", value, coapResponse);
+        log.info("Notification #{}: CoAP: {}", value, coapResponse);
 
         ChannelBuffer response = coapResponse.getContent();
         String payloadAsStr = response.toString(CoapMessage.CHARSET);
@@ -80,7 +78,8 @@ public class SdkObservationCallback extends SdkCallback {
     @Override
     public boolean continueObservation()
     {
-        boolean result = getResponseCount() < maxNotifications;
+        log.info("continueObservation: {}", getResponseCount());
+        boolean result = getResponseCount() < arguments.getMaxNotifications();
         log.info("Received {}/{} responses (continue observation: {})", result);
         return result;
     }

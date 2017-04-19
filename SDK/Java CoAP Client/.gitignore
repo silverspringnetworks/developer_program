@@ -1,0 +1,6 @@
+# Maven target directory
+target
+
+# IntelliJ related
+.idea
+sdkcoapclient.iml
