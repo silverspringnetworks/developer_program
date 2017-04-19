@@ -28,8 +28,8 @@ ssni_coap_server | The SSNI COAP Server Library
 1. In the IDE, go to `Sketch/Include Library/Contributed Libraries` and select `ssni_coap_server`
 
 1. In the IDE, go to `Sketch/Include Library/Manage Libraries`
-   1. If your board is an Arduino M0, M0 Pro, Arduino/Genuino Zero or ZERO Pro; in the search bar, type RTC and install the RTCZero library
-   1. If your board is an Arduino Due; in the search bar, type RTC and install the RTCDue library
+   1. If your board is an Arduino M0, M0 Pro, Arduino/Genuino Zero or ZERO Pro; in the search bar, type RTC then locate and install the RTCZero library
+   1. If your board is an Arduino Due; in the search bar, type RTC then locate and install the RTCDue library
    1. Do you have the DHT11 sensor?
       1. If yes, use `Manage Libraries` to locate and install the following:
 			* Adafruit Unified Sensor
