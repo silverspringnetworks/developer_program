@@ -108,7 +108,13 @@ var watcher = {
         }  
         }
    }
- }
+ } else if ((file == 'exception.txt') && (mask & Inotify.IN_CLOSE_WRITE)) {
+      var exceptionfile = fs.readFileSync(exceptionFilename, "utf8" );
+      if ((true == (exceptionfile.includes('Failed to connect'))|| (true == exceptionfile.includes('Device disconnected')))) {
+          console.log("Either Sensor-Tag is powered off or Bluetooth connectivity is Down");
+          inotify.close();
+      }
+   }
  }
 };
 inotify.addWatch(watcher);
