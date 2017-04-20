@@ -712,7 +712,9 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
 	char buffer[256];
     uint32_t cnt;
 	int rc;
-    int elapsed;
+	boolean obs_flag;
+    float elapsed;
+	float timeout;
 	uint8_t * pHdr;
 	uint8_t * pPayload;
 	uint16_t rx_len = 0;
@@ -725,17 +727,29 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
 	uart.setTimeout(READ_BUF_TIMEOUT);	 
 
 	// Wait for incoming HDLC frame
-	elapsed = 0;
-	while( elapsed++ < hdlc_frame_timeout ) 
+	elapsed = 0.0;
+	timeout = (float) hdlc_frame_timeout;
+	while( elapsed < timeout ) 
 	{
 		// Check if there is nothing at the UART
 		if (!uart.available())
 		{
 			// Check if it is time to send Observe response message
-			do_observe();
+			// The function call returns a flag that determines if Observe is turned on
+			obs_flag = do_observe();
 			
+#if defined(ARDUINO_ARCH_SAMD)
+			if (obs_flag)
+			{
+				// The reading of the time on SAMD takes about 5.5 ms
+				// Adjust the variable accordingly
+				elapsed += 5.5;
+				continue;
+			}
+#endif
 			// Sleep for 1 ms
 			delay(MS_SLEEP);
+			elapsed++;
 			continue;
 			
 		} // if
