@@ -1,9 +1,7 @@
 {
   "clientPort": "6000",
-  "method" : "POST",
+  "method" : "DELETE",
   "timeout": "30",
-  "clientId": "<clientId>",
-  "clientSecret": "<clientSecret>",
   "devices": [
     {
       "deviceId": "gateway",
