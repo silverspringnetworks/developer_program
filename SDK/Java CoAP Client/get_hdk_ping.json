@@ -4,8 +4,8 @@
   "clientPort": "6000",
   "method" : "GET",
   "timeout": "30",
-  "clientId": "52a19a7012db269e412f6596efcdc0e808cc0b29bd98241",
-  "clientSecret": "850136671",
+  "clientId": "<clientId>",
+  "clientSecret": "<clientSecret>",
   "devices": [
     {
       "deviceId": "f969e33e-f334-49c9-99ee-15febc40cbed",

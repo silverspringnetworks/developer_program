@@ -8,7 +8,7 @@
       "deviceHost": "74.121.23.204",
       "devicePort": "5683",
       "devicePath": "/sessions",
-      "deviceQuery" : "user=bluben&pass=2Doll@r$&security=none&sticky=true"
+      "deviceQuery" : "user=foobar&pass=foobar&security=none&sticky=true"
     }
   ]
 }

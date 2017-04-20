@@ -3,11 +3,11 @@
   "proxyPort": "5683",
   "clientPort": "6000",
   "observe": "true",
-  "maxNotifications": "2",
+  "maxNotifications": "5",
   "method" : "GET",
-  "timeout": "150",
-  "clientId": "52a19a7012db269e412f6596efcdc0e808cc0b29bd98241",
-  "clientSecret": "850136671",
+  "timeout": "330",
+  "clientId": "<clientId>",
+  "clientSecret": "<clientSecret>",
   "devices": [
     {
       "deviceId": "f969e33e-f334-49c9-99ee-15febc40cbed",

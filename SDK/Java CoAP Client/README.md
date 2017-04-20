@@ -115,8 +115,8 @@ The following configuration JSON gives an example using almost all options:
   "observe": "true",
   "maxNotifications": "5",
   "timeout": "300",
-  "clientId": "52a19a7012db269e412f6596efcdc0e808cc0b29bd98241",
-  "clientSecret": "850136671",
+  "clientId": "<clientId>",
+  "clientSecret": "<clientSecret>",
   "devices": [
     {
       "deviceId": "f969e33e-f334-49c9-99ee-15febc40cbed",
