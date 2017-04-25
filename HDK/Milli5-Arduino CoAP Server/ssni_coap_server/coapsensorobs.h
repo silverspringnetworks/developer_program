@@ -50,11 +50,11 @@ typedef error_t (*ObsFuncPtr)( struct mbuf *, uint8_t * );
 void set_observer( const char * uri, ObsFuncPtr p );
 
 /**
- * @brief If the ISR has run, create a CoAP Observe response
+ * @brief Checks if Observe is turned on and if so, checks if a response should be sent
  *
- * @return boolean
+ * @return boolean Returns a boolean that tells whether or not Observe is turned on
  */
-void do_observe();
+boolean do_observe();
 
 /**
  * @brief CoAP Register for Observe
