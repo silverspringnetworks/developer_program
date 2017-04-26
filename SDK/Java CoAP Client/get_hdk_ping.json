@@ -1,5 +1,5 @@
 {
-  "proxyHost": "74.121.23.204",
+  "proxyHost": "api.coap-test.developer.ssni.com",
   "proxyPort": "5683",
   "clientPort": "6000",
   "method" : "GET",
@@ -8,8 +8,8 @@
   "clientSecret": "<clientSecret>",
   "devices": [
     {
-      "deviceId": "f969e33e-f334-49c9-99ee-15febc40cbed",
-      "deviceHost": "SSN00135005003cb8e1.TEAM-ATS-23X-INSTALL.ENG.SSNSGS.NET",
+      "deviceId": "<deviceId>",
+      "deviceHost": "SSN<macAddress>.shared-starfish-test-install.eng.ssnsgs.net",
       "devicePort": "5683",
       "devicePath": "/"
     }
