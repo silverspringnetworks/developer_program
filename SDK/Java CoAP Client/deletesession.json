@@ -5,7 +5,7 @@
   "devices": [
     {
       "deviceId": "gateway",
-      "deviceHost": "74.121.23.204",
+      "deviceHost": "api.coap-test.developer.ssni.com",
       "devicePort": "5683",
       "devicePath": "/sessions"
     }

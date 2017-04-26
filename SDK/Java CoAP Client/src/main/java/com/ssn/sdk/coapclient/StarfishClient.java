@@ -28,11 +28,11 @@ public class StarfishClient
     private Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
     private static String tokenUrl = "https://poc.api.ssniot.cloud/api/tokens"; //Note: revised on 20170215
-    private static String observationsUrl = "https://poc.api.dev.ssniot.cloud/api/solutions/lpoc/devices";
+    private static String observationsUrl = "https://poc.api.dev.ssniot.cloud/api/solutions/sandbox/devices";
 
     // Dev Specific
-    private static String clientId = "52a19a7012db269e412f6596efcdc0e808cc0b29bd98241";
-    private static String clientSecret = "850136671";
+    private static String clientId = "";
+    private static String clientSecret = "";
 
     private static String apiToken = null;
     private static String lnicMacAddress = null;
@@ -167,6 +167,7 @@ public class StarfishClient
     private void sendObservations(String deviceId, String payload) throws Exception
     {
         String fullUrl = observationsUrl + "/" + deviceId + "/observations";
+        //log.debug("Starfish Observations URL: {} ",fullUrl);
         URL obj = new URL(fullUrl);
         HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 

@@ -90,7 +90,7 @@ public class SdkCoapClient extends CoapClient
         // TODO: Generalize
         if (messageCode == MessageCode.POST || messageCode == MessageCode.PUT)
         {
-            if (path.equals("/sessions") && query == null)
+            if (path.equals("/sessions") && (arguments.getClientId() != null && arguments.getClientId().length() > 0))
             {
                 TokenClient tc = new TokenClient();
                 String token;
