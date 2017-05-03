@@ -68,13 +68,13 @@ Networks, Inc.
 #define SID_MAX_LEN             32      /* Sensor component of URI, max */
 
 /* maximum length of a Uri string */
-#define OPT_STR_MAX     (99)
+#define OPT_STR_MAX     		(99)
 
 /* 
  * 4 + 8 (max token) + 2 (option and option length, + option) + 1 (option
  * terminator) + 4 observe option. Can be added to later, as required.
  */
-#define COAP_OBS_HDR_SZ     28
+#define COAP_OBS_HDR_SZ     	(28)
 
 struct coap_msg_ctx {
     /* version always 01 on send, silently discarded on error recv */

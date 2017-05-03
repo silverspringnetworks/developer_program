@@ -34,9 +34,6 @@ Networks, Inc.
 
 #define MBUF_LITE   (1)
 
-/* No bigger than PROXY_BUF_SIZE, code constraint. Extra 16 for header. */
-#define MLEN    (255 - 16)	/* was (512) */
-
 /* limited feature mbuf alternative
  * do not refer to elements directly, always use access macros below
  */
@@ -48,12 +45,67 @@ struct mbuf {
 
 typedef struct mbuf * mbuf_ptr_t;
 
-struct mbuf *m_get(void);
+/**
+ * @brief Set the size of the mbuf data buffer
+ *
+ * @param[in] data_buf_size The size of the data buffer of the mbuf
+ *
+ */
+void set_mbuf_data_size( int data_buf_size );
+
+
+/**
+ * @brief Get the size of the mbuf data buffer
+ *
+ * @param[out] The size of the data buffer of the mbuf
+ *
+ */
+int get_mbuf_data_size();
+
+
+/**
+ * @brief Allocate memory for the mbuf including the data buffer
+ *
+ *
+ */
+struct mbuf *m_get();
+
+/**
+ * @brief De-allocate the mbuf memory including the data buffer
+ *
+ * @param[in] m Pointer to the mbuf
+ *
+ */
 void m_free(struct mbuf *m);
 
+/**
+ * @brief Append bytes to the mbuf data buffer
+ *
+ * @param[in] mp Pointer to the mbuf
+ * @param[in] len Number of bytes to append
+ *
+ */
 void *m_append(struct mbuf *mp, int16_t len);
+
+
+/**
+ * @brief Prepend bytes to the mbuf data buffer
+ *
+ * @param[in] m Pointer to the mbuf
+ * @param[in] len Number of bytes to prepend
+ *
+ */
 struct mbuf *m_prepend(struct mbuf *m, int len);
+
+/**
+ * @brief Duplicate the mbuf
+ *
+ * @param[in] m Pointer to the mbuf to be duplicated
+ *
+ */
 struct mbuf *m_dup(struct mbuf *);
+
+
 int m_copydata(struct mbuf *m, uint32_t off, uint32_t len, void *vp);
 void m_adj(struct mbuf *mp, int req_len);
 

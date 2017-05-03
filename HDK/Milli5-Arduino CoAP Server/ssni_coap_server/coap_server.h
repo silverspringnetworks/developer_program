@@ -38,7 +38,7 @@ Networks, Inc.
  * @brief Init HDLCS and the CoAP Server 
  *
  */
-void coap_s_init(  HardwareSerial * pSerial, uint32_t max_age, uint32_t uart_timeout_ms, const char * uri, ObsFuncPtr p );
+void coap_s_init( HardwareSerial * pSerial, uint32_t max_age, uint32_t uart_timeout_ms, uint32_t max_info_len, const char * uri, ObsFuncPtr p );
 
 
 
