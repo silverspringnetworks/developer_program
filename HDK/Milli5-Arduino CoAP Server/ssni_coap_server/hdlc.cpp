@@ -57,10 +57,13 @@ Networks, Inc.
 // This number is fixed for the Milli Arduino Shield
 #define UART_BAUD_RATE 38400
 
+// The max payload size
+static uint32_t max_payload_size = 0;
+
 // Pointer to Serial console and UART
 static HardwareSerial * pU;
 #define uart (*pU)
-void hdlc_init( HardwareSerial * pUART )
+void hdlc_init( HardwareSerial * pUART, uint32_t max_info_len )
 {
 	// Set pointer to UART object
 	pU = pUART;
@@ -68,6 +71,9 @@ void hdlc_init( HardwareSerial * pUART )
 	// Set baud rate for the mShield UART
 	// NOTE: This baud rate is fixed and cannot be changed
 	uart.begin(UART_BAUD_RATE);
+	
+	// Set the max payload size
+	max_payload_size = max_info_len;
 
 } // hdlc_set_serial
 
@@ -612,33 +618,45 @@ err:
 }
 
 
-static int
-hu_hdlc_parse_infolen(const uint8_t *hdr, int hdrlen, uint16_t *infolen)
+// Get the payload size
+#define PARSE_ERR (-1)
+static int hu_hdlc_parse_infolen( const uint8_t *hdr, int hdrlen, uint16_t *infolen )
 {
 
     /* frame length field of 0 (scan for next flag byte) is not supported */
-    int frmlen;
+    uint16_t frmlen;
+    uint16_t paylen;
 
     /* Frame type 3, 11 bit length field */
     frmlen = buf_be16(hdr, 0) & 0x07FF;
+	
+	/* Make sure the frame length is not shorter than the header */
+	if ( frmlen < hdrlen )
+	{
+		return PARSE_ERR;
+		
+	} // if
+	
+	/* Compute payload length */
+	paylen = frmlen - hdrlen;
 
-    if (frmlen == hdrlen) {
-        *infolen = 0;
-    }
-    else if (frmlen < hdrlen + 3) {
+	// If info field is present, check the payload length
+    if ( paylen && ( paylen < 3 ) )
+	{
         /* if the info field is present, the frame must contain at least
          * - the header
          * - info field (1 byte minimum)
          * - separate HCS/FCS (2 bytes additional)
          */
-        return 1;
-    } 
-    else {
-        /* returned value includes the 2 bytes of FCS */
-        *infolen = frmlen - hdrlen;
-    }
-    return 0;
-}
+        return PARSE_ERR;
+		
+    } // if
+
+    /* The returned value includes the 2 bytes of FCS */
+    *infolen = paylen;
+	return 0;
+	
+} // hu_hdlc_parse_infolen
 
 
 
@@ -693,18 +711,14 @@ void print_hctx_pend()
 #define HDLC_FRAME_ERR_FLUSH    (4)
 #define HDLC_FRAME_END			(5)
 
-// Receive buffer
-#define RX_BUF_LEN 1024
-uint8_t RxBuf[RX_BUF_LEN];
+// UART receive buffer
+uint8_t UART_Buf[UART_MAX_BUF_LEN];
 
-// Receive timing
-enum
-{
-	MS_SLEEP 			= 1,
-	READ_BUF_TIMEOUT	= 150
-};
-
+// Count the number of received frames
 static int hframerecv;
+
+// Sleep for 1 ms while waiting for a frame to arrive on UART
+#define MS_SLEEP				(1)
 
 // Receive an HDLC frame
 int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
@@ -723,7 +737,7 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
 
     memset( pHUX, 0x0, sizeof(hctx.hux) );
 
-	// Read UART for maximum 100 ms
+	// Read UART for maximum 200 ms
 	uart.setTimeout(READ_BUF_TIMEOUT);	 
 
 	// Wait for incoming HDLC frame
@@ -755,14 +769,24 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
 		} // if
 		
 		// Read the HDLC frame until time-out
-		cnt = uart.readBytes( RxBuf, RX_BUF_LEN );
+		cnt = uart.readBytes( UART_Buf, UART_MAX_BUF_LEN );
 		sprintf( buffer, "readBytes() count: %d", cnt );
 		dlog( LOG_INFO, buffer );
-		capture_dump( RxBuf, cnt );
+		capture_dump( UART_Buf, cnt );
+		
+		// Check if we received more bytes than there is space for in the receive buffer
+		if ( cnt > UART_MAX_BUF_LEN )
+		{
+			// This should never happen as the readBytes method above already sets the limit
+			dlog( LOG_DEBUG, "The UART receive buffer has overflown!" );
+			sprintf( buffer, "We read %d bytes and the max is %d bytes.", cnt, UART_MAX_BUF_LEN );
+			dlog( LOG_DEBUG, buffer );
+			
+		} // if
 
 		// Check for HDLC frame delimiters
 		hctx.hu_state = HDLC_FRAME_BASE;
-		if (( RxBuf[0] != HDLC_FLAG ) || ( RxBuf[cnt-1] != HDLC_FLAG ))
+		if (( UART_Buf[0] != HDLC_FLAG ) || ( UART_Buf[cnt-1] != HDLC_FLAG ))
 		{
             ++hustats.hs_discard;  
 			dlog( LOG_DEBUG, "Missing HDLC flag(s)" );
@@ -774,7 +798,7 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
 		rx_len = cnt - 2;
 		
 		// Parse the header
-		pHdr = &RxBuf[1];
+		pHdr = &UART_Buf[1];
 		rc = hu_hdlc_parse_hdr( pHdr, HDLC_HDR_SIZE, &hctx.hu_pend );
 		if (rc) 
 		{
@@ -840,12 +864,21 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
 				
 			} // if
 
+			/* Check if payload is greater than the maximum allowed */
+			rx_len = pHUX->h_infolen - HDLC_CRC_SIZE;
+			if ( rx_len > max_payload_size )
+			{
+				dlog( LOG_DEBUG, "The HDLC payload is too large!" );
+				sprintf( buffer, "We got %d bytes and the max is %d bytes.", rx_len, max_payload_size );
+				dlog( LOG_DEBUG, buffer );
+				return 0;
+				
+			} // if
+
 			// Return payload
 			pPayload = pHdr + HDLC_HDR_SIZE;
-			rx_len = pHUX->h_infolen - HDLC_CRC_SIZE;
 			memcpy( info, pPayload, rx_len );
 			hctx.hu_state = HDLC_FRAME_INFO;
-
 		}
 		else 
 		{
@@ -853,6 +886,7 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
 			
 		} // if-else
 
+		// Increment the receive frame counter
 		hframerecv++;
 		log_msg( "HDLC recv frame", pHdr, frame_len, 1 );
 		return 1;
@@ -860,7 +894,6 @@ int hdlc_rx( uint8_t *hdr, uint8_t *info, int framesz, int hdlc_frame_timeout )
     } // while
 
 	// Time-out
-	//dlog( LOG_DEBUG, "<== Time-out!");
 	return 0;
 	
 } // hdlc_rx()

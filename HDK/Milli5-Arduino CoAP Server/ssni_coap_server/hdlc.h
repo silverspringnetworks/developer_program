@@ -34,13 +34,23 @@ Networks, Inc.
 #include <HardwareSerial.h>
 
 #define HDLC_FLAG           (0x7e)
+
+/* The UART time-out period in milliseconds */
+#define READ_BUF_TIMEOUT		400
+
+/* The maximum number of bytes we can receive in one chunk over the UART */
+#define UART_MAX_BUF_LEN		1024
+
+/* The max payload size in the mNIC */
+#define MNIC_MAX_PAYLOAD_SIZE	255
+
 /* Supported header dimensions:
  * Min: format(2) dst(1) src(1) ctrl(1) hcs(2)  - 7 bytes
  * The only option supported in simple HDLC.
  */
-#define HDLC_HDR_SIZE       (7)
-#define HDLC_HDR_MAX        HDLC_HDR_SIZE
-#define HDLC_CRC_SIZE		(2)
+#define HDLC_HDR_SIZE       	(7)
+#define HDLC_HDR_MAX        	HDLC_HDR_SIZE
+#define HDLC_CRC_SIZE			(2)
 
 
 /* Supported frame types */
@@ -85,7 +95,7 @@ Networks, Inc.
 #define HDLC_ERROR_UNKNOWN_STATE    (HDLC_ERROR_BASE + 13)
 
 /* Set pointer to Serial object */
-void hdlc_init( HardwareSerial * pUART );
+void hdlc_init( HardwareSerial * pUART, uint32_t max_info_len );
 
 /* Frame / data parsers used by send/recv implementers */
 struct hdlc_hdr_fields {
