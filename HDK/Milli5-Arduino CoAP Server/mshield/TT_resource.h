@@ -44,6 +44,13 @@ typedef struct TT_cfg_struct
 /******************************************************************************/
 
 /**
+ *
+ * @brief CoAP Resource "put description here"
+ *
+ */
+error_t crmysensor(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it);
+
+/**
  * @brief Enable sensor
  *
  * @return error_t

@@ -125,7 +125,7 @@ void setup()
   arduino_temp_sensor_init();
 
   // Init the CoAP Server
-  coap_s_init( UART_PTR, COAP_MSG_MAX_AGE_IN_SECS, UART_TIMEOUT_IN_MS, OBS_SENSOR_NAME, OBS_FUNC_PTR );
+  coap_s_init( UART_PTR, COAP_MSG_MAX_AGE_IN_SECS, UART_TIMEOUT_IN_MS, MAX_HDLC_INFO_LEN, OBS_SENSOR_NAME, OBS_FUNC_PTR );
 }
 
 /********************************************************************************/
