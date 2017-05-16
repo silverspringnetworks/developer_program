@@ -7,7 +7,7 @@ This sample application demonstrates how to use `Starfish JS SDK` to build a sim
 ```
 const Starfish = require('starfish-sdk');
 const options = {
-  'endpoint': 'https://poc.api.ssni.cloud',
+  'endpoint': 'https://example.com',
   'credentials' : {
     'clientId' : 'your-client-id',
     'clientSecret' : 'your-secret'
