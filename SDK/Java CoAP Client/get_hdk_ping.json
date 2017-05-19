@@ -1,16 +1,16 @@
 {
-  "proxyHost": "api.coap-test.developer.ssni.com",
+  "proxyHost": "api.coap-staging.developer.ssni.com",
   "proxyPort": "5683",
   "clientPort": "6000",
   "method" : "GET",
-  "timeout": "30",
+  "timeout": "1000",
   "clientId": "<clientId>",
   "clientSecret": "<clientSecret>",
   "devices": [
     {
       "deviceId": "<deviceId>",
       "deviceHost": "SSN<macAddress>.shared-starfish-test-install.eng.ssnsgs.net",
-      "devicePort": "5683",
+      "devicePort": "4849",
       "devicePath": "/"
     }
   ]
