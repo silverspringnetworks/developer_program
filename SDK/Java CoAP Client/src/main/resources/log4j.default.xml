@@ -14,27 +14,27 @@
     <!--</appender>-->
 
     <logger name="com.ssn.sdk.coapclient.config.OptionsArgumentsWrapper">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.SdkCoapClient">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.StarfishClient">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.TokenClient">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.SdkCoapObserver">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="de.uzl.itm.ncoap.application.client.CoapClient">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="de.uzl.itm.ncoap.communication.reliability.outbound.ClientOutboundReliabilityHandler">

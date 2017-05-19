@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2017, Silver Spring Networks, Inc.
  * All rights reserved
  */
@@ -27,16 +27,13 @@ public class StarfishClient
 {
     private Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-    private static String tokenUrl = "https://poc.api.ssniot.cloud/api/tokens"; //Note: revised on 20170215
-    private static String observationsUrl = "https://poc.api.dev.ssniot.cloud/api/solutions/sandbox/devices";
+    private static String observationsUrl = "https://api.data-platform.developer.ssni.com/api/solutions/sandbox/devices";
+
 
     // Dev Specific
-    private static String clientId = "";
-    private static String clientSecret = "";
-
-    private static String apiToken = null;
-    private static String lnicMacAddress = null;
-    private static String apMacAddress = null;
+    private static String clientId = null;
+    private static String clientSecret = null;
+    //private static String apiToken = null;
 
 
     /**
@@ -53,13 +50,15 @@ public class StarfishClient
     public void sendObservation(String observation, String deviceId)
     {
         // Get token
+        TokenClient tc = new TokenClient();
+        String token;
         try
         {
-            getApiToken();
+            token = tc.getApiToken(clientId, clientSecret);
         }
         catch (Exception excptn)
         {
-            log.error("Exception in getApiToken: {}", excptn.getMessage());
+            log.error("Failed to acquire API token: {}", excptn.getMessage());
             log.info("Skipping send of observation to Starfish");
             return;
         }
@@ -70,7 +69,7 @@ public class StarfishClient
         // Send observations
         try
         {
-            sendObservations(deviceId, payload);
+            sendObservations(deviceId, payload, token);
         }
         catch (Exception excptn)
         {
@@ -111,63 +110,12 @@ public class StarfishClient
     }
 
 
-    private void getApiToken() throws Exception
-    {
-        URL obj = new URL(tokenUrl);
-        HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-
-        // To dump info on the cert
-        //print_https_cert(con);
-
-        // Setup request
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("Accept", "application/json");
-
-        // Dev or POC?
-        String requestPayload;
-        requestPayload = "{ \"clientId\": \"" + clientId + "\", \"clientSecret\": \"" + clientSecret + "\" }";
-
-        // Send request
-        con.setDoOutput(true);
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.writeBytes(requestPayload);
-        wr.flush();
-        wr.close();
-        //System.out.println("***TRACE: Sending 'POST' request to URL : " + tokenUrl);
-        //System.out.println("***TRACE: Post payload : " + requestPayload);
-
-        // Read response
-        int httpStatus = con.getResponseCode();
-        log.debug("Starfish tokens Status: {} ", httpStatus);
-        if (httpStatus != 200 && httpStatus != 201)
-        {
-            log.error("Starfish tokens call failed: {}", httpStatus);
-        }
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null)
-        {
-            response.append(inputLine);
-        }
-        in.close();
-        con.disconnect();
-
-        // Capture token
-        JSONObject jo = new JSONObject(response.toString());
-        apiToken = jo.getString("accessToken");
-        log.debug("Starfish API token: {}", apiToken);
-    }
-
-
     // HTTP POST request
-    private void sendObservations(String deviceId, String payload) throws Exception
+    private void sendObservations(String deviceId, String payload, String token) throws Exception
     {
         String fullUrl = observationsUrl + "/" + deviceId + "/observations";
-        //log.debug("Starfish Observations URL: {} ",fullUrl);
+
+        log.debug("Starfish Observations URL: {} ",fullUrl);
         URL obj = new URL(fullUrl);
         HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 
@@ -175,7 +123,7 @@ public class StarfishClient
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
         con.setRequestProperty("Accept", "application/json");
-        con.setRequestProperty("Authorization", apiToken);
+        con.setRequestProperty("Authorization", token);
 
         // Send request
         con.setDoOutput(true);

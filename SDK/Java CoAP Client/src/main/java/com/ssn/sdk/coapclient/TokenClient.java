@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017, Silver Spring Networks, Inc.
+ * All rights reserved
+ */
 package com.ssn.sdk.coapclient;
 
 import org.json.JSONObject;
@@ -19,7 +23,8 @@ public class TokenClient
     private Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
     // Starfish token endpoint
-    private static final String tokenUrl = "https://poc.api.ssniot.cloud/api/tokens";
+    private static final String tokenUrl = "https://api.data-platform.developer.ssni.com/api/tokens";
+
 
 
     public String getApiToken(String clientId, String clientSecret) throws Exception
