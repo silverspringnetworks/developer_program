@@ -29,8 +29,8 @@ public class OptionsArgumentsWrapper
     private String confPath = null;
 
     @Option(name = "--clientPort",
-            usage="Port client expects responses on (6000))")
-    private int clientPort = 6000;
+            usage="Port client expects responses on (7000))")
+    private int clientPort = 7000;
 
     @Option(name = "--method",
             usage="CoAP method (GET)")
@@ -41,8 +41,8 @@ public class OptionsArgumentsWrapper
     private String deviceHost = "localhost";
 
     @Option(name = "--devicePort",
-            usage = "Port of the device or server URI (5683)")
-    private int devicePort = 5683;
+            usage = "Port of the device or server URI (4849)")
+    private int devicePort = 4849;
 
     @Option(name = "--devicePath",
             usage = "Sets the path of the target URI ('/')")
@@ -57,8 +57,8 @@ public class OptionsArgumentsWrapper
     private String deviceId = "";
 
     @Option(name = "--proxyHost",
-            usage = "IP address or CNAME of a proxy the request is to be sent to (null)")
-    private String proxyHost = null;
+            usage = "IP address or CNAME of a proxy the request is to be sent to (api.coap-staging.developer.ssni.com)")
+    private String proxyHost = "api.coap-staging.developer.ssni.com";
 
     @Option(name = "--proxyPort",
             usage = "Sets the port of a proxy the request is to be sent to (5683)")
@@ -87,6 +87,10 @@ public class OptionsArgumentsWrapper
     @Option(name = "--clientSecret",
             usage = "Sets the Starfish cleint Secret ('')")
     private String clientSecret = "";
+
+    @Option(name = "--test",
+            usage = "Empty argument that sets endpoints for the TEST network")
+    private boolean testenv = false;
 
     @Option(name = "--help",
             usage = "Prints option help")
@@ -191,6 +195,12 @@ public class OptionsArgumentsWrapper
         {
             clientSecret = soption;
             log.debug("Conf clientSecret: {}", clientSecret);
+        }
+        boption = jo.optBoolean("test");
+        if (boption)
+        {
+            testenv = true;
+            log.debug("Conf test: {}", true);
         }
 
         JSONArray darray = jo.getJSONArray("devices");
@@ -340,6 +350,13 @@ public class OptionsArgumentsWrapper
      */
     public String getClientSecret() {
         return clientSecret;
+    }
+
+    /**
+     * @return <code>true</code> if --test was given as console parameter or <code>false</code> otherwise
+     */
+    public boolean isTestEnv() {
+        return testenv;
     }
 
     /**

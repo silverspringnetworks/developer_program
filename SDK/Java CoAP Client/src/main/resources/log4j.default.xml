@@ -8,10 +8,6 @@
         </layout>
     </appender>
 
-    <!--<appender name="async" class="org.apache.log4j.AsyncAppender">-->
-        <!--<param name="BufferSize" value="1000000"/>-->
-        <!--<appender-ref ref="console"/>-->
-    <!--</appender>-->
 
     <logger name="com.ssn.sdk.coapclient.config.OptionsArgumentsWrapper">
         <level value="info"/>
