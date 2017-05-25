@@ -308,7 +308,7 @@ struct mbuf * hdlcs_read(void)
         return r;
     }
     
-    dlog( LOG_DEBUG, "hdlcs_read() - %d", r );
+    //dlog( LOG_DEBUG, "hdlcs_read() - %d", r );
 	return NULL;
 
 } // hdlcs_read()
