@@ -6,10 +6,8 @@ package com.ssn.sdk.coapclient;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLPeerUnverifiedException;
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.text.SimpleDateFormat;
@@ -27,30 +25,45 @@ public class StarfishClient
 {
     private Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-    private static String observationsUrl = "https://api.data-platform.developer.ssni.com/api/solutions/sandbox/devices";
+    // Starfish Staging and Production environment observations endpoint
+    private static final String stagingObservationsEndpoint = "https://api.data-platform.developer.ssni.com/api/solutions/sandbox/devices";
 
+    // Starfish Test environment observations endpoint
+    private static final String testObservationsEndpoint = "https://poc.api.dev.ssniot.cloud/api/solutions/sandbox/devices";
 
-    // Dev Specific
+    // Default observations URL
+    private static String observationsUrl = stagingObservationsEndpoint;
+
+    // Class specific
     private static String clientId = null;
     private static String clientSecret = null;
-    //private static String apiToken = null;
+    private static String deviceId = null;
+    private static boolean useTestEnvironment = false;
 
 
     /**
-     *  Initializes an instance of {@link SdkCoapObserver}.
+     *  Initializes an instance of {@link StarfishClient}.
      *
      */
-    public StarfishClient(String sfClientId, String sfClientSecret )
+    public StarfishClient(String sfClientId, String sfClientSecret, String sfDeviceId, boolean sfUseTestEnvironment )
     {
         clientId = sfClientId;
         clientSecret = sfClientSecret;
+        deviceId = sfDeviceId;
+        useTestEnvironment = sfUseTestEnvironment;
+
+        // Set test observations endpoint if using the test environment
+        if (sfUseTestEnvironment)
+        {
+            observationsUrl = testObservationsEndpoint;
+        }
     }
 
 
-    public void sendObservation(String observation, String deviceId)
+    public void sendObservation(String observation)
     {
         // Get token
-        TokenClient tc = new TokenClient();
+        TokenClient tc = new TokenClient(useTestEnvironment);
         String token;
         try
         {

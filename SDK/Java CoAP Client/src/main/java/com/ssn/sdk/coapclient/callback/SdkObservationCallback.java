@@ -62,8 +62,8 @@ public class SdkObservationCallback extends SdkCallback {
 
         if (payloadAsStr.length() > 0) {
             log.info("Sending observation to Starfish");
-            StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret());
-            starfishClient.sendObservation(payloadAsStr, arguments.getDeviceId());
+            StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+            starfishClient.sendObservation(payloadAsStr);
         }
     }
 

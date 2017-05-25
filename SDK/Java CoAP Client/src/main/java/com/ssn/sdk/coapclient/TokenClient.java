@@ -22,14 +22,35 @@ public class TokenClient
 {
     private Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-    // Starfish token endpoint
-    private static final String tokenUrl = "https://api.data-platform.developer.ssni.com/api/tokens";
+    // Starfish Staging and Production enviornment tokens endpoint
+    private static final String stagingTokensEndpoint = "https://api.data-platform.developer.ssni.com/api/tokens";
+
+    // Starfish Test enviornment tokens endpoint
+    private static final String testTokensEndpoint = "https://poc.api.ssniot.cloud/api/tokens";
+
+    // Default tokenUrl
+    private static String tokenUrl = stagingTokensEndpoint;
+
+
+    /**
+     *  Initializes an instance of {@link TokenClient}.
+     *
+     */
+    public TokenClient(boolean useTestEnvironment)
+    {
+        // Set test tokens endpoint if using the test environment
+        if (useTestEnvironment)
+        {
+            tokenUrl = testTokensEndpoint;
+        }
+    }
 
 
 
     public String getApiToken(String clientId, String clientSecret) throws Exception
     {
         URL obj = new URL(tokenUrl);
+        log.debug("Starfish tokens URL: {}", tokenUrl);
         HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
 
         // Setup request
