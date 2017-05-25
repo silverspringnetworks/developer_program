@@ -42,7 +42,7 @@ Networks, Inc.
 #include "coap_server.h"
 
 
-#define VERSION_NUMBER "1.3.2"
+#define VERSION_NUMBER "1.3.3"
 
 /* 
  * Use environment variable COAP_DATA_ROOT to set server data root dir 
