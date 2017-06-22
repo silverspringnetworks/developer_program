@@ -58,6 +58,8 @@ Networks, Inc.
 error_t crtemperature(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
 {
     struct optlv *o;
+	uint8_t obs = false;
+
 
     /* No URI path beyond /temp is supported, so reject if present. */
     o = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_PATH, &it);
@@ -143,6 +145,7 @@ error_t crtemperature(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *
 				{
 					case COAP_OBS_REG:
 						rc = coap_obs_reg();
+						obs = true;
 						break;
 					
 					case COAP_OBS_DEREG:
@@ -168,9 +171,18 @@ error_t crtemperature(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *
         }
         dlog(LOG_DEBUG, "GET (status %d) read %d bytes.", rc, len);
         if (!rc) {
-            rsp->plen = len;
-            rsp->cf = COAP_CF_CSV;
-            rsp->code = COAP_RSP_205_CONTENT;
+			if (obs)
+			{                        
+			/* Good code, but no content. */
+				rsp->code = COAP_RSP_203_VALID;
+				rsp->plen = 0;
+			}
+			else
+			{
+				rsp->plen = len;
+				rsp->cf = COAP_CF_CSV;
+				rsp->code = COAP_RSP_205_CONTENT;
+			}
         } else {
             switch (rc) {
             case ERR_BAD_DATA:
