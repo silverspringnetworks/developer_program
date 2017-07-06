@@ -57,8 +57,8 @@ public class OptionsArgumentsWrapper
     private String deviceId = "";
 
     @Option(name = "--proxyHost",
-            usage = "IP address or CNAME of a proxy the request is to be sent to (api.coap-staging.developer.ssni.com)")
-    private String proxyHost = "api.coap-staging.developer.ssni.com";
+            usage = "IP address or CNAME of a proxy the request is to be sent to (default = null)")
+    private String proxyHost = null;
 
     @Option(name = "--proxyPort",
             usage = "Sets the port of a proxy the request is to be sent to (5683)")
