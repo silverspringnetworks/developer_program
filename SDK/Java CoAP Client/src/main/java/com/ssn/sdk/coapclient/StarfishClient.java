@@ -117,7 +117,7 @@ public class StarfishClient
         jo.put("observations", joaObservations);
 
         String json = jo.toString();
-        log.debug("Starfish payload: {}", json);
+        log.info("Starfish payload: {}", json);
 
         return json;
     }

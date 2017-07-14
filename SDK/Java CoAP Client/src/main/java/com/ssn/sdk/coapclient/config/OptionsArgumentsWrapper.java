@@ -8,6 +8,8 @@ import com.ssn.sdk.coapclient.SdkCoapClient;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import de.uzl.itm.ncoap.message.MessageCode;
 import org.json.*;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -364,5 +366,32 @@ public class OptionsArgumentsWrapper
      */
     public boolean isHelp() {
         return help;
+    }
+
+
+    /**
+     * @return <code>MessageCode</code> the http method equivalent specified for the message.
+     */
+    public int getRequestMessageCode()
+    {
+        int messageCode = MessageCode.GET;
+        if (this.getMethod().equalsIgnoreCase("GET"))
+        {
+            messageCode= MessageCode.GET;
+        }
+        if (this.getMethod().equalsIgnoreCase("DELETE"))
+        {
+            messageCode= MessageCode.DELETE;
+        }
+        if (this.getMethod().equalsIgnoreCase("POST"))
+        {
+            messageCode= MessageCode.POST;
+        }
+        if (this.getMethod().equalsIgnoreCase("PUT"))
+        {
+            messageCode= MessageCode.PUT;
+        }
+
+        return messageCode;
     }
 }

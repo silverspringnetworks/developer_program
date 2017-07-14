@@ -5,21 +5,18 @@
 package com.ssn.sdk.coapclient;
 
 /**
- * Created by bob on 3/21/2017.
+ * CoapDevice. Contains the details of a device (the HDK). It acts as a partial cache. Note, to be used with upcoming features.
+ *
+ * @author Bob Luben
  */
 public class CoapDevice
 {
-    private long maxAge = 0;
+    private long maxAge;
 
 
-    /**
-     * Returns the CoAP method to be used with request
-     * @return the CoAP method to be used with request
-     */
     public long getMaxAge() {
         return maxAge;
     }
-
     public void setMaxAge(long newMaxAge) {
         maxAge =  newMaxAge;
     }

@@ -42,25 +42,10 @@ public class SdkCoapClient extends CoapClient
         this.arguments = arguments;
     }
 
-    public void sendCoapRequest() throws URISyntaxException, UnknownHostException {
+    public void sendCoapRequest() throws URISyntaxException, UnknownHostException
+    {
 
-        int messageCode = MessageCode.GET;
-        if (arguments.getMethod().equalsIgnoreCase("GET"))
-        {
-            messageCode= MessageCode.GET;
-        }
-        if (arguments.getMethod().equalsIgnoreCase("DELETE"))
-        {
-            messageCode= MessageCode.DELETE;
-        }
-        if (arguments.getMethod().equalsIgnoreCase("POST"))
-        {
-            messageCode= MessageCode.POST;
-        }
-        if (arguments.getMethod().equalsIgnoreCase("PUT"))
-        {
-            messageCode= MessageCode.PUT;
-        }
+        int messageCode = arguments.getRequestMessageCode();
 
         // Get URI of the resource to be requested
         String host = arguments.getDeviceHost();
@@ -73,9 +58,12 @@ public class SdkCoapClient extends CoapClient
         int messageType = arguments.isNon() ? MessageType.NON : MessageType.CON;
 
         // Set the client callback
-        if (arguments.isObserve()) {
+        if (arguments.isObserve())
+        {
             callback = new SdkObservationCallback(arguments);
-        } else {
+        }
+        else
+        {
             callback = new SdkCallback();
         }
 
