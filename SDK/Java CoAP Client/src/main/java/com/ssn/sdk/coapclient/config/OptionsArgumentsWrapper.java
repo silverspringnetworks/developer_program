@@ -51,8 +51,8 @@ public class OptionsArgumentsWrapper
     private String devicePath = "/";
 
     @Option(name = "--deviceQuery",
-            usage = "Sets the query of the target URI (default = null)")
-    private String deviceQuery = null;
+            usage = "Sets the query of the target URI (empty string))")
+    private String deviceQuery = "";
 
     @Option(name = "--deviceId",
             usage="Devices starfish device id (empty string)")

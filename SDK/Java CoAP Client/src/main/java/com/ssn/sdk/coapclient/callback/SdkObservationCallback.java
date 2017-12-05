@@ -61,9 +61,19 @@ public class SdkObservationCallback extends SdkCallback {
 
 
         if (payloadAsStr.length() > 0) {
-            log.info("Sending observation to Starfish");
             StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
-            starfishClient.sendObservation(payloadAsStr);
+
+            // Select the payload trasnformer to use based on the resource path.
+            if (arguments.getDevicePath().equalsIgnoreCase("/sensor/arduino/temp"))
+            {
+                log.info("Sending observation to Starfish");
+                starfishClient.sendObservation(payloadAsStr, "com.ssn.sdk.coapclient.TempPayloadTransformer");
+            }
+            if (arguments.getDevicePath().equalsIgnoreCase("/sensor/rl78/methane"))
+            {
+                log.info("Sending observation to Starfish");
+                starfishClient.sendObservation(payloadAsStr, "com.ssn.sdk.coapclient.ChAlertPayloadTransformer");
+            }
         }
     }
 

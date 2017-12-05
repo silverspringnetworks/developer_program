@@ -8,11 +8,14 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.StringTokenizer;
+import java.lang.reflect.Method;
 import org.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,9 +63,9 @@ public class StarfishClient
     }
 
 
-    public void sendObservation(String observation)
+    public void sendObservation(String observation, String payloadTransformerName)
     {
-        // Get token
+        // Get Starfish token
         TokenClient tc = new TokenClient(useTestEnvironment);
         String token;
         try
@@ -77,49 +80,36 @@ public class StarfishClient
         }
 
         // Build observations payload
-        String payload = buildPayload(observation);
-
-        // Send observations
+        Object pti = null;
+        Class ptc = null;
+        String payloadJson = null;
         try
         {
-            sendObservations(deviceId, payload, token);
+            // Use reflection to load and call the transformer class
+            ptc = Class.forName(payloadTransformerName);
+            pti = ptc.newInstance();
+            Method method = ptc.getMethod("buildPayload", String.class);
+
+            payloadJson = (String) method.invoke(pti, observation);
         }
         catch (Exception excptn)
         {
-            log.error("Exception in sendObservations: {}", excptn.getMessage());
-            log.error("Stack Trace sendObservations: {}", excptn.getCause());
+            log.error("Payload Transformer Class Exception: {}", excptn.getCause());
+            log.info("Skipping send of observation to Starfish");
+            return;
+        }
+
+
+        // Send observations to Starfish Data Platform
+        try
+        {
+            sendObservations(deviceId, payloadJson, token);
+        }
+        catch (Exception excptn)
+        {
+            log.error("Exception in sendObservations: {}", excptn.getCause());
             log.info("Skipping send of observation to Starfish");
         }
-    }
-
-
-    private String buildPayload(String observation)
-    {
-        String[] parts = observation.split(",", 3);
-
-        Long ts = new Long(parts[0]);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date dt = new Date(ts);
-        String timestamp = sdf.format(dt);
-        log.debug("timestamp: {}", timestamp);
-
-        // Convert the observation
-        JSONObject joObservation = new JSONObject();
-        joObservation.put("timestamp", timestamp);
-        joObservation.put("temperature", parts[1]);
-
-        JSONArray joaObservations = new JSONArray();
-        joaObservations.put(joObservation);
-
-        // Build payload
-        JSONObject jo = new JSONObject();
-        jo.put("observations", joaObservations);
-
-        String json = jo.toString();
-        log.info("Starfish payload: {}", json);
-
-        return json;
     }
 
 

@@ -4,6 +4,8 @@
  */
 package com.ssn.sdk.coapclient.callback;
 
+import com.ssn.sdk.coapclient.StarfishClient;
+import com.ssn.sdk.coapclient.config.OptionsArgumentsWrapper;
 import de.uzl.itm.ncoap.application.client.ClientCallback;
 import de.uzl.itm.ncoap.message.CoapResponse;
 import de.uzl.itm.ncoap.message.CoapMessage;
@@ -26,13 +28,27 @@ public class SdkCallback extends ClientCallback
     private AtomicBoolean responseReceived;
     private AtomicInteger transmissionCounter;
     private AtomicBoolean timedOut;
+    private OptionsArgumentsWrapper arguments;
 
 
+    // Default constructor
     public SdkCallback()
     {
         this.responseReceived = new AtomicBoolean(false);
         this.transmissionCounter = new AtomicInteger(0);
         this.timedOut = new AtomicBoolean(false);
+
+        this.arguments = null;
+    }
+
+    // Standard constructor
+    public SdkCallback(OptionsArgumentsWrapper arguments)
+    {
+        this.responseReceived = new AtomicBoolean(false);
+        this.transmissionCounter = new AtomicInteger(0);
+        this.timedOut = new AtomicBoolean(false);
+
+        this.arguments = arguments;
     }
 
     /**
@@ -53,6 +69,23 @@ public class SdkCallback extends ClientCallback
 
         String payloadAsHex = this.bytesToHexString(response.array());
         log.info("***Payload As Hex: <{}>", payloadAsHex);
+
+        //NOTE: Special handling for New Cosmos. Push ODR response to Starfish.
+        if (payloadAsStr.length() > 0) {
+            StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+
+            // Select the payload trasnformer to use based on the resource path.
+            if (arguments.getDevicePath().equalsIgnoreCase("/sensor/arduino/temp"))
+            {
+                log.info("Sending observation to Starfish");
+                starfishClient.sendObservation(payloadAsStr, "com.ssn.sdk.coapclient.TempPayloadTransformer");
+            }
+            if (arguments.getDevicePath().equalsIgnoreCase("/sensor/rl78/methane"))
+            {
+                log.info("Sending observation to Starfish");
+                starfishClient.sendObservation(payloadAsStr, "com.ssn.sdk.coapclient.ChAlertPayloadTransformer");
+            }
+        }
     }
 
     /**

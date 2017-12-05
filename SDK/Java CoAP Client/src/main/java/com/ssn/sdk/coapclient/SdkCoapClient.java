@@ -64,7 +64,7 @@ public class SdkCoapClient extends CoapClient
         }
         else
         {
-            callback = new SdkCallback();
+            callback = new SdkCallback(arguments);
         }
 
         boolean useProxy = arguments.getProxyAddress() != null;
@@ -73,30 +73,32 @@ public class SdkCoapClient extends CoapClient
         CoapRequest coapRequest = null;
         if (messageCode == MessageCode.POST || messageCode == MessageCode.PUT)
         {
-            if (path.equals("/sessions") && (arguments.getClientId() != null && arguments.getClientId().length() > 0))
+            if (path.equals("/sessions"))
             {
-                TokenClient tc = new TokenClient(arguments.isTestEnv());
-                String token;
-                try
+                if ((arguments.getClientId() != null && arguments.getClientId().length() > 0))
                 {
-                    token = tc.getApiToken(arguments.getClientId(), arguments.getClientSecret());
+
+                    TokenClient tc = new TokenClient(arguments.isTestEnv());
+                    String token;
+                    try
+                    {
+                        token = tc.getApiToken(arguments.getClientId(), arguments.getClientSecret());
+                    } catch (Exception excpn)
+                    {
+                        log.error("Aborting: Failed to acquire API token: {}", excpn.getMessage());
+                        return;
+                    }
+                    byte[] payload = token.getBytes();
+                    coapRequest = new CoapRequest(messageType, messageCode, resourceURI, false);
+                    coapRequest.setContent(payload, ContentFormat.TEXT_PLAIN_UTF8);
+                } else {
+                    //byte[] payload = arguments.getDeviceQuery().getBytes();
+                    coapRequest = new CoapRequest(messageType, messageCode, resourceURI, false);
+                    //coapRequest.setContent(payload, ContentFormat.TEXT_PLAIN_UTF8);
                 }
-                catch (Exception excpn)
-                {
-                    log.error("Aborting: Failed to acquire API token: {}", excpn.getMessage());
-                    return;
-                }
-                byte[] payload = token.getBytes();
-                if (useProxy)
-                {
-                    useProxy = false;
-                }
-                coapRequest = new CoapRequest(messageType, messageCode, resourceURI, useProxy);
-                coapRequest.setContent(payload, ContentFormat.TEXT_PLAIN_UTF8);
             }
-        }
-        else
-        {
+            //TODO:
+        } else {
             coapRequest = new CoapRequest(messageType, messageCode, resourceURI, useProxy);
         }
 

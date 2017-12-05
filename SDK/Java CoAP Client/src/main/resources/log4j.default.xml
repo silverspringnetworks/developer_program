@@ -25,28 +25,28 @@
         <level value="info"/>
     </logger>
 
-    <logger name="com.ssn.sdk.coapclient.SdkCoapObserver">
+    <logger name="com.ssn.sdk.coapclient.TempPayloadTransformer">
         <level value="info"/>
     </logger>
 
-    <logger name="de.uzl.itm.ncoap.application.client.CoapClient">
+    <logger name="com.ssn.sdk.coapclient.ChAlertPayloadTransformer">
         <level value="info"/>
     </logger>
 
     <logger name="de.uzl.itm.ncoap.communication.reliability.outbound.ClientOutboundReliabilityHandler">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="de.uzl.itm.ncoap.communication.blockwise.client.ClientBlock2Handler">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.callback.SdkObservationCallback">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.callback.SdkCallback">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <root>
