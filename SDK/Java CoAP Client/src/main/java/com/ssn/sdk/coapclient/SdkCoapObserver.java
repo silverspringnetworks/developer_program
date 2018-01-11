@@ -27,7 +27,7 @@ public class SdkCoapObserver
     private static String proxyPort = "5683";
     private static String deviceHost = "SSN00135005003cb8e1.TEAM-ATS-23X-INSTALL.ENG.SSNSGS.NET";
     private static String devicePort = "5683";
-    private static String devicePath = "/sensor/arduino/temp";
+    private static String devicePath = "/snsr/arduino/temp";
     private static String deviceQuery = "sens";
 
     private static String sessionPath = "/sessions";
