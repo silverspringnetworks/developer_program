@@ -34,6 +34,13 @@ public class StarfishClient
     // Starfish Test environment observations endpoint
     private static final String testObservationsEndpoint = "https://poc.api.dev.ssniot.cloud/api/solutions/sandbox/devices";
 
+    // Logistics Staging and Production environment observations endpoint
+    private static final String stagingLogisticsObservationsEndpoint = "https://logistics.ssniot.cloud";
+
+    // Starfish Test environment observations endpoint
+    // TODO: validate this is the proper endpoint
+    private static final String testLogisticsObservationsEndpoint = "https://poc.logistics.dev.ssniot.cloud";
+
     // Default observations URL
     private static String observationsUrl = stagingObservationsEndpoint;
 
@@ -42,6 +49,7 @@ public class StarfishClient
     private static String clientSecret = null;
     private static String deviceId = null;
     private static boolean useTestEnvironment = false;
+    private static boolean useLogisticsBackend = false;
 
 
     /**
@@ -55,13 +63,43 @@ public class StarfishClient
         deviceId = sfDeviceId;
         useTestEnvironment = sfUseTestEnvironment;
 
-        // Set test observations endpoint if using the test environment
+        // Default
+        observationsUrl = stagingObservationsEndpoint;
+
         if (sfUseTestEnvironment)
         {
             observationsUrl = testObservationsEndpoint;
         }
     }
 
+    public StarfishClient(String sfClientId, String sfClientSecret, String sfDeviceId, boolean sfUseTestEnvironment, boolean sfUseLogisticsBackend )
+    {
+        clientId = sfClientId;
+        clientSecret = sfClientSecret;
+        deviceId = sfDeviceId;
+        useTestEnvironment = sfUseTestEnvironment;
+        useLogisticsBackend = sfUseLogisticsBackend;
+
+        if (sfUseLogisticsBackend)
+        {
+            observationsUrl = stagingLogisticsObservationsEndpoint;
+
+            if (sfUseTestEnvironment)
+            {
+                observationsUrl = testLogisticsObservationsEndpoint;
+            }
+        }
+        else
+        {
+            // Default
+            observationsUrl = stagingObservationsEndpoint;
+
+            if (sfUseTestEnvironment)
+            {
+                observationsUrl = testObservationsEndpoint;
+            }
+        }
+    }
 
     public void sendObservation(String observation, String payloadTransformerName)
     {
@@ -112,11 +150,58 @@ public class StarfishClient
         }
     }
 
+    public void sendObservation(byte[] observation, String payloadTransformerName)
+    {
+        // Get Starfish token
+        TokenClient tc = new TokenClient(useTestEnvironment);
+        String token;
+        try
+        {
+            token = tc.getApiToken(clientId, clientSecret);
+        }
+        catch (Exception excptn)
+        {
+            log.error("Failed to acquire API token: {}", excptn.getMessage());
+            log.info("Skipping send of observation to Logistics");
+            return;
+        }
+
+        // Build observations payload
+        Object pti = null;
+        Class ptc = null;
+        String payloadJson = null;
+        try
+        {
+            // Use reflection to load and call the transformer class
+            ptc = Class.forName(payloadTransformerName);
+            pti = ptc.newInstance();
+            Method method = ptc.getMethod("buildPayload", String.class);
+
+            payloadJson = (String) method.invoke(pti, observation, deviceId);
+        }
+        catch (Exception excptn)
+        {
+            log.error("Payload Transformer Class Exception: {}", excptn.getCause());
+            log.info("Skipping send of observation to Logistics");
+            return;
+        }
+    }
 
     // HTTP POST request
     private void sendObservations(String deviceId, String payload, String token) throws Exception
     {
-        String fullUrl = observationsUrl + "/" + deviceId + "/observations";
+        String fullUrl;
+
+        if (useLogisticsBackend) 
+        {
+            // https://logistics.ssniot.cloud/observations
+            fullUrl = observationsUrl + "/observations";
+        }
+        else
+        {
+            // https://api.data-platform.developer.ssni.com/api/solutions/<solutionId>/devices/<deviceId>/observations
+            fullUrl = observationsUrl + "/" + deviceId + "/observations";
+        }
 
         log.debug("Starfish Observations URL: {} ",fullUrl);
         URL obj = new URL(fullUrl);

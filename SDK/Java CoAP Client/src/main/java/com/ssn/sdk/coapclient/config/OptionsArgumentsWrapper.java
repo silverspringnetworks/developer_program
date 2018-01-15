@@ -83,11 +83,11 @@ public class OptionsArgumentsWrapper
     private int maxNotifications = 1;
 
     @Option(name = "--clientId",
-            usage = "Sets the Starfish cleint Id ('')")
+            usage = "Sets the Starfish client Id ('')")
     private String clientId = "";
 
     @Option(name = "--clientSecret",
-            usage = "Sets the Starfish cleint Secret ('')")
+            usage = "Sets the Starfish client Secret ('')")
     private String clientSecret = "";
 
     @Option(name = "--test",

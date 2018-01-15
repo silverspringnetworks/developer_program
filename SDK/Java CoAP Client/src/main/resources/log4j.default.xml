@@ -8,7 +8,6 @@
         </layout>
     </appender>
 
-
     <logger name="com.ssn.sdk.coapclient.config.OptionsArgumentsWrapper">
         <level value="info"/>
     </logger>
@@ -30,6 +29,10 @@
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.ChAlertPayloadTransformer">
+        <level value="info"/>
+    </logger>
+
+    <logger name="com.ssn.sdk.coapclient.LogisticsPayloadTransformer">
         <level value="info"/>
     </logger>
 

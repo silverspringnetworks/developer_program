@@ -70,20 +70,33 @@ public class SdkCallback extends ClientCallback
         String payloadAsHex = this.bytesToHexString(response.array());
         log.info("***Payload As Hex: <{}>", payloadAsHex);
 
+        byte[] payloadAsByteArray = response.array();
+
         //NOTE: Special handling for New Cosmos. Push ODR response to Starfish.
         if (payloadAsStr.length() > 0) {
-            StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
 
             // Select the payload trasnformer to use based on the resource path.
-            if (arguments.getDevicePath().equalsIgnoreCase("/snsr/arduino/temp"))
+            if (arguments.getDevicePath().equalsIgnoreCase("/sensor/arduino/temp"))
             {
+                StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
                 log.info("Sending observation to Starfish");
                 starfishClient.sendObservation(payloadAsStr, "com.ssn.sdk.coapclient.TempPayloadTransformer");
             }
-            if (arguments.getDevicePath().equalsIgnoreCase("/snsr/rl78/methane"))
+            else if (arguments.getDevicePath().equalsIgnoreCase("/sensor/rl78/methane"))
             {
+                StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
                 log.info("Sending observation to Starfish");
                 starfishClient.sendObservation(payloadAsStr, "com.ssn.sdk.coapclient.ChAlertPayloadTransformer");
+            }
+            else if (arguments.getDevicePath().equalsIgnoreCase("/sensor/logistics/log"))
+            {
+                StarfishClient logisticsClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv(), true);
+                log.info("Sending observation to Logistics");
+                logisticsClient.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.LogisticsPayloadTransformer");
+            }
+            else
+            {
+                log.error("Can't send observation. Unknown path: {}", arguments.getDevicePath());
             }
         }
     }
