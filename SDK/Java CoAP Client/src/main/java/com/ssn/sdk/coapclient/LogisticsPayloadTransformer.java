@@ -17,7 +17,7 @@ public class LogisticsPayloadTransformer
     private Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
 
-    public String buildPayload(byte[] observation, String deviceId)
+    public String buildPayload(byte[] observation, String palletMacAddress, String apMacAddress)
     {
 
         byte[] encodedBytes = Base64.getEncoder().encode(observation);
@@ -30,8 +30,8 @@ public class LogisticsPayloadTransformer
 
         // Build payload
         JSONObject jo = new JSONObject();
-        jo.put("palletteMacAddress", deviceId);
-        jo.put("apMacAddress", "");
+        jo.put("palletMacAddress", palletMacAddress);
+        jo.put("apMacAddress", apMacAddress);
         jo.put("sensorData", new String(encodedBytes));
 
         String json = jo.toString();

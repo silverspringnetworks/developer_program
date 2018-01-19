@@ -41,13 +41,13 @@ public class LogisticsPayloadTransformTest extends TestCase
 
         LogisticsPayloadTransformer pt = new LogisticsPayloadTransformer();
 
-        jsonResult = pt.buildPayload("abc123".getBytes(), "00135005FF0662E1");
+        jsonResult = pt.buildPayload("abc123".getBytes(), "00135005FF0662E1", "fdc8:1001:4a99:81:213:50ff:fe12:43df");
 
-        sValue = getStrObservationAttribute(jsonResult, "palletteMacAddress");
+        sValue = getStrObservationAttribute(jsonResult, "palletMacAddress");
         assertEquals("00135005FF0662E1", sValue);
 
         sValue = getStrObservationAttribute(jsonResult, "apMacAddress");
-        assertEquals("", sValue);
+        assertEquals("fdc8:1001:4a99:81:213:50ff:fe12:43df", sValue);
 
         sValue = getStrObservationAttribute(jsonResult, "sensorData");
         assertEquals("YWJjMTIz", sValue); // base64("abc123")= "YWJjMTIz"

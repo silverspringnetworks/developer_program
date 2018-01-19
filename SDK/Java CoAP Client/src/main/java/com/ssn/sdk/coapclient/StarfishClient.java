@@ -35,11 +35,11 @@ public class StarfishClient
     private static final String testObservationsEndpoint = "https://poc.api.dev.ssniot.cloud/api/solutions/sandbox/devices";
 
     // Logistics Staging and Production environment observations endpoint
-    private static final String stagingLogisticsObservationsEndpoint = "https://logistics.ssniot.cloud";
+    // TODO: validate this is the proper endpoint
+    private static final String stagingLogisticsObservationsEndpoint = "https://logistics.dev.ssniot.cloud";
 
     // Starfish Test environment observations endpoint
-    // TODO: validate this is the proper endpoint
-    private static final String testLogisticsObservationsEndpoint = "https://poc.logistics.dev.ssniot.cloud";
+    private static final String testLogisticsObservationsEndpoint = "https://logistics.dev.ssniot.cloud";
 
     // Default observations URL
     private static String observationsUrl = stagingObservationsEndpoint;
@@ -48,6 +48,9 @@ public class StarfishClient
     private static String clientId = null;
     private static String clientSecret = null;
     private static String deviceId = null;
+    private static String apMacAddress = null;
+    private static String palletMacAddress = null;
+
     private static boolean useTestEnvironment = false;
     private static boolean useLogisticsBackend = false;
 
@@ -72,13 +75,15 @@ public class StarfishClient
         }
     }
 
-    public StarfishClient(String sfClientId, String sfClientSecret, String sfDeviceId, boolean sfUseTestEnvironment, boolean sfUseLogisticsBackend )
+    public StarfishClient(String sfClientId, String sfClientSecret, String sfDeviceId, boolean sfUseTestEnvironment, boolean sfUseLogisticsBackend, String sfApMacAddress, String sfPalletMacAddress)
     {
         clientId = sfClientId;
         clientSecret = sfClientSecret;
         deviceId = sfDeviceId;
         useTestEnvironment = sfUseTestEnvironment;
         useLogisticsBackend = sfUseLogisticsBackend;
+        apMacAddress = sfApMacAddress;
+        palletMacAddress = sfPalletMacAddress;
 
         if (sfUseLogisticsBackend)
         {
@@ -165,6 +170,7 @@ public class StarfishClient
             log.info("Skipping send of observation to Logistics");
             return;
         }
+        log.debug("Token: <{}>", token);
 
         // Build observations payload
         Object pti = null;
@@ -175,15 +181,29 @@ public class StarfishClient
             // Use reflection to load and call the transformer class
             ptc = Class.forName(payloadTransformerName);
             pti = ptc.newInstance();
-            Method method = ptc.getMethod("buildPayload", String.class);
+            Method method = ptc.getMethod("buildPayload", byte[].class, String.class, String.class);
 
-            payloadJson = (String) method.invoke(pti, observation, deviceId);
+            log.info("observation length: {}", observation.length);
+
+            payloadJson = (String) method.invoke(pti, observation, palletMacAddress, apMacAddress);
         }
         catch (Exception excptn)
         {
             log.error("Payload Transformer Class Exception: {}", excptn.getCause());
             log.info("Skipping send of observation to Logistics");
             return;
+        }
+        log.debug("Payload: <{}>", payloadJson);
+
+        // Send observations to Starfish Data Platform
+        try
+        {
+            sendObservations(deviceId, payloadJson, token);
+        }
+        catch (Exception excptn)
+        {
+            log.error("Exception in sendObservations: {}", excptn.getCause());
+            log.info("Skipping send of observation to Starfish");
         }
     }
 
