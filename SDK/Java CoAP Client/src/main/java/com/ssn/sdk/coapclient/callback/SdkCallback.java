@@ -63,27 +63,39 @@ public class SdkCallback extends ClientCallback
         responseReceived.set(true);
         log.info("Received #: CoAP: {}", coapResponse);
 
-        ChannelBuffer response = coapResponse.getContent();
-        String payloadAsStr = response.toString(CoapMessage.CHARSET);
+        byte[] payloadAsByteArray = coapResponse.getContentAsByteArray();
+        log.info("***Payload length: {}", payloadAsByteArray.length);
+
+        String payloadAsStr = new String(payloadAsByteArray, CoapMessage.CHARSET);
         log.info("***Payload As String: <{}>", payloadAsStr);
 
-        String payloadAsHex = this.bytesToHexString(response.array());
+        String payloadAsHex = this.bytesToHexString(payloadAsByteArray);
         log.info("***Payload As Hex: <{}>", payloadAsHex);
 
         //NOTE: Special handling for New Cosmos. Push ODR response to Starfish.
         if (payloadAsStr.length() > 0) {
-            StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
 
             // Select the payload trasnformer to use based on the resource path.
             if (arguments.getDevicePath().equalsIgnoreCase("/snsr/arduino/temp"))
             {
+                StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
                 log.info("Sending observation to Starfish");
                 starfishClient.sendObservation(payloadAsStr, "com.ssn.sdk.coapclient.TempPayloadTransformer");
             }
-            if (arguments.getDevicePath().equalsIgnoreCase("/snsr/rl78/methane"))
+            else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/rl78/methane"))
             {
+                StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
                 log.info("Sending observation to Starfish");
                 starfishClient.sendObservation(payloadAsStr, "com.ssn.sdk.coapclient.ChAlertPayloadTransformer");
+            }
+            else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/sens") || arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/log"))
+            {
+                StarfishClient logisticsClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv(), true, arguments.getApMacAddress(), arguments.getDeviceHost().substring(3,19));
+                logisticsClient.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.LogisticsPayloadTransformer");
+            }
+            else
+            {
+                log.error("Can't send observation. Unknown path: {}", arguments.getDevicePath());
             }
         }
     }
