@@ -1,7 +1,7 @@
 # Itron Networked Solutions Developer Repository
 
 ## Applications
-[IoT Router BLE](HDK/IoT_Router_BLE/)
+[IoT Edge Router](HDK/IoT_Router_BLE/)
 
 [Milli5-Arduino CoAP Server](HDK/Milli5-Arduino%20CoAP%20Server)
 
