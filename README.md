@@ -1,4 +1,4 @@
-# Silver Spring Networks Developer Repository
+# Itron Networked Solutions Developer Repository
 
 ## Applications
 [IoT Router BLE](HDK/IoT_Router_BLE/)
