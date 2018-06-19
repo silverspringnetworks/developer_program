@@ -70,11 +70,20 @@ public class SdkObservationCallback extends SdkCallback {
                 log.info("Sending observation to Starfish");
                 starfishClient.sendObservation(payloadAsStr, "com.ssn.sdk.coapclient.TempPayloadTransformer");
             }
+            // CH4 methane paylod (New Cosmos rl78 device)
+            // Updated to support the CBOR wrapper format.
             else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/rl78/methane"))
             {
+                // Remove the CBOR wrapper
+                final int cborwrapperlength = 11;
+                byte[] ch4PayloadAsByteArray = stripOffCborWrapper(payloadAsByteArray, cborwrapperlength);
+                String ch4PayloadAsStr = new String(ch4PayloadAsByteArray, CoapMessage.CHARSET);
+                log.info("*** CH4 Inner payload As String: <{}>", ch4PayloadAsStr);
+
+                // Pass the rl78 data on as a string
                 StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
                 log.info("Sending observation to Starfish");
-                starfishClient.sendObservation(payloadAsStr, "com.ssn.sdk.coapclient.ChAlertPayloadTransformer");
+                starfishClient.sendObservation(ch4PayloadAsStr, "com.ssn.sdk.coapclient.ChAlertPayloadTransformer");
             }
             else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/sens") || arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/log"))
             {
@@ -113,5 +122,22 @@ public class SdkObservationCallback extends SdkCallback {
             sb.append(String.format("%02x", b&0xff));
         }
         return sb.toString();
+    }
+
+
+    // Helper to strip off an outer CBOR wrapper
+    public byte[] stripOffCborWrapper(byte[] payload, int wrapperlength)
+    {
+        int innerLength = payload.length - wrapperlength;
+        byte[] innerPayload = new byte[innerLength];
+
+        // This is brain dead simple. We just skip the first 11 bytes.
+        // Long term we need to use a CBOR parser.
+        for (int outindx=wrapperlength, inindx=0; outindx < payload.length ; outindx++,inindx++)
+        {
+            innerPayload[inindx] = payload[outindx];
+        }
+
+        return innerPayload;
     }
 }
