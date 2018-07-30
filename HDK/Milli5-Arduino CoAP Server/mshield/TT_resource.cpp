@@ -31,7 +31,8 @@ Networks, Inc.
 #include "log.h"
 #include "exp_coap.h"
 #include "coap_rsp_msg.h"
-//#include "coappdu.h"
+#include "coappdu.h"
+#include "coapmsg.h"
 #include "arduino_pins.h"
 #include "TT_resource.h"
 
@@ -42,6 +43,181 @@ Networks, Inc.
 
 // TT Config
 TT_cfg_t TT_cfg;
+
+/**
+ * crtemperature
+ *
+ * @brief CoAP Resource "describe your sensor here"
+ *
+ */
+error_t crmysensor(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
+{
+    struct optlv *o;
+
+    /* No URI path beyond /temp is supported, so reject if present. */
+    o = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_PATH, &it);
+    if (o)
+    {
+        rsp->code = COAP_RSP_404_NOT_FOUND;
+        goto err;
+    }            
+
+    /* All methods require a query, so return an error if missing. */
+    if (!(o = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_QUERY, NULL))) 
+    {
+        rsp->code = COAP_RSP_405_METHOD_NOT_ALLOWED;
+        goto err;
+    }
+    
+    /*
+     * PUT for writing configuration or enabling the sensor
+     */
+    if (req->code == COAP_REQUEST_PUT) 
+    {
+        error_t rc = ERR_OK;
+
+        /* PUT /uri?cfg=<A|B> */
+        if (!coap_opt_strcmp(o, "cfg=A"))
+        {
+			//arduino_put_temp_cfg(CELSIUS_SCALE);
+        } 
+        else if (!coap_opt_strcmp(o, "cfg=B"))
+        {
+			//arduino_put_temp_cfg(FAHRENHEIT_SCALE);
+			
+        }
+        else
+        {
+            /* Not supported query. */
+            rsp->code = COAP_RSP_501_NOT_IMPLEMENTED;
+            goto err;
+        }
+        
+        if (!rc)
+        {
+            rsp->code = COAP_RSP_204_CHANGED;
+            rsp->plen = 0;
+        }
+        else
+        {
+            switch (rc)
+            {
+            case ERR_BAD_DATA:
+            case ERR_INVAL:
+                rsp->code = COAP_RSP_406_NOT_ACCEPTABLE;
+                break;
+            default:
+                rsp->code = COAP_RSP_500_INTERNAL_ERROR;
+                break;
+            }
+            goto err;
+        }
+    } // if PUT
+    
+    /*
+     * GET for reading sensor or config information
+     */
+    else if (req->code == COAP_REQUEST_GET)
+    {
+        uint8_t rc, len = 0;
+
+        /* Config or sensor values. */
+        /* GET /temp?cfg */
+        if (!coap_opt_strcmp(o, "cfg"))
+        {
+            /* get temperature config */
+            //rc = arduino_get_temp_cfg( rsp->msg, &len );
+        }
+        /* GET /temp?sens */
+        else if (!coap_opt_strcmp(o, "sens"))
+        {
+			if ((o = copt_get_next_opt_type((sl_co*)&(req->oh), COAP_OPTION_OBSERVE, NULL))) 
+			{
+				uint32_t obsval = co_uint32_n2h(o);
+				switch(obsval)
+				{
+					//case COAP_OBS_REG:
+						//rc = coap_obs_reg();
+						break;
+					
+					//case COAP_OBS_DEREG:
+						//rc = coap_obs_dereg();
+						break;
+					
+					default:
+						rc = ERR_INVAL;
+
+				} // switch
+			}
+			else
+			{
+				/* Get sensor value */
+				//rc = arduino_get_temp( rsp->msg, &len );
+				
+			} // if-else
+        }
+        else {
+            /* Don't support other queries. */
+            rsp->code = COAP_RSP_501_NOT_IMPLEMENTED;
+            goto err;
+        }
+        dlog(LOG_DEBUG, "GET (status %d) read %d bytes.", rc, len);
+        if (!rc) {
+            rsp->plen = len;
+            rsp->cf = COAP_CF_CSV;
+            rsp->code = COAP_RSP_205_CONTENT;
+        } else {
+            switch (rc) {
+            case ERR_BAD_DATA:
+            case ERR_INVAL:
+                rsp->code = COAP_RSP_406_NOT_ACCEPTABLE;
+                break;
+            default:
+                rsp->code = COAP_RSP_500_INTERNAL_ERROR;
+                break;
+            }
+            goto err;
+        }
+    } // if GET
+    
+    /*
+     * DELETE for disabling sensors.
+     */
+    /* DELETE /temp?all */
+    else if (req->code == COAP_REQUEST_DELETE) 
+    {
+        if (!coap_opt_strcmp(o, "all"))
+        {
+            //if (arduino_disab_temp()) 
+            {
+                rsp->code = COAP_RSP_500_INTERNAL_ERROR;
+                goto err;
+            }
+        } else {
+            rsp->code = COAP_RSP_405_METHOD_NOT_ALLOWED;
+            goto err;
+        }
+        rsp->code = COAP_RSP_202_DELETED;
+        rsp->plen = 0;
+    
+    } // if DELETE 
+    else 
+    {
+        /* no other operation is supported */
+        rsp->code = COAP_RSP_405_METHOD_NOT_ALLOWED;
+        goto err;
+        
+    } // Unknown operation
+
+done:
+    return ERR_OK;
+
+err:
+    rsp->plen = 0;
+
+    return ERR_OK;
+    
+} // crmysensor
 
 /**
  * @brief Enable temp sensor.

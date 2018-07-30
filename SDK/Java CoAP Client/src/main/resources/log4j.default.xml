@@ -8,33 +8,29 @@
         </layout>
     </appender>
 
-    <!--<appender name="async" class="org.apache.log4j.AsyncAppender">-->
-        <!--<param name="BufferSize" value="1000000"/>-->
-        <!--<appender-ref ref="console"/>-->
-    <!--</appender>-->
 
     <logger name="com.ssn.sdk.coapclient.config.OptionsArgumentsWrapper">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.SdkCoapClient">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.StarfishClient">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.TokenClient">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.SdkCoapObserver">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="de.uzl.itm.ncoap.application.client.CoapClient">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="de.uzl.itm.ncoap.communication.reliability.outbound.ClientOutboundReliabilityHandler">
@@ -54,7 +50,7 @@
     </logger>
 
     <root>
-        <priority value="warn"/>
+        <priority value="info"/>
         <appender-ref ref="console"/>
     </root>
 </log4j:configuration>

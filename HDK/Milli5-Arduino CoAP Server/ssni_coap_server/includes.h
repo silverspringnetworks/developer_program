@@ -42,6 +42,13 @@ Networks, Inc.
 #include <stdlib.h>
 
 #include <assert.h>
+#ifndef BIG_ENDIAN
+#define BIG_ENDIAN 1
+#endif
+
+#ifndef BYTE_ORDER
+#define BYTE_ORDER BIG_ENDIAN
+#endif
 
 #ifndef min
 #define min(a, b) ((a)<(b)?(a):(b))

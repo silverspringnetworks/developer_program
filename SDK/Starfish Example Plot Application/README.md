@@ -1,8 +1,20 @@
 # Starfish Data Platform Reference App
 
-To run this application, just open `index.html` in the browser.
+To run this application, just open `index.html` in the browser. 
 
-This sample application demonstrates how to use `Starfish JS SDK` to build a simple web application to fetch devices and observations from *Starfish Data Platform*.
+This sample application demonstrates how to use `Starfish JS SDK` to build a simple web application to fetch devices and observations from *Starfish Data Platform*. By default SDK connects to *Starfish Production Endpoint* and users can overide the endpoint using the options object. Refer to [starfish-js](https://github.com/silverspringnetworks/starfish-js) repo for details on usage.
+
+```
+const Starfish = require('starfish-sdk');
+const options = {
+  'endpoint': 'https://example.com',
+  'credentials' : {
+    'clientId' : 'your-client-id',
+    'clientSecret' : 'your-secret'
+  }
+}
+var starfish = new Starfish(options)
+```
 
 To use the sample application you will need clientId/secret issued by *Starfish Data Platform*.
 

@@ -44,14 +44,34 @@ Networks, Inc.
 int malloc_cnt;
 int free_cnt;
 
-struct mbuf *
-m_get(void)
+// Set the size of the mbuf data buffer
+static int mbuf_data_buf_size = 0;
+void set_mbuf_data_size( int buf_size )
+{
+	// Get the size of the mbuf data buffer
+	mbuf_data_buf_size = buf_size;
+	
+} // set_mbuf_size
+
+
+// Get the size of the mbuf data buffer
+int get_mbuf_data_size()
+{
+	// Return the size of the mbuf data buffer
+	return mbuf_data_buf_size;
+	
+} // get_mbuf_size
+
+
+struct mbuf * m_get()
 {
     struct mbuf *m;
-    m = (struct mbuf *) malloc(sizeof(*m) + MLEN);
+	int mbuf_size = sizeof(*m) + mbuf_data_buf_size;
+	SerialUSB.print("Allocating mbuf with size: "); SerialUSB.println(mbuf_size);
+    m = (struct mbuf *) malloc(mbuf_size);
     assert(m);
     m->len = 0;
-    m->size = MLEN;
+    m->size = mbuf_data_buf_size;
     malloc_cnt++;
     return m;
 }
@@ -71,7 +91,7 @@ m_dup(struct mbuf *m)
     struct mbuf *n = m_get();
 
     if (n) {
-        memcpy(n, m, sizeof(*m) + MLEN);
+        memcpy(n, m, sizeof(*m) + mbuf_data_buf_size);
         n->len = m->len;
     }
 
@@ -84,7 +104,7 @@ struct mbuf *
 m_prepend(struct mbuf *m, int len)
 {
 
-    if (m->len + len > MLEN) {
+    if (m->len + len > mbuf_data_buf_size) {
         return NULL;
     }
 
@@ -100,7 +120,7 @@ void *
 m_append(struct mbuf *m, int16_t len)
 {
     void *d;
-    if (m->len + len > MLEN) {
+    if (m->len + len > mbuf_data_buf_size) {
         return NULL;
     }
 

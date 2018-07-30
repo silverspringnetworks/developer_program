@@ -40,25 +40,35 @@ Networks, Inc.
 #include "arduino_pins.h"
 #include "arduino_time.h"
 
-// ISR
-boolean coap_observe_flag = false;
-void coap_observe_isr()
-{
-	coap_observe_flag = true;
-}
+
+// The most recent minute we sent a CoAP response message
+// Make sure we don't send Observe response more than once per minute
+static uint32_t prev_minute = 0;
+static boolean	obs_flag = false;
 
 // Check if we should send Observe message
-void do_observe()
+boolean do_observe()
 {
-	if (coap_observe_flag)
+	// Check if we are doing Observe
+	if (obs_flag)
 	{
-		// Clear the CoAP Observe flag
-		coap_observe_flag = false;
+		uint32_t m = rtc.getMinutes();
+		
+		// Check if the current minute is different from the previous minute
+		if ( m != prev_minute )
+		{
+			// Record the current minute
+			prev_minute = m;
 
-		// Send response
-		coap_observe_rsp();
+			// Send response
+			coap_observe_rsp();
 
+		} // if
 	} // if
+	
+	// Return the obs_flag
+	return obs_flag;
+	
 } // do_observe
 
 // Sequence number 
@@ -68,22 +78,12 @@ static uint32_t start_sn;
 // Register for Observe
 error_t coap_obs_reg()
 {
-#if defined(ARDUINO_ARCH_SAMD)
-	// Set timer for interrupt at whole minutes
-	rtc.setAlarmSeconds(0);
-	rtc.enableAlarm(RTCZero::MATCH_SS);
-
-	// Set ISR
-	rtc.attachInterrupt((voidFuncPtr)coap_observe_isr);
-#endif
-
-#if defined(ARDUINO_ARCH_SAM)
-  // Set timer for interrupt at whole minutes
-  rtc.setAlarmTime(0,0,0);
-
-  // Set callback
-  rtc.attachAlarm((voidFuncPtr)coap_observe_isr);
-#endif
+	// Record the minute that we turn on Observe
+	// Make sure we don't send Observe response more than once per minute
+	prev_minute = rtc.getMinutes();
+	
+	// Flag that we are doing Observe
+	obs_flag = true;
 
 	// Set mNIC wake-up pin to HIGH, so that we can toggle it 0 -> 1
 	pinMode(MNIC_WAKEUP_PIN,OUTPUT);
@@ -91,33 +91,18 @@ error_t coap_obs_reg()
 
 	// Set start sequence number
 	start_sn = 10; // Non-zero value
-	
-  return ERR_OK;
+
+	return ERR_OK;
 
 } // coap_obs_reg
 
 // De-register for Observe
 error_t coap_obs_dereg()
 {
+	// Quit Observe
 	println("De-register for Observe");
-
-#if defined(ARDUINO_ARCH_SAMD)
-	// Disable alarm
-	rtc.disableAlarm();
-
-	// Remove ISR
-	rtc.detachInterrupt();
-#endif
-
-#if defined(ARDUINO_ARCH_SAM)
-  // Disable alarm
-  rtc.disableAlarmTime();
-
-  // Remove callback
-  rtc.detachAlarm();
-#endif
-
-
+	obs_flag = false;
+	
 	// Set mNIC wake-up pin to LOW
 	digitalWrite(MNIC_WAKEUP_PIN,LOW);
 

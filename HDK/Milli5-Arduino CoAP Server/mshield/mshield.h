@@ -111,7 +111,7 @@ Networks, Inc.
 // If you specify LOG_INFO, you'll get some printing to the Serial Monitor
 // If you specify LOG_DEBUG, a lot of messages will be printed
 
-#define LOG_LEVEL						      LOG_DEBUG
+#define LOG_LEVEL						LOG_DEBUG
 
 
 /******************************************************************************/
@@ -120,6 +120,11 @@ Networks, Inc.
 //
 #define UART_TIMEOUT_IN_MS				2000
 
+
+/******************************************************************************/
+/* The largest HDLC payload size                                              */
+/* The maximum payload length in the mNIC is 255                              */
+#define MAX_HDLC_INFO_LEN				(255)
 
 /******************************************************************************/
 //

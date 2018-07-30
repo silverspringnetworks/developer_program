@@ -5,10 +5,10 @@
   "devices": [
     {
       "deviceId": "gateway",
-      "deviceHost": "74.121.23.204",
+      "deviceHost": "api.coap-staging.developer.ssni.com",
       "devicePort": "5683",
       "devicePath": "/sessions",
-      "deviceQuery" : "user=foobar&pass=foobar&security=none&sticky=true"
+      "deviceQuery" : "user=foobar&pass=foobar&sticky=true"
     }
   ]
 }

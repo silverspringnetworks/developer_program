@@ -43,11 +43,12 @@ static const char *label[] = {"EMRG", "ALRT", "CRIT", "ERR", "WARN",
 static const int numlevels = sizeof (label) / sizeof(label[0]);
 
 // Pointer to Serial class used for printing
-static Serial_ * pSerMon = NULL;
+static Serial_ *pSerMon = NULL;
 #define SerMon (*pSerMon)
+static bool log_enabled = false;
 
 /* Init logging */
-void log_init( Serial_ * pSerial, uint32_t baud, uint32_t log_level )
+void log_init( Serial_ *pSerial, uint32_t baud, uint32_t log_level )
 {
 	// Assign pointer used for printing
 	pSerMon = pSerial;
@@ -56,7 +57,17 @@ void log_init( Serial_ * pSerial, uint32_t baud, uint32_t log_level )
 	SerMon.begin(baud);
  
 	// Wait for the port to connect
-	while(!SerMon);
+	//while(!SerMon);
+	// Give 16s to allow USB to connect to monitor.
+	log_enabled = false;
+	for (int indx=0 ; indx < 8 ; indx++) {
+		if (!SerMon){
+			delay(2000);
+		} else {
+			log_enabled = true;
+			break;
+		}
+	}
 	
 	// Set the logging level
 	dlog_level(log_level);
@@ -78,6 +89,12 @@ void dlog(int level, const char *format, ...)
 {
     va_list args;
 	char buffer[PRINTF_LEN];
+	
+	// Is logging enabled?
+	if (!log_enabled)
+	{
+		return;
+	}
    
     // Check debug log
     if (level > log_level) 
@@ -101,6 +118,12 @@ void ddump(int level, const char *label, const void *data, int datalen)
     const uint8_t *b = (const uint8_t *) data;
 	char buffer[PRINTF_LEN];
     int i;
+    
+    // Is logging enabled?
+    if (!log_enabled)
+    {
+	    return;
+    }
 
     if (level > log_level) 
 	{
@@ -132,6 +155,12 @@ void log_msg(const char *label, const void *data, int datalen, int eol)
     static char llabel[64];
     static int llen;
     static uint8_t line[256];
+    
+    // Is logging enabled?
+    if (!log_enabled)
+    {
+	    return;
+    }
 
     if ( LOG_DEBUG > log_level ) 
 	{
@@ -167,6 +196,12 @@ void log_msg(const char *label, const void *data, int datalen, int eol)
 
 void print( const char * buf )
 {
+	// Is logging enabled?
+	if (!log_enabled)
+	{
+		return;
+	}
+	
     if ( LOG_DEBUG > log_level ) 
 	{
         return;
@@ -179,6 +214,12 @@ void print( const char * buf )
 
 void println( const char * buf )
 {
+	// Is logging enabled?
+	if (!log_enabled)
+	{
+		return;
+	}
+	
     if ( LOG_DEBUG > log_level ) 
 	{
         return;
@@ -190,6 +231,12 @@ void println( const char * buf )
 
 void printnum( int n )
 {
+	// Is logging enabled?
+	if (!log_enabled)
+	{
+		return;
+	}
+	
     if ( LOG_DEBUG > log_level ) 
 	{
         return;
@@ -213,6 +260,12 @@ void capture_dump( uint8_t * p, int count )
 	char str[6];
     uint8_t ch;
 	uint16_t ix;
+	
+	// Is logging enabled?
+	if (!log_enabled)
+	{
+		return;
+	}
 
     // Check debug log
     if ( LOG_DEBUG > log_level ) 

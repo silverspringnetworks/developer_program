@@ -1,4 +1,4 @@
-# Silver Spring Networks - Arduino MilliShield Software
+# Itron Networked Solutions - Arduino MilliShield Software
 
 **Note: The only version of Arduino IDE supported is for Windows 7, 8 and 10**
 

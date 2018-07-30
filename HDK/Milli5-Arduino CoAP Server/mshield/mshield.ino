@@ -32,8 +32,10 @@ Networks, Inc.
  *
  * \section intro_sec Introduction
  *
- * These Arduino MilliShield libraries were written and tested for Arduino ZERO Pro, M0 Pro, Zero and Due <br>
- * This code base consists of three Arduino libraries: <br>
+ * The Arduino MilliShield CoAP Server Library was written and tested for 
+ * Arduino M0, M0 Pro and Due under Windows only.<br>
+ * 
+ * This code base consists of one Arduino library written by Silver Spring Networks: <br>
  *
  * \subsection coap_server The CoAP Server library
  *
@@ -53,7 +55,7 @@ Networks, Inc.
  * \subsection step10 Step 7a: Do you have the DHT11 sensor? 
  * \subsection step11 Step 7b:   If yes, use Manage Libraries to locate and install the following libraries:
  * \subsection step12 Step 7c:     Adafruit Unified Sensor v1.0.2
- * \subsection step13 Step 7d:     Adafruit DHT Sensor v1.3.0
+ * \subsection step13 Step 7d:     DHT Sensor Library v1.3.0
  *
  * \note {Replace <user> with your Windows user name.}
  *
@@ -123,7 +125,7 @@ void setup()
   arduino_temp_sensor_init();
 
   // Init the CoAP Server
-  coap_s_init( UART_PTR, COAP_MSG_MAX_AGE_IN_SECS, UART_TIMEOUT_IN_MS, OBS_SENSOR_NAME, OBS_FUNC_PTR );
+  coap_s_init( UART_PTR, COAP_MSG_MAX_AGE_IN_SECS, UART_TIMEOUT_IN_MS, MAX_HDLC_INFO_LEN, OBS_SENSOR_NAME, OBS_FUNC_PTR );
 }
 
 /********************************************************************************/

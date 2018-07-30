@@ -62,17 +62,56 @@ public class SdkCoapClient extends CoapClient
             messageCode= MessageCode.PUT;
         }
 
-        // determine the URI of the resource to be requested
+        // Get URI of the resource to be requested
         String host = arguments.getDeviceHost();
         int port = arguments.getDevicePort();
         String path = arguments.getDevicePath();
         String query = arguments.getDeviceQuery();
         URI resourceURI = new URI("coap", null, host, port, path, query, null);
 
-        // create the request
-        boolean useProxy = arguments.getProxyAddress() != null;
+        // Confirmable
         int messageType = arguments.isNon() ? MessageType.NON : MessageType.CON;
-        CoapRequest coapRequest = new CoapRequest(messageType, messageCode, resourceURI, useProxy);
+
+        // Set the client callback
+        if (arguments.isObserve()) {
+            callback = new SdkObservationCallback(arguments);
+        } else {
+            callback = new SdkCallback();
+        }
+
+        boolean useProxy = arguments.getProxyAddress() != null;
+
+        // If it's a session call. SSNI gateway specific security code - get a session.
+        CoapRequest coapRequest = null;
+        if (messageCode == MessageCode.POST || messageCode == MessageCode.PUT)
+        {
+            if (path.equals("/sessions") && (arguments.getClientId() != null && arguments.getClientId().length() > 0))
+            {
+                TokenClient tc = new TokenClient(arguments.isTestEnv());
+                String token;
+                try
+                {
+                    token = tc.getApiToken(arguments.getClientId(), arguments.getClientSecret());
+                }
+                catch (Exception excpn)
+                {
+                    log.error("Aborting: Failed to acquire API token: {}", excpn.getMessage());
+                    return;
+                }
+                byte[] payload = token.getBytes();
+                if (useProxy)
+                {
+                    useProxy = false;
+                }
+                coapRequest = new CoapRequest(messageType, messageCode, resourceURI, useProxy);
+                coapRequest.setContent(payload, ContentFormat.TEXT_PLAIN_UTF8);
+            }
+        }
+        else
+        {
+            coapRequest = new CoapRequest(messageType, messageCode, resourceURI, useProxy);
+        }
+
 
         if (messageCode == MessageCode.GET)
         {
@@ -86,27 +125,6 @@ public class SdkCoapClient extends CoapClient
             coapRequest.setObserve(0);
         }
 
-        // If it's a session call
-        // TODO: Generalize
-        if (messageCode == MessageCode.POST || messageCode == MessageCode.PUT)
-        {
-            if (path.equals("/sessions") && query == null)
-            {
-                TokenClient tc = new TokenClient();
-                String token;
-                try
-                {
-                    token = tc.getApiToken(arguments.getClientId(), arguments.getClientSecret());
-                } catch (Exception excpn)
-                {
-                    log.error("Aborting: Failed to acquire API token: {}", excpn.getMessage());
-                    return;
-                }
-                byte[] payload = token.getBytes();
-                coapRequest.setContent(payload, ContentFormat.TEXT_PLAIN_UTF8);
-            }
-        }
-
         // determine recipient (proxy or CoAP resource host)
         InetSocketAddress remoteSocket;
         if (useProxy) {
@@ -117,13 +135,6 @@ public class SdkCoapClient extends CoapClient
             InetAddress serverAddress = InetAddress.getByName(arguments.getDeviceHost());
             int serverPort = arguments.getDevicePort();
             remoteSocket = new InetSocketAddress(serverAddress, serverPort);
-        }
-
-        // define the client callback
-        if (arguments.isObserve()) {
-            callback = new SdkObservationCallback(arguments);
-        } else {
-            callback = new SdkCallback();
         }
 
         //Send the CoAP request

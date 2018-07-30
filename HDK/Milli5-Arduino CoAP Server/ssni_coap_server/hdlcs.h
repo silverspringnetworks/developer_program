@@ -33,8 +33,8 @@ Networks, Inc.
 #include <HardwareSerial.h>
 #include "errors.h"
 
-/* initialize state machine */
-error_t hdlcs_open( HardwareSerial * pSerial, uint32_t timeout_ms );
+/* Open HDLCS connection */
+error_t hdlcs_open( HardwareSerial * pUART, uint32_t timeout_ms, uint32_t max_hdlc_info_len );
 
 /* shut down state machine */
 int hdlcs_close(void);

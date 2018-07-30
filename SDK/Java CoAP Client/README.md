@@ -140,11 +140,12 @@ All command line configuration options are described in this section.
 | proxyPort | The port number of the CoAP proxy.
 | clientPort | The UDP listening port used by the client. Default is 6000.
 | method | The CoAP method. Default is GET.
-| observe| Used in conjunction with the GET method. Set to true to establish an observe on a CoAP resource. Default is false.
+| observe| Used in conjunction with the GET method. Include to establish an observe on a CoAP resource. Default is false.
 | maxNotifications | Sets a limit on how many observe notifications are read by the client. Default is 1. Note that after the client shuts down after maxNotifications have been received, the CoAP resources observe is not cancelled.
 | timeout | The time in seconds allowed for a response from a CoAP activity. If an observe has been established the client will shutdown on the timeout even if maxNotifications have not been received. It is up to the user to set the timeout value accordingly. Default is 60 seconds.
 | clientId | Your Starfish account client id.
 | clientSecret | Your Starfish account client secret.
+| test | Include this option to use the Starfish Test environment.
 
 **Note**: If no proxy is used, the proxyHost and proxyPort options must not be present in the
 configuration.

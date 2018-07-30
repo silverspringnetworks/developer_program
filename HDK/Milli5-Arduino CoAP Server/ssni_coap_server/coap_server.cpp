@@ -42,7 +42,7 @@ Networks, Inc.
 #include "coap_server.h"
 
 
-#define VERSION_NUMBER "1.3.0"
+#define VERSION_NUMBER "1.3.4"
 
 /* 
  * Use environment variable COAP_DATA_ROOT to set server data root dir 
@@ -58,7 +58,7 @@ Networks, Inc.
 
 
 // CoAP Server initialization
-void coap_s_init( HardwareSerial * pSerial, uint32_t max_age, uint32_t uart_timeout_ms, const char * uri, ObsFuncPtr pObsFuncPtr )
+void coap_s_init( HardwareSerial * pSerial, uint32_t max_age, uint32_t uart_timeout_ms, uint32_t max_hdlc_payload_size, const char * uri, ObsFuncPtr pObsFuncPtr )
 {
 	char ver[64];
 	int res;
@@ -72,9 +72,8 @@ void coap_s_init( HardwareSerial * pSerial, uint32_t max_age, uint32_t uart_time
 	/* Set the URI used for obtaining token etc in CoAP Observe response msg */
 	set_observer( uri, pObsFuncPtr );
 
-	// Open HDLCS
-	// The object SerialUART is defined in mshield.h
-	res = hdlcs_open( pSerial, uart_timeout_ms );
+	// Open the HDLC connection
+	res = hdlcs_open( pSerial, uart_timeout_ms, max_hdlc_payload_size );
 	if (res) 
 	{
 		dlog(LOG_ERR, "HDLC initialization failed");
@@ -116,16 +115,13 @@ mbuf_ptr_t coap_s_proc( mbuf_ptr_t m )
     
     struct mbuf *r = NULL;
 
-	char str2[40];
-	strncpy(str2,(char*)m->data, m->len); 
-	
     /* Parse incoming message */
     memset(&cc, 0, sizeof(cc));
     copt_init((sl_co*)&(cc.oh));
     memset(&rcc, 0, sizeof(rcc));
     copt_init((sl_co*)&(rcc.oh));
     rc = coap_msg_parse(&cc, m, &code);
-    
+
     if (rc == ERR_OK) {
         if (cc.type == COAP_T_ACK_VAL) {
             /*
@@ -248,6 +244,7 @@ error:
 done:
     assert(cc.msg == m);
     if (cc.msg) {
+		SerialUSB.println("Freeing cc.msg");
         m_free(cc.msg);
         cc.msg = NULL;
     }
