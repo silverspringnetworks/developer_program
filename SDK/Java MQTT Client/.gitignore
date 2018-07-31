@@ -1,0 +1,9 @@
+# Maven target directory
+target
+
+# IntelliJ related
+.idea
+sdkmqttclient.iml
+
+#Exempt directories
+.DS_Store
