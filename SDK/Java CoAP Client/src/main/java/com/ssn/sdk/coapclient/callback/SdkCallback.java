@@ -73,8 +73,8 @@ public class SdkCallback extends ClientCallback
         log.info("***Payload As Hex: <{}>", payloadAsHex);
 
         //NOTE: Special handling for New Cosmos. Push ODR response to Starfish.
-        if (payloadAsStr.length() > 0) {
-
+        if (payloadAsStr.length() > 0)
+        {
             // Select the payload trasnformer to use based on the resource path.
             if (arguments.getDevicePath().equalsIgnoreCase("/snsr/arduino/temp"))
             {
@@ -93,9 +93,14 @@ public class SdkCallback extends ClientCallback
                 StarfishClient logisticsClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv(), true, arguments.getApMacAddress(), arguments.getDeviceHost().substring(3,19));
                 logisticsClient.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.LogisticsPayloadTransformer");
             }
+            else if (arguments.getDevicePath().toLowerCase().contains("wfci"))
+            {
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.WfciPayloadTransformer");
+            }
             else
             {
-                log.error("Can't send observation. Unknown path: {}", arguments.getDevicePath());
+                log.info("Got data from unknown sensor: {}. Ignoring data!", arguments.getDevicePath());
             }
         }
     }

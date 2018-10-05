@@ -175,16 +175,20 @@ public class StarfishClient
         // Build observations payload
         Object pti = null;
         Class ptc = null;
-        String payloadJson = null;
+        String payloadJson;
         try
         {
             // Use reflection to load and call the transformer class
             ptc = Class.forName(payloadTransformerName);
             pti = ptc.newInstance();
-            Method method = ptc.getMethod("buildPayload", byte[].class, String.class, String.class);
-
-            log.info("observation length: {}", observation.length);
-
+            Method method;
+            if (useLogisticsBackend)
+            {
+                method = ptc.getMethod("buildPayload", byte[].class, String.class, String.class);
+            }
+            else {
+                method = ptc.getMethod("buildPayload", byte[].class);
+            }
             payloadJson = (String) method.invoke(pti, observation, palletMacAddress, apMacAddress);
         }
         catch (Exception excptn)

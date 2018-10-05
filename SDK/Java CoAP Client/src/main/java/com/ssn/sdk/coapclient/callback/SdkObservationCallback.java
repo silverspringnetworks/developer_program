@@ -21,8 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author bluben
  */
-public class SdkObservationCallback extends SdkCallback {
-
+public class SdkObservationCallback extends SdkCallback
+{
     private Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
     private AtomicInteger responseCounter;
@@ -61,8 +61,8 @@ public class SdkObservationCallback extends SdkCallback {
         String payloadAsHex = this.bytesToHexString(payloadAsByteArray);
         log.info("***Payload As Hex: <{}>", payloadAsHex);
 
-        if (payloadAsStr.length() > 0) {
-    
+        if (payloadAsStr.length() > 0)
+        {
             // Select the payload trasnformer to use based on the resource path.
             if (arguments.getDevicePath().equalsIgnoreCase("/snsr/arduino/temp"))
             {
@@ -91,9 +91,14 @@ public class SdkObservationCallback extends SdkCallback {
                 log.info("Sending observation to Logistics");
                 logisticsClient.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.LogisticsPayloadTransformer");
             }
+            else if (arguments.getDevicePath().toLowerCase().contains("wfci"))
+            {
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.WfciPayloadTransformer");
+            }
             else
             {
-                log.error("Can't send observation. Unknown path: {}", arguments.getDevicePath());
+                log.info("Got data from unknown sensor: {}. Ignoring data!", arguments.getDevicePath());
             }
         }
     }

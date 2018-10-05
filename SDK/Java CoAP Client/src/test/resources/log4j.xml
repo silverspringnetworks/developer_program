@@ -36,10 +36,6 @@
         <level value="info"/>
     </logger>
 
-    <logger name="com.ssn.sdk.coapclient.SdkCoapObserver">
-        <level value="info"/>
-    </logger>
-
     <logger name="com.ssn.sdk.coapclient.callback.SdkObservationCallback">
         <level value="debug"/>
     </logger>

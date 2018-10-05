@@ -7,7 +7,7 @@
 
     <properties>
         <ncoap.verison>1.8.3-SNAPSHOT</ncoap.verison>
-        <product.verison>1.3.8</product.verison>
+        <product.verison>1.4.0</product.verison>
     </properties>
 
     <groupId>de.uzl.itm</groupId>
@@ -15,37 +15,38 @@
     <version>${product.verison}</version>
     <packaging>jar</packaging>
 
-    <name>SSN SDK CoAP Clientt</name>
+    <name>Itron Reference Java CoAP Client</name>
     <description>
-      CoAP Client for use with SSNI's IoT SDK.
+      CoAP Client for use with Itron's Developer Program.
     </description>
 
     <dependencies>
 
+        <dependency>
+            <groupId>co.nstant.in</groupId>
+            <artifactId>cbor</artifactId>
+            <version>0.8</version>
+        </dependency>
 		<dependency>
         	<groupId>de.uzl.itm</groupId>
         	<artifactId>ncoap-core</artifactId>
         	<version>${ncoap.verison}</version>
 		</dependency>
-
         <dependency>
             <groupId>args4j</groupId>
             <artifactId>args4j</artifactId>
             <version>2.0.26</version>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.6.6</version>
         </dependency>
-
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20160810</version>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

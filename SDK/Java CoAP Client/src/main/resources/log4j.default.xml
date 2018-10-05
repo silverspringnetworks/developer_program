@@ -21,7 +21,7 @@
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.TokenClient">
-        <level value="info"/>
+        <level value="debug"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.TempPayloadTransformer">

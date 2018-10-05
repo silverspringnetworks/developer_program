@@ -92,12 +92,9 @@ public class SdkCoapClient extends CoapClient
                     coapRequest = new CoapRequest(messageType, messageCode, resourceURI, false);
                     coapRequest.setContent(payload, ContentFormat.TEXT_PLAIN_UTF8);
                 } else {
-                    //byte[] payload = arguments.getDeviceQuery().getBytes();
                     coapRequest = new CoapRequest(messageType, messageCode, resourceURI, false);
-                    //coapRequest.setContent(payload, ContentFormat.TEXT_PLAIN_UTF8);
                 }
             }
-            //TODO:
         } else {
             coapRequest = new CoapRequest(messageType, messageCode, resourceURI, useProxy);
         }
@@ -105,7 +102,10 @@ public class SdkCoapClient extends CoapClient
 
         if (messageCode == MessageCode.GET)
         {
-            coapRequest.setPreferredBlock2Size(BlockSize.SIZE_128);
+            if (coapRequest != null)
+            {
+                coapRequest.setPreferredBlock2Size(BlockSize.SIZE_128);
+            }
         }
         coapRequest.setEndpointID1();
 
