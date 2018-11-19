@@ -1,0 +1,85 @@
+﻿/*
+Silver Spring Networks, Inc. ("Silver Spring") licenses this software to you and the company (“You” or “Your”) 
+a license for this software (“Software”).  
+Using the Software constitutes Your acceptance of these terms (“License”).  
+
+License Grant. Subject to Your acceptance and compliance with this License, Silver Spring grants to You, solely for Your own internal business purpose, 
+               a non-exclusive, non-transferable license to access and use the Software and the associated user documentation (“Documentation”) 
+               for the term and number agreed to be Silver Spring. 
+
+Restrictions. No intellectual property rights are granted under this License and Silver Spring reserves all rights not expressly granted. 
+You may not:  
+(a) modify or create derivative works of the Software or Documentation; 
+(b) assign, transfer, lease or sublicense the Software or Documentation to any third party 
+    (other than Your consultants who are bound to written obligations of confidentiality at least as restrictive as those contained in this License); 
+and (c) reverse engineer, disassemble, decrypt, extract or otherwise reduce the Software to a human perceivable 
+    form or otherwise attempt to determine the source code or algorithms of the Software 
+    (unless the foregoing restriction is expressly prohibited by applicable law).
+You may not remove or destroy any proprietary, trademark or copyright markings or notices placed on or contained in the Software or Documentation.  
+Silver Spring PROVIDES THE SOFTWARE “AS IS” AND MAKES NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY REGARDING OR RELATING TO THE SOFTWARE.  
+Silver Spring HEREBY DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, 
+WHETHER RIGHTS ARISES BY LAW, BY USE AND CUSTOM OR USAGE IN THE TRADE, OR BY COURSE OF DEALING. 
+Silver Spring DOES NOT WARRANT THAT THE SOFTWARE OR ANY PORTION THEREOF WILL BE ERROR-FREE.
+
+Termination. This License is effective until terminated. Your rights under this License will terminate automatically without notice if you fail to comply with any of its terms. 
+Upon the termination of this License, You must cease all use of the Software and remove it from Your computer.
+*/
+using System;
+using System.Collections;
+using System.Windows.Forms;
+
+namespace HdkClient
+{
+    /// <summary>
+    /// Collection of CoApDevice objects available to the caller.
+    /// </summary>
+    public class CoApDevices : CollectionBase
+    {
+        /// <summary>
+        /// Get the n'th item in the CoApDevice collection.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns>the index'th entry in our collection</returns>
+        public CoApDevice this[int index]
+        {
+            get
+            {
+                return ((CoApDevice)InnerList[index]);
+            }
+            set
+            {
+                InnerList[index] = value;
+            }
+        }
+        /// <summary>
+        /// Get the first CoApDevice object whose name matches the input argument.
+        /// </summary>
+        /// <param name="match">the name to search for</param>
+        /// <returns>the matching item or null if not found</returns>
+        public CoApDevice this[string match]
+        {
+            get
+            {
+                foreach (CoApDevice item in this)
+                {
+
+                    if (item.Name == match)
+                    {
+                        return item;
+                    }
+                }
+                return null;
+            }
+        }
+        /// <summary>
+        /// Add a CoApDevice to the list of devices.
+        /// </summary>
+        /// <param name="value">the CoApDevice to add to the device collection</param>
+        /// <returns>the index of the added item</returns>
+        public int Add(CoApDevice value)
+        {
+            return (InnerList.Add(value));
+        }
+
+    }
+}
