@@ -42,8 +42,6 @@ Networks, Inc.
 #include "coap_server.h"
 
 
-#define VERSION_NUMBER "1.3.4"
-
 /* 
  * Use environment variable COAP_DATA_ROOT to set server data root dir 
  *
@@ -60,7 +58,6 @@ Networks, Inc.
 // CoAP Server initialization
 void coap_s_init( HardwareSerial * pSerial, uint32_t max_age, uint32_t uart_timeout_ms, uint32_t max_hdlc_payload_size, const char * uri, ObsFuncPtr pObsFuncPtr )
 {
-	char ver[64];
 	int res;
 	
 	// Init CoAP registry
@@ -76,18 +73,9 @@ void coap_s_init( HardwareSerial * pSerial, uint32_t max_age, uint32_t uart_time
 	res = hdlcs_open( pSerial, uart_timeout_ms, max_hdlc_payload_size );
 	if (res) 
 	{
-		dlog(LOG_ERR, "HDLC initialization failed");
+		dlog(LOG_ERR, "HDLC initialization failed!");
 
-	} // if
-
-	// Print version number, time and date
-	sprintf( ver, "Arduino MilliShield Software Version Number: %s\n", VERSION_NUMBER );
-	println(ver);
-	sprintf( ver, "Time: %s\n", __TIME__ );
-	println(ver);
-	sprintf( ver, "Date: %s\n", __DATE__ );
-	println(ver);
-
+	}
 } // coap_s_init()
 
 
@@ -244,7 +232,7 @@ error:
 done:
     assert(cc.msg == m);
     if (cc.msg) {
-		SerialUSB.println("Freeing cc.msg");
+		dlog(LOG_DEBUG, "Freeing cc.msg");
         m_free(cc.msg);
         cc.msg = NULL;
     }

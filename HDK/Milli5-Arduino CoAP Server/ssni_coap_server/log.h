@@ -172,6 +172,14 @@ void capture( uint8_t ch );
 */
 void capture_dump( uint8_t * p, int count );
 
+/**
+* free_ram
+*
+* @brief Compute Free Ram
+*
+*/
+int free_ram();
+
 
 
 #endif /* INC_LOG_H */

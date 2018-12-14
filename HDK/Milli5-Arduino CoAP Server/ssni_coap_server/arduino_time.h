@@ -81,6 +81,14 @@ void print_current_time(void);
 
 /**
 * @brief
+* Prints the current time specifically for logging
+* The time is set to 0 during boot
+*
+*/
+void print_log_time(void);
+
+/**
+* @brief
 * Prints the current date
 * The date is set to 0 during boot
 *
