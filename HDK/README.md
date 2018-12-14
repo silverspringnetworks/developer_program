@@ -1,7 +1,5 @@
 #Silver Spring Networks Developer Repository
 ## Applications
-[Java CoAP Client](SDK/Java%20CoAP%20Client)
+[Milli5-Arduino CoAP Server](HDK/Milli5-Arduino%20CoAP%20Server)
 
-[Windows CoAP Client](SDK/Windows%20CoAP%20Client)
-
-[Starfish Data Platform Plot Application](SDK/Starfish%20Example%20Plot%20Application)
+[IoT Edge Router](HDK/IoT_Router_BLE/)
