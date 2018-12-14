@@ -20,12 +20,8 @@
         <level value="debug"/>
     </logger>
 
-    <logger name="com.ssn.sdk.coapclient.sdp.TokenClient">
-        <level value="info"/>
-    </logger>
-
     <logger name="com.ssn.sdk.coapclient.payload.TempPayloadTransformer">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.payload.ChAlertPayloadTransformer">
@@ -36,16 +32,16 @@
         <level value="info"/>
     </logger>
 
-    <logger name="de.uzl.itm.ncoap.communication.reliability.outbound.ClientOutboundReliabilityHandler">
+    <logger name="com.ssn.sdk.coapclient.sdp.TokenClient">
         <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.callback.SdkObservationCallback">
-        <level value="info"/>
+        <level value="debug"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.callback.SdkCallback">
-        <level value="info"/>
+        <level value="debug"/>
     </logger>
 
     <root>

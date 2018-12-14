@@ -8,6 +8,7 @@ import com.ssn.sdk.coapclient.callback.SdkCallback;
 import com.ssn.sdk.coapclient.callback.SdkObservationCallback;
 import com.ssn.sdk.coapclient.config.OptionsArgumentsWrapper;
 import com.ssn.sdk.coapclient.config.LoggingConfiguration;
+import com.ssn.sdk.coapclient.sdp.TokenClient;
 import de.uzl.itm.ncoap.application.client.CoapClient;
 import de.uzl.itm.ncoap.communication.blockwise.BlockSize;
 import de.uzl.itm.ncoap.message.*;
@@ -42,25 +43,10 @@ public class SdkCoapClient extends CoapClient
         this.arguments = arguments;
     }
 
-    public void sendCoapRequest() throws URISyntaxException, UnknownHostException {
+    public void sendCoapRequest() throws URISyntaxException, UnknownHostException
+    {
 
-        int messageCode = MessageCode.GET;
-        if (arguments.getMethod().equalsIgnoreCase("GET"))
-        {
-            messageCode= MessageCode.GET;
-        }
-        if (arguments.getMethod().equalsIgnoreCase("DELETE"))
-        {
-            messageCode= MessageCode.DELETE;
-        }
-        if (arguments.getMethod().equalsIgnoreCase("POST"))
-        {
-            messageCode= MessageCode.POST;
-        }
-        if (arguments.getMethod().equalsIgnoreCase("PUT"))
-        {
-            messageCode= MessageCode.PUT;
-        }
+        int messageCode = arguments.getRequestMessageCode();
 
         // Get URI of the resource to be requested
         String host = arguments.getDeviceHost();
@@ -73,38 +59,47 @@ public class SdkCoapClient extends CoapClient
         int messageType = arguments.isNon() ? MessageType.NON : MessageType.CON;
 
         // Set the client callback
-        if (arguments.isObserve()) {
+        if (arguments.isObserve())
+        {
             callback = new SdkObservationCallback(arguments);
-        } else {
-            callback = new SdkCallback();
+        }
+        else
+        {
+            callback = new SdkCallback(arguments);
         }
 
         boolean useProxy = arguments.getProxyAddress() != null;
 
         // If it's a session call. SSNI gateway specific security code - get a session.
-        CoapRequest coapRequest = null;
+        de.uzl.itm.ncoap.message.CoapRequest coapRequest = null;
         if (messageCode == MessageCode.POST || messageCode == MessageCode.PUT)
         {
-            if (path.equals("/sessions") && (arguments.getClientId() != null && arguments.getClientId().length() > 0))
+            if (path.equals("/sessions"))
             {
-                TokenClient tc = new TokenClient(arguments.isTestEnv());
-                String token;
-                try
+                if ((arguments.getClientId() != null && arguments.getClientId().length() > 0))
                 {
-                    token = tc.getApiToken(arguments.getClientId(), arguments.getClientSecret());
+
+                    TokenClient tc = new TokenClient(arguments.isTestEnv());
+                    String token;
+                    try
+                    {
+                        token = tc.getApiToken(arguments.getClientId(), arguments.getClientSecret());
+                    } catch (Exception excpn)
+                    {
+                        log.error("Aborting: Failed to acquire API token: {}", excpn.getMessage());
+                        return;
+                    }
+                    byte[] payload = token.getBytes();
+                    coapRequest = new CoapRequest(messageType, messageCode, resourceURI, false);
+                    coapRequest.setContent(payload, ContentFormat.TEXT_PLAIN_UTF8);
                 }
-                catch (Exception excpn)
-                {
-                    log.error("Aborting: Failed to acquire API token: {}", excpn.getMessage());
-                    return;
+                else {
+                    coapRequest = new CoapRequest(messageType, messageCode, resourceURI, false);
                 }
-                byte[] payload = token.getBytes();
-                if (useProxy)
-                {
-                    useProxy = false;
-                }
+            }
+            else
+            {
                 coapRequest = new CoapRequest(messageType, messageCode, resourceURI, useProxy);
-                coapRequest.setContent(payload, ContentFormat.TEXT_PLAIN_UTF8);
             }
         }
         else
@@ -115,7 +110,10 @@ public class SdkCoapClient extends CoapClient
 
         if (messageCode == MessageCode.GET)
         {
-            coapRequest.setPreferredBlock2Size(BlockSize.SIZE_128);
+            if (coapRequest != null)
+            {
+                coapRequest.setPreferredBlock2Size(BlockSize.SIZE_128);
+            }
         }
         coapRequest.setEndpointID1();
 
