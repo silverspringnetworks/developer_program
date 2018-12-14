@@ -1,11 +1,11 @@
-package com.ssn.sdk.coapclient;
+package com.ssn.sdk.coapclient.payload;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import com.ssn.sdk.coapclient.PayloadUtilities;
+import com.ssn.sdk.coapclient.util.PayloadUtilities;
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -21,7 +21,6 @@ import java.util.TimeZone;
 
 public class WfciPayloadTransformer
 {
-    //private static final Logger logger = LogManager.getLogger(WfciPayloadTransformer.class.getName());
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     public String buildPayload(byte[] payload)

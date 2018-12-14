@@ -16,23 +16,23 @@
         <level value="info"/>
     </logger>
 
-    <logger name="com.ssn.sdk.coapclient.StarfishClient">
+    <logger name="com.ssn.sdk.coapclient.sdp.StarfishClient">
         <level value="debug"/>
     </logger>
 
-    <logger name="com.ssn.sdk.coapclient.TempPayloadTransformer">
+    <logger name="com.ssn.sdk.coapclient.payload.TempPayloadTransformer">
         <level value="info"/>
     </logger>
 
-    <logger name="com.ssn.sdk.coapclient.ChAlertPayloadTransformer">
+    <logger name="com.ssn.sdk.coapclient.payload.ChAlertPayloadTransformer">
         <level value="info"/>
     </logger>
 
-    <logger name="com.ssn.sdk.coapclient.LogisticsPayloadTransformer">
+    <logger name="com.ssn.sdk.coapclient.payload.LogisticsPayloadTransformer">
         <level value="info"/>
     </logger>
 
-    <logger name="com.ssn.sdk.coapclient.TokenClient">
+    <logger name="com.ssn.sdk.coapclient.sdp.TokenClient">
         <level value="info"/>
     </logger>
 

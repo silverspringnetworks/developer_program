@@ -1,5 +1,6 @@
 package com.ssn.sdk.coapclient;
 
+import com.ssn.sdk.coapclient.payload.LogisticsPayloadTransformer;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

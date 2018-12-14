@@ -1,4 +1,4 @@
-package com.ssn.sdk.coapclient;
+package com.ssn.sdk.coapclient.payload;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -1,5 +1,6 @@
 package com.ssn.sdk.coapclient;
 
+import com.ssn.sdk.coapclient.payload.ChAlertPayloadTransformer;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -9,14 +10,14 @@ import org.json.JSONArray;
 /**
  * Created by bluben on 7/14/17.
  */
-public class ChPayloadTrasnformTest extends TestCase
+public class ChPayloadTransformTest extends TestCase
 {
     /**
      * Create the test case
      *
      * @param testName name of the test case
      */
-    public ChPayloadTrasnformTest( String testName )
+    public ChPayloadTransformTest( String testName )
     {
         super( testName );
     }
@@ -26,7 +27,7 @@ public class ChPayloadTrasnformTest extends TestCase
      */
     public static Test suite()
     {
-        return new TestSuite( ChPayloadTrasnformTest.class );
+        return new TestSuite( ChPayloadTransformTest.class );
     }
 
     /**
@@ -146,26 +147,6 @@ public class ChPayloadTrasnformTest extends TestCase
         assertEquals("NG", sValue);
         sValue = getStrObservationAttribute(jsonResult, "batteryHealth");
         assertEquals("LB", sValue);
-    }
-
-
-    public void testbuildPayloadChHealthUsingHealthClass()
-    {
-        Integer level;
-        String sValue;
-        int iValue;
-        String jsonResult;
-
-        ChHealthPayloadTransformer pt = new ChHealthPayloadTransformer();
-
-        jsonResult = pt.buildPayload("101,h,OK,s,OK,s");
-        iValue = getIntObservationAttribute(jsonResult, "hoursSincePowerUp");
-        level = new Integer(iValue);
-        assertEquals("101", level.toString());
-        sValue = getStrObservationAttribute(jsonResult, "deviceHealth");
-        assertEquals("OK", sValue);
-        sValue = getStrObservationAttribute(jsonResult, "batteryHealth");
-        assertEquals("OK", sValue);
     }
 
 

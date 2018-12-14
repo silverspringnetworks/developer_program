@@ -8,6 +8,7 @@ import com.ssn.sdk.coapclient.callback.SdkCallback;
 import com.ssn.sdk.coapclient.callback.SdkObservationCallback;
 import com.ssn.sdk.coapclient.config.OptionsArgumentsWrapper;
 import com.ssn.sdk.coapclient.config.LoggingConfiguration;
+import com.ssn.sdk.coapclient.sdp.TokenClient;
 import de.uzl.itm.ncoap.application.client.CoapClient;
 import de.uzl.itm.ncoap.communication.blockwise.BlockSize;
 import de.uzl.itm.ncoap.message.*;
@@ -70,7 +71,7 @@ public class SdkCoapClient extends CoapClient
         boolean useProxy = arguments.getProxyAddress() != null;
 
         // If it's a session call. SSNI gateway specific security code - get a session.
-        CoapRequest coapRequest = null;
+        de.uzl.itm.ncoap.message.CoapRequest coapRequest = null;
         if (messageCode == MessageCode.POST || messageCode == MessageCode.PUT)
         {
             if (path.equals("/sessions"))
@@ -91,11 +92,18 @@ public class SdkCoapClient extends CoapClient
                     byte[] payload = token.getBytes();
                     coapRequest = new CoapRequest(messageType, messageCode, resourceURI, false);
                     coapRequest.setContent(payload, ContentFormat.TEXT_PLAIN_UTF8);
-                } else {
+                }
+                else {
                     coapRequest = new CoapRequest(messageType, messageCode, resourceURI, false);
                 }
             }
-        } else {
+            else
+            {
+                coapRequest = new CoapRequest(messageType, messageCode, resourceURI, useProxy);
+            }
+        }
+        else
+        {
             coapRequest = new CoapRequest(messageType, messageCode, resourceURI, useProxy);
         }
 

@@ -7,7 +7,7 @@
 
     <properties>
         <ncoap.verison>1.8.3-SNAPSHOT</ncoap.verison>
-        <product.verison>1.4.0</product.verison>
+        <product.verison>1.4.1</product.verison>
     </properties>
 
     <groupId>de.uzl.itm</groupId>
@@ -26,6 +26,11 @@
             <groupId>co.nstant.in</groupId>
             <artifactId>cbor</artifactId>
             <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty</artifactId>
+            <version>3.9.0.Final</version>
         </dependency>
 		<dependency>
         	<groupId>de.uzl.itm</groupId>

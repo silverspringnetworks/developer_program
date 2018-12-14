@@ -4,11 +4,12 @@
  */
 package com.ssn.sdk.coapclient.callback;
 
+import co.nstant.in.cbor.CborException;
 import com.ssn.sdk.coapclient.config.OptionsArgumentsWrapper;
-import com.ssn.sdk.coapclient.StarfishClient;
+import com.ssn.sdk.coapclient.sdp.StarfishClient;
+import com.ssn.sdk.coapclient.util.PayloadUtilities;
 import de.uzl.itm.ncoap.message.CoapMessage;
 import de.uzl.itm.ncoap.message.CoapResponse;
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,43 +59,58 @@ public class SdkObservationCallback extends SdkCallback
         String payloadAsStr = new String(payloadAsByteArray, CoapMessage.CHARSET);
         log.info("***Payload As String: <{}>", payloadAsStr);
 
-        String payloadAsHex = this.bytesToHexString(payloadAsByteArray);
+        PayloadUtilities pu = new PayloadUtilities();
+        String payloadAsHex = pu.bytesToHexString(payloadAsByteArray);
         log.info("***Payload As Hex: <{}>", payloadAsHex);
+
+
+        // Check for error on the request. If so, no need to transform the payload.
+        if (coapResponse.isErrorResponse())
+        {
+            log.error("***CoAP Response Error: {}", coapResponse.getMessageCode());
+            return;
+        }
 
         if (payloadAsStr.length() > 0)
         {
             // Select the payload trasnformer to use based on the resource path.
             if (arguments.getDevicePath().equalsIgnoreCase("/snsr/arduino/temp"))
             {
-                StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
-                log.info("Sending observation to Starfish");
-                starfishClient.sendObservation(payloadAsStr, "com.ssn.sdk.coapclient.TempPayloadTransformer");
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.TempPayloadTransformer");
             }
             // CH4 methane paylod (New Cosmos rl78 device)
             // Updated to support the CBOR wrapper format.
             else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/rl78/methane"))
             {
                 // Remove the CBOR wrapper
-                final int cborwrapperlength = 11;
-                byte[] ch4PayloadAsByteArray = stripOffCborWrapper(payloadAsByteArray, cborwrapperlength);
+                byte[] ch4PayloadAsByteArray;
+                try
+                {
+                    ch4PayloadAsByteArray = pu.stripOffCborWrapperByte(payloadAsByteArray);
+                }
+                catch (CborException excptn)
+                {
+                    log.error("*** Error removing CBOR wrapper from r178 payload: <{}>", excptn.getMessage());
+                    return;
+                }
                 String ch4PayloadAsStr = new String(ch4PayloadAsByteArray, CoapMessage.CHARSET);
                 log.info("*** CH4 Inner payload As String: <{}>", ch4PayloadAsStr);
 
                 // Pass the rl78 data on as a string
-                StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
-                log.info("Sending observation to Starfish");
-                starfishClient.sendObservation(ch4PayloadAsStr, "com.ssn.sdk.coapclient.ChAlertPayloadTransformer");
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                sfc.sendObservation(ch4PayloadAsStr, "com.ssn.sdk.coapclient.payload.ChAlertPayloadTransformer");
             }
             else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/sens") || arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/log"))
             {
-                StarfishClient logisticsClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv(), true, arguments.getApMacAddress(), arguments.getDeviceHost().substring(3,19));
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
                 log.info("Sending observation to Logistics");
-                logisticsClient.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.LogisticsPayloadTransformer");
+                sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.LogisticsPayloadTransformer");
             }
             else if (arguments.getDevicePath().toLowerCase().contains("wfci"))
             {
                 StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
-                sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.WfciPayloadTransformer");
+                sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.WfciPayloadTransformer");
             }
             else
             {
@@ -118,31 +134,5 @@ public class SdkObservationCallback extends SdkCallback
         boolean result = getResponseCount() < arguments.getMaxNotifications();
         log.info("Received {}/{} responses (continue observation: {})", result);
         return result;
-    }
-
-
-    private String bytesToHexString(byte[] bytes){
-        StringBuilder sb = new StringBuilder();
-        for(byte b : bytes){
-            sb.append(String.format("%02x", b&0xff));
-        }
-        return sb.toString();
-    }
-
-
-    // Helper to strip off an outer CBOR wrapper
-    public byte[] stripOffCborWrapper(byte[] payload, int wrapperlength)
-    {
-        int innerLength = payload.length - wrapperlength;
-        byte[] innerPayload = new byte[innerLength];
-
-        // This is brain dead simple. We just skip the first 11 bytes.
-        // Long term we need to use a CBOR parser.
-        for (int outindx=wrapperlength, inindx=0; outindx < payload.length ; outindx++,inindx++)
-        {
-            innerPayload[inindx] = payload[outindx];
-        }
-
-        return innerPayload;
     }
 }
