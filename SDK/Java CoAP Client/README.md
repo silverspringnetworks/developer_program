@@ -1,5 +1,9 @@
 ## Java CoAP Client
-### Silver Spring Networks Developer Program SDK
+### Itron Developer Program SDK
+
+### Current Version Info
+Current version is 1.4.1.
+See the changes.md file for details.
 
 #### Overview
 A component of the Silver Sprint Networks developer program, the Java CoAP client is a standalone
