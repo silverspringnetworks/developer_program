@@ -8,6 +8,8 @@ import com.ssn.sdk.coapclient.SdkCoapClient;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import de.uzl.itm.ncoap.message.MessageCode;
 import org.json.*;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -49,12 +51,16 @@ public class OptionsArgumentsWrapper
     private String devicePath = "/";
 
     @Option(name = "--deviceQuery",
-            usage = "Sets the query of the target URI (default = null)")
-    private String deviceQuery = null;
+            usage = "Sets the query of the target URI (empty string))")
+    private String deviceQuery = "";
 
     @Option(name = "--deviceId",
             usage="Devices starfish device id (empty string)")
     private String deviceId = "";
+
+    @Option(name = "--apMacAddress",
+            usage="Logistics AccessPoint Mac Address (empty string)")
+    private String apMacAddress = "";
 
     @Option(name = "--proxyHost",
             usage = "IP address or CNAME of a proxy the request is to be sent to (default = null)")
@@ -81,11 +87,11 @@ public class OptionsArgumentsWrapper
     private int maxNotifications = 1;
 
     @Option(name = "--clientId",
-            usage = "Sets the Starfish cleint Id ('')")
+            usage = "Sets the Starfish client Id ('')")
     private String clientId = "";
 
     @Option(name = "--clientSecret",
-            usage = "Sets the Starfish cleint Secret ('')")
+            usage = "Sets the Starfish client Secret ('')")
     private String clientSecret = "";
 
     @Option(name = "--test",
@@ -236,6 +242,12 @@ public class OptionsArgumentsWrapper
                 deviceQuery = soption;
                 log.debug("Conf deviceQuery: {}", deviceQuery);
             }
+
+            soption = darray.getJSONObject(0).optString("apMacAddress");
+            if (soption != null && !soption.equals("")) {
+                apMacAddress = soption;
+                log.debug("Conf apMacAddress: {}", apMacAddress);
+            }
         }
     }
 
@@ -360,9 +372,43 @@ public class OptionsArgumentsWrapper
     }
 
     /**
+     * @return the Logistics AP Mac Address or <code>''</code> if not set
+     */
+    public String getApMacAddress() {
+        return apMacAddress;
+    }
+
+    /**
      * @return <code>true</code> if --help was given as console parameter or <code>false</code> otherwise
      */
     public boolean isHelp() {
         return help;
+    }
+
+
+    /**
+     * @return <code>MessageCode</code> the http method equivalent specified for the message.
+     */
+    public int getRequestMessageCode()
+    {
+        int messageCode = MessageCode.GET;
+        if (this.getMethod().equalsIgnoreCase("GET"))
+        {
+            messageCode= MessageCode.GET;
+        }
+        if (this.getMethod().equalsIgnoreCase("DELETE"))
+        {
+            messageCode= MessageCode.DELETE;
+        }
+        if (this.getMethod().equalsIgnoreCase("POST"))
+        {
+            messageCode= MessageCode.POST;
+        }
+        if (this.getMethod().equalsIgnoreCase("PUT"))
+        {
+            messageCode= MessageCode.PUT;
+        }
+
+        return messageCode;
     }
 }

@@ -4,11 +4,12 @@
  */
 package com.ssn.sdk.coapclient.callback;
 
+import co.nstant.in.cbor.CborException;
 import com.ssn.sdk.coapclient.config.OptionsArgumentsWrapper;
-import com.ssn.sdk.coapclient.StarfishClient;
+import com.ssn.sdk.coapclient.sdp.StarfishClient;
+import com.ssn.sdk.coapclient.util.PayloadUtilities;
 import de.uzl.itm.ncoap.message.CoapMessage;
 import de.uzl.itm.ncoap.message.CoapResponse;
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author bluben
  */
-public class SdkObservationCallback extends SdkCallback {
-
+public class SdkObservationCallback extends SdkCallback
+{
     private Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
     private AtomicInteger responseCounter;
@@ -52,18 +53,69 @@ public class SdkObservationCallback extends SdkCallback {
         int value = responseCounter.incrementAndGet();
         log.info("Notification #{}: CoAP: {}", value, coapResponse);
 
-        ChannelBuffer response = coapResponse.getContent();
-        String payloadAsStr = response.toString(CoapMessage.CHARSET);
+        byte[] payloadAsByteArray = coapResponse.getContentAsByteArray();
+        log.info("***Payload length: {}", payloadAsByteArray.length);
+
+        String payloadAsStr = new String(payloadAsByteArray, CoapMessage.CHARSET);
         log.info("***Payload As String: <{}>", payloadAsStr);
 
-        String payloadAsHex = this.bytesToHexString(response.array());
+        PayloadUtilities pu = new PayloadUtilities();
+        String payloadAsHex = pu.bytesToHexString(payloadAsByteArray);
         log.info("***Payload As Hex: <{}>", payloadAsHex);
 
 
-        if (payloadAsStr.length() > 0) {
-            log.info("Sending observation to Starfish");
-            StarfishClient starfishClient = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
-            starfishClient.sendObservation(payloadAsStr);
+        // Check for error on the request. If so, no need to transform the payload.
+        if (coapResponse.isErrorResponse())
+        {
+            log.error("***CoAP Response Error: {}", coapResponse.getMessageCode());
+            return;
+        }
+
+        if (payloadAsStr.length() > 0)
+        {
+            // Select the payload trasnformer to use based on the resource path.
+            if (arguments.getDevicePath().equalsIgnoreCase("/snsr/arduino/temp"))
+            {
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.TempPayloadTransformer");
+            }
+            // CH4 methane paylod (New Cosmos rl78 device)
+            // Updated to support the CBOR wrapper format.
+            else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/rl78/methane"))
+            {
+                // Remove the CBOR wrapper
+                byte[] ch4PayloadAsByteArray;
+                try
+                {
+                    ch4PayloadAsByteArray = pu.stripOffCborWrapperByte(payloadAsByteArray);
+                }
+                catch (CborException excptn)
+                {
+                    log.error("*** Error removing CBOR wrapper from r178 payload: <{}>", excptn.getMessage());
+                    return;
+                }
+                String ch4PayloadAsStr = new String(ch4PayloadAsByteArray, CoapMessage.CHARSET);
+                log.info("*** CH4 Inner payload As String: <{}>", ch4PayloadAsStr);
+
+                // Pass the rl78 data on as a string
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                sfc.sendObservation(ch4PayloadAsStr, "com.ssn.sdk.coapclient.payload.ChAlertPayloadTransformer");
+            }
+            else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/sens") || arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/log"))
+            {
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                log.info("Sending observation to Logistics");
+                sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.LogisticsPayloadTransformer");
+            }
+            else if (arguments.getDevicePath().toLowerCase().contains("wfci"))
+            {
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.WfciPayloadTransformer");
+            }
+            else
+            {
+                log.info("Got data from unknown sensor: {}. Ignoring data!", arguments.getDevicePath());
+            }
         }
     }
 
@@ -82,14 +134,5 @@ public class SdkObservationCallback extends SdkCallback {
         boolean result = getResponseCount() < arguments.getMaxNotifications();
         log.info("Received {}/{} responses (continue observation: {})", result);
         return result;
-    }
-
-
-    private String bytesToHexString(byte[] bytes){
-        StringBuilder sb = new StringBuilder();
-        for(byte b : bytes){
-            sb.append(String.format("%02x", b&0xff));
-        }
-        return sb.toString();
     }
 }

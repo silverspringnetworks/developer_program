@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HdkClient.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="NoAccept" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="DevicePrefix" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SSN</Value>
+    </Setting>
+    <Setting Name="DeviceSuffix" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.sg.yel01.ssn.ssnsgs.net</Value>
+    </Setting>
+    <Setting Name="GatewayUri" Type="System.String" Scope="User">
+      <Value Profile="(Default)">api.coap-staging.developer.ssni.com</Value>
+    </Setting>
+    <Setting Name="GatewayUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://api.data-platform.developer.ssni.com</Value>
+    </Setting>
+    <Setting Name="ClientId" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ClientSecret" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Solution" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -8,7 +8,6 @@
         </layout>
     </appender>
 
-
     <logger name="com.ssn.sdk.coapclient.config.OptionsArgumentsWrapper">
         <level value="info"/>
     </logger>
@@ -17,36 +16,36 @@
         <level value="info"/>
     </logger>
 
-    <logger name="com.ssn.sdk.coapclient.StarfishClient">
+    <logger name="com.ssn.sdk.coapclient.sdp.StarfishClient">
+        <level value="debug"/>
+    </logger>
+
+    <logger name="com.ssn.sdk.coapclient.sdp.TokenClient">
         <level value="info"/>
     </logger>
 
-    <logger name="com.ssn.sdk.coapclient.TokenClient">
+    <logger name="com.ssn.sdk.coapclient.payload.TempPayloadTransformer">
+        <level value="debug"/>
+    </logger>
+
+    <logger name="com.ssn.sdk.coapclient.payload.ChAlertPayloadTransformer">
         <level value="info"/>
     </logger>
 
-    <logger name="com.ssn.sdk.coapclient.SdkCoapObserver">
-        <level value="info"/>
-    </logger>
-
-    <logger name="de.uzl.itm.ncoap.application.client.CoapClient">
+    <logger name="com.ssn.sdk.coapclient.payload.LogisticsPayloadTransformer">
         <level value="info"/>
     </logger>
 
     <logger name="de.uzl.itm.ncoap.communication.reliability.outbound.ClientOutboundReliabilityHandler">
-        <level value="debug"/>
-    </logger>
-
-    <logger name="de.uzl.itm.ncoap.communication.blockwise.client.ClientBlock2Handler">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.callback.SdkObservationCallback">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <logger name="com.ssn.sdk.coapclient.callback.SdkCallback">
-        <level value="debug"/>
+        <level value="info"/>
     </logger>
 
     <root>
