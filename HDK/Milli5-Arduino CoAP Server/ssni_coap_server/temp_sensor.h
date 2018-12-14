@@ -32,6 +32,28 @@ Networks, Inc.
 
 #include <arduino.h>
 #include "errors.h"
+#include "hbuf.h"
+
+
+// Payload Format
+//
+// The sensor payload returned in a response can be simple text (string) or a CBOR payload.
+// The CBOR payload is a CBOR wrapper containing the device type followed by the text payload.
+//     A typical CBOR payload: {0:"temp",1:<text payload>"}
+//
+// CBOR payloads are required to use the Milli in MQTT bubble up mode. For more information
+// contact Developer Program Support.
+//
+// For CBOR format payload set TEMP_CBOR_PAYLOAD to 1.
+//
+#define TEMP_CBOR_PAYLOAD  	1
+
+// Device type used with CBOR style payloads.
+#define CBOR_DEVICE_TYPE    "temp"
+
+// Payload Max Size
+#define PAYLOAD_MAX_SIZE    128
+
 
 typedef enum
 {

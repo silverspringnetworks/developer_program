@@ -31,7 +31,8 @@ Networks, Inc.
 #include "coap_rsp_msg.h"
 #include "arduino_time.h"
 
-// Assemble a CoAP response message; {Timestamp,Value(s),Unit}
+
+// Assemble a CoAP response message; {Timestamp,Value,Unit}
 error_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading, const char * unit )
 {
     uint8_t 	l;
@@ -57,9 +58,8 @@ error_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading,
 
 			// Concatenate the reading
 			strcat( rsp_buf, reading_buf );
-			
-		} // for
-	} // if
+		}
+	}
 
 	// Check if we have a unit
 	if (unit)
@@ -67,8 +67,7 @@ error_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading,
 		// Concatenate the unit
 		sprintf( unit_buf, ",%s", unit );
 		strcat( rsp_buf, unit_buf );
-		
-	} // if
+	}
 
 	// Print message
 	dlog( LOG_INFO, rsp_buf );
@@ -77,7 +76,7 @@ error_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading,
 	l = strlen(rsp_buf);
 	
 	// Allocate memory
-	p = (char*) m_append(m,l);
+	p = (char*) m_append(m, l);
     if (!p) 
     {
         return ERR_NO_MEM;
@@ -89,4 +88,4 @@ error_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading,
 	
     return ERR_OK;
 	
-} // rsp_msg()
+} // rsp_msg

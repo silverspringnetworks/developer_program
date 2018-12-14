@@ -27,8 +27,6 @@ Networks, Inc.
 
 */
 
-
-
 #include "log.h"
 #include "bufutil.h"
 #include "coap_rsp_msg.h"
@@ -47,6 +45,7 @@ RTCDue rtc(XTAL);
 
 // Time relative UTC
 static int32_t seconds_relative_utc = 0;
+
 
 /*
  * crtime
@@ -130,12 +129,16 @@ error_t crtime(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
 		rc = rsp_msg( rsp->msg, &len, count, NULL, NULL );
 
         dlog(LOG_DEBUG, "GET (status %d) read %d bytes.", rc, len);
-        if (!rc) {
+        if (!rc)
+		{
             rsp->plen = len;
             rsp->cf = COAP_CF_CSV;
             rsp->code = COAP_RSP_205_CONTENT;
-        } else {
-            switch (rc) {
+        }
+		else
+		{
+            switch (rc)
+			{
             case ERR_BAD_DATA:
             case ERR_INVAL:
                 rsp->code = COAP_RSP_406_NOT_ACCEPTABLE;
@@ -146,24 +149,22 @@ error_t crtime(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
             }
             goto err;
         }
-    } // if GET
+    }
     else 
     {
         /* no other operation is supported */
         rsp->code = COAP_RSP_405_METHOD_NOT_ALLOWED;
         goto err;
-        
-    } // Unknown operation
+    }
 
 done:
     return ERR_OK;
 
 err:
     rsp->plen = 0;
-
     return ERR_OK;
-    
 } // crtime
+
 
 /**
  * @brief Set time zone
@@ -174,6 +175,7 @@ error_t set_time_zone( int32_t zone )
 	seconds_relative_utc = zone*60*60;
 	
 } // set_time_zone
+
 
 /*
  *
@@ -192,6 +194,7 @@ error_t rtc_time_init( int32_t zone )
 	
 } // rtc_time_init()
 
+
 /*
  * @brief Get the RTC time in local time
  *
@@ -205,6 +208,7 @@ time_t get_rtc_epoch()
 	return epoch;
 
 } // get_rtc_time()
+
 
 /**
 * @brief
@@ -225,6 +229,28 @@ void print_current_time(void)
 	println(buffer);
 	
 } // print_current_time
+
+
+/**
+* @brief
+* Prints the current time specifically for logging
+* The time is set to 0 during boot
+*
+*/
+void print_log_time(void)
+{
+	uint32_t a,b,c;
+	char buffer[PRINTF_LEN];
+
+	// Print time
+	a = rtc.getSeconds();
+	b = rtc.getMinutes();
+	c = rtc.getHours();
+	sprintf( buffer, "Time: %02d:%02d:%02d: ", c, b, a );
+	print(buffer);
+	
+} // print_current_time
+
 
 /**
 * @brief

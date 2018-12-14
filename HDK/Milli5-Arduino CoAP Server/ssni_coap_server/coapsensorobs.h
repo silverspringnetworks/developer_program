@@ -35,6 +35,19 @@ Networks, Inc.
 #include "hbuf.h"
 
 
+// Observation Frequency
+//
+// When observations are enabled, the amount of time between observation notifications is
+// determined by this define. The observation frequency is the number of seconds between
+// observation notifications.
+//
+// The value is in seconds.
+//   60   -> 1m
+//   600  -> 10m
+//   1800 -> 30m
+//
+#define OBSERVATION_FREQUENCY  60
+
 /**
  * @brief A function pointer to set the sensor function used during Observe
  *

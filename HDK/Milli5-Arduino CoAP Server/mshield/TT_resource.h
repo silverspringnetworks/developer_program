@@ -33,11 +33,24 @@ Networks, Inc.
 #include "errors.h"
 #include "hbuf.h"
 
+
+//////////////////////////////////////////////////////////////////////////
+//
+// This template provides an outline of the code needed to incorporate a sensor into the Arduino
+// CoAP server. It demonstrates most of the CoAP protocol support needed. It provides an idea
+// of how to structure your code and to isolate a sensor from the CoAP server as a whole.
+//
+// For a working example, please review the HDT11 "temp" sensor support, located in temp_sensor.cpp.
+//
+//////////////////////////////////////////////////////////////////////////
+
+
 typedef struct TT_cfg_struct
 {
 	uint32_t state;
 	
 } TT_cfg_t;
+
 
 /******************************************************************************/
 /*                      Public Methods                                        */
@@ -65,11 +78,11 @@ error_t arduino_enab_TT(void);
 error_t arduino_disab_TT(void);
 
 /**
- * @brief Init sensor
+ * @brief Initialize sensor
  * @return error_t
  *
  */
-error_t arduino_init_TT();
+error_t arduino_init_TT(void);
 
 /**
  * @brief Set TT state
@@ -92,7 +105,7 @@ error_t arduino_get_TT_state(struct mbuf *m, uint8_t *len);
  * @param[in] len Length of input
  * @return error_t
  */
-error_t arduino_set_TT_cfg(struct mbuf *m, uint8_t *len);
+error_t arduino_put_TT_cfg(char config);
 
 /**
  * @brief Get TT config

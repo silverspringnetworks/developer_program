@@ -28,7 +28,6 @@ Networks, Inc.
 */
 
 
-
 #include "errors.h"
 #include "log.h"
 #include "coappdu.h"
@@ -41,10 +40,13 @@ Networks, Inc.
 #include "arduino_time.h"
 
 
-// The most recent minute we sent a CoAP response message
-// Make sure we don't send Observe response more than once per minute
-static uint32_t prev_minute = 0;
+// Holds base epoch time - used to determine when to fire a notification.
+static time_t   base_epoch = 0;
+// Observation flag
 static boolean	obs_flag = false;
+// Sequence number
+static uint32_t start_sn;
+
 
 // Check if we should send Observe message
 boolean do_observe()
@@ -52,35 +54,39 @@ boolean do_observe()
 	// Check if we are doing Observe
 	if (obs_flag)
 	{
-		uint32_t m = rtc.getMinutes();
+		time_t epoch = get_rtc_epoch();
+		if (base_epoch == 0)
+		{
+			base_epoch = epoch;
+		}
 		
 		// Check if the current minute is different from the previous minute
-		if ( m != prev_minute )
+		if ( epoch >= (base_epoch+OBSERVATION_FREQUENCY) )
 		{
 			// Record the current minute
-			prev_minute = m;
+			dlog(LOG_DEBUG, "Observe notification at epoch: %d", base_epoch);
+			base_epoch = epoch;
 
 			// Send response
 			coap_observe_rsp();
-
-		} // if
-	} // if
+			
+			int freeram = free_ram();
+			dlog(LOG_DEBUG, "Free Ram: %d", freeram);
+		}
+	}
 	
-	// Return the obs_flag
+	// Return the observation flag
 	return obs_flag;
 	
 } // do_observe
 
-// Sequence number 
-// TODO: Don't know yet how it is used
-static uint32_t start_sn; 
 
 // Register for Observe
 error_t coap_obs_reg()
 {
 	// Record the minute that we turn on Observe
 	// Make sure we don't send Observe response more than once per minute
-	prev_minute = rtc.getMinutes();
+	base_epoch = get_rtc_epoch();
 	
 	// Flag that we are doing Observe
 	obs_flag = true;

@@ -38,8 +38,7 @@ static int log_level = LOG_DEBUG;
 
 // default LOG_ERROR, -v WARN, -vv NOTICE, -vvv INFO, -vvvv DEBUG
 
-static const char *label[] = {"EMRG", "ALRT", "CRIT", "ERR", "WARN", 
-                              "NOTE", "INFO", "DEBG"};
+static const char *label[] = {"EMRG", "ALRT", "CRIT", "ERR", "WARN", "NOTE", "INFO", "DEBG"};
 static const int numlevels = sizeof (label) / sizeof(label[0]);
 
 // Pointer to Serial class used for printing
@@ -47,7 +46,7 @@ static Serial_ *pSerMon = NULL;
 #define SerMon (*pSerMon)
 static bool log_enabled = false;
 
-/* Init logging */
+
 void log_init( Serial_ *pSerial, uint32_t baud, uint32_t log_level )
 {
 	// Assign pointer used for printing
@@ -75,7 +74,6 @@ void log_init( Serial_ *pSerial, uint32_t baud, uint32_t log_level )
 } // log_init
 
 
-
 void dlog_level(int level)
 {
     /* force level bounds */
@@ -83,7 +81,8 @@ void dlog_level(int level)
     level = level < 0 ? 0 : level;
 
     log_level = level;
-}
+} // dlog_level
+
 
 void dlog(int level, const char *format, ...)
 {
@@ -103,7 +102,7 @@ void dlog(int level, const char *format, ...)
     }
 
 	// Print time
-	print_current_time();
+	print_log_time();
 
 	// Print to serial port using the format
 	va_start( args, format );
@@ -112,6 +111,7 @@ void dlog(int level, const char *format, ...)
 	va_end(args);
 
 } // dlog
+
 
 void ddump(int level, const char *label, const void *data, int datalen)
 {
@@ -131,7 +131,7 @@ void ddump(int level, const char *label, const void *data, int datalen)
     }
 
 	// Print time
-	print_current_time();
+	print_log_time();
 
     if (label) 
 	{
@@ -229,6 +229,7 @@ void println( const char * buf )
 	
 } // println
 
+
 void printnum( int n )
 {
 	// Is logging enabled?
@@ -246,14 +247,17 @@ void printnum( int n )
 	
 } // println
 
+
 uint8_t capture_buf[1024];
 uint16_t cap_count = 0;
+
 
 void capture( uint8_t ch )
 {
 	capture_buf[cap_count++] = ch;
 	
 } // capture
+
 
 void capture_dump( uint8_t * p, int count )
 {
@@ -300,4 +304,13 @@ void capture_dump( uint8_t * p, int count )
 	cap_count = 0;
 
 } // capture_dump
+
+
+// Function to return the amount of Free Ram.
+extern "C" char *sbrk(int i);
+int free_ram()
+{
+	char stack_dummy = 0;
+	return &stack_dummy - sbrk(0);
+}
 

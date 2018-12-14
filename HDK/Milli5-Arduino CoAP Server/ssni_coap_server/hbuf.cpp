@@ -40,6 +40,8 @@ Networks, Inc.
 
 #include <assert.h>
 #include "hbuf.h"
+#include "log.h"
+
 
 int malloc_cnt;
 int free_cnt;
@@ -67,7 +69,8 @@ struct mbuf * m_get()
 {
     struct mbuf *m;
 	int mbuf_size = sizeof(*m) + mbuf_data_buf_size;
-	SerialUSB.print("Allocating mbuf with size: "); SerialUSB.println(mbuf_size);
+	//BL SerialUSB.print("Allocating mbuf with size: "); SerialUSB.println(mbuf_size);
+	dlog(LOG_DEBUG, "Allocating mbuf with size: %d", mbuf_size);
     m = (struct mbuf *) malloc(mbuf_size);
     assert(m);
     m->len = 0;

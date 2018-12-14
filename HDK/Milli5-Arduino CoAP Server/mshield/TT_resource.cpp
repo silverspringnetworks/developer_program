@@ -29,32 +29,47 @@ Networks, Inc.
 
 
 #include "log.h"
+#include "cbor.h"
 #include "exp_coap.h"
 #include "coap_rsp_msg.h"
 #include "coappdu.h"
 #include "coapmsg.h"
-#include "arduino_pins.h"
 #include "TT_resource.h"
 
 
-/******************************************************************************/
-/*                      Public Methods                                        */
-/******************************************************************************/
+//////////////////////////////////////////////////////////////////////////
+//
+// This template provides an outline of the code needed to incorporate a sensor into the Arduino
+// CoAP server. It demonstrates most of the CoAP protocol support needed. It provides an idea
+// of how to structure your code and to isolate a sensor from the CoAP server as a whole.
+//
+// For a working example, please review the HDT11 "temp" sensor support, located in temp_sensor.cpp.
+//
+//////////////////////////////////////////////////////////////////////////
 
-// TT Config
+
+// Config struct. Intent is to contain sensor specific configuration.
 TT_cfg_t TT_cfg;
 
+
+//////////////////////////////////////////////////////////////////////////
+//
+// Code to handle inbound CoAP requests. This handler must be referenced in the crarduino function
+// located in mshield.ino (the resource request dispatcher).
+//
+//////////////////////////////////////////////////////////////////////////
+
 /**
- * crtemperature
+ * crmysensor
  *
- * @brief CoAP Resource "describe your sensor here"
+ * @brief CoAP myresource "describe sensor here"
  *
  */
 error_t crmysensor(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
 {
     struct optlv *o;
 
-    /* No URI path beyond /temp is supported, so reject if present. */
+    // No URI path beyond "/myresource" is supported, so reject if present.
     o = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_PATH, &it);
     if (o)
     {
@@ -62,7 +77,8 @@ error_t crmysensor(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
         goto err;
     }            
 
-    /* All methods require a query, so return an error if missing. */
+    // All methods require a query, so return an error if missing.
+	// Keep or remove based on your needs.
     if (!(o = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_QUERY, NULL))) 
     {
         rsp->code = COAP_RSP_405_METHOD_NOT_ALLOWED;
@@ -76,19 +92,20 @@ error_t crmysensor(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
     {
         error_t rc = ERR_OK;
 
-        /* PUT /uri?cfg=<A|B> */
+        // PUT /uri?cfg=<A|B>
         if (!coap_opt_strcmp(o, "cfg=A"))
         {
-			//arduino_put_temp_cfg(CELSIUS_SCALE);
+            char config = 'A';
+            arduino_put_TT_cfg(config);
         } 
         else if (!coap_opt_strcmp(o, "cfg=B"))
         {
-			//arduino_put_temp_cfg(FAHRENHEIT_SCALE);
-			
+            char config = 'B';
+            arduino_put_TT_cfg(config);
         }
         else
         {
-            /* Not supported query. */
+            // Query not supported
             rsp->code = COAP_RSP_501_NOT_IMPLEMENTED;
             goto err;
         }
@@ -112,7 +129,7 @@ error_t crmysensor(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
             }
             goto err;
         }
-    } // if PUT
+    }
     
     /*
      * GET for reading sensor or config information
@@ -121,18 +138,18 @@ error_t crmysensor(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
     {
         uint8_t rc, len = 0;
 
-        /* Config or sensor values. */
-        /* GET /temp?cfg */
+        // Config values: GET /myresource?cfg
         if (!coap_opt_strcmp(o, "cfg"))
         {
-            /* get temperature config */
-            //rc = arduino_get_temp_cfg( rsp->msg, &len );
+            // Get the sensor config CoAP response
+            rc = arduino_get_TT_cfg(rsp->msg, &len);
         }
-        /* GET /temp?sens */
+        // Sensor values: GET /myresource?sens
         else if (!coap_opt_strcmp(o, "sens"))
         {
 			if ((o = copt_get_next_opt_type((sl_co*)&(req->oh), COAP_OPTION_OBSERVE, NULL))) 
 			{
+				// Note we disable observations in the template. See temp_sensor example.
 				uint32_t obsval = co_uint32_n2h(o);
 				switch(obsval)
 				{
@@ -146,81 +163,110 @@ error_t crmysensor(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
 					
 					default:
 						rc = ERR_INVAL;
-
-				} // switch
+				}
 			}
 			else
 			{
-				/* Get sensor value */
-				//rc = arduino_get_temp( rsp->msg, &len );
-				
-			} // if-else
+				// Get sensor value CoAP response
+				rc = arduino_get_TT(rsp->msg, &len);
+			}
         }
-        else {
-            /* Don't support other queries. */
+        else
+		{
+            // Don't support other queries
             rsp->code = COAP_RSP_501_NOT_IMPLEMENTED;
             goto err;
         }
+		
+		// What response to return?
         dlog(LOG_DEBUG, "GET (status %d) read %d bytes.", rc, len);
-        if (!rc) {
+        if (!rc)
+		{
             rsp->plen = len;
             rsp->cf = COAP_CF_CSV;
             rsp->code = COAP_RSP_205_CONTENT;
-        } else {
-            switch (rc) {
-            case ERR_BAD_DATA:
-            case ERR_INVAL:
-                rsp->code = COAP_RSP_406_NOT_ACCEPTABLE;
-                break;
-            default:
-                rsp->code = COAP_RSP_500_INTERNAL_ERROR;
-                break;
+        }
+		else
+		{
+            switch (rc)
+			{
+				case ERR_BAD_DATA:
+				case ERR_INVAL:
+					rsp->code = COAP_RSP_406_NOT_ACCEPTABLE;
+					break;
+				default:
+					rsp->code = COAP_RSP_500_INTERNAL_ERROR;
+					break;
             }
             goto err;
         }
-    } // if GET
+    }
     
     /*
      * DELETE for disabling sensors.
      */
-    /* DELETE /temp?all */
+    // DELETE /myresource?all
     else if (req->code == COAP_REQUEST_DELETE) 
     {
         if (!coap_opt_strcmp(o, "all"))
         {
-            //if (arduino_disab_temp()) 
+            if (arduino_disab_TT()) 
             {
                 rsp->code = COAP_RSP_500_INTERNAL_ERROR;
                 goto err;
             }
-        } else {
+        }
+		else
+		{
             rsp->code = COAP_RSP_405_METHOD_NOT_ALLOWED;
             goto err;
         }
         rsp->code = COAP_RSP_202_DELETED;
         rsp->plen = 0;
-    
-    } // if DELETE 
+    } 
     else 
     {
-        /* no other operation is supported */
+        // No other operation is supported
         rsp->code = COAP_RSP_405_METHOD_NOT_ALLOWED;
         goto err;
         
-    } // Unknown operation
+    }
 
 done:
     return ERR_OK;
 
 err:
     rsp->plen = 0;
-
     return ERR_OK;
     
 } // crmysensor
 
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+// Sensor initialization code. Usually called in setup function.
+//
+//////////////////////////////////////////////////////////////////////////
 /**
- * @brief Enable temp sensor.
+ * @brief
+ *
+ */
+error_t arduino_init_TT()
+{
+	return ERR_OK;
+} // arduino_init_TT
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+// Sensor specific code. These are helpers called by the above handlers.
+//
+//////////////////////////////////////////////////////////////////////////
+
+
+/**
+ * @brief Enable myresource sensor. Call this when sensor is enabled, possibly in setup, possibly in response to a host wakeup.
  */
 error_t arduino_enab_TT()
 {
@@ -234,7 +280,7 @@ error_t arduino_enab_TT()
 
 
 /**
- * @brief Disable TT sensor.
+ * @brief Disable TT sensor. Call this when sensor is disabled, usually on a DELETE.
  */
 error_t arduino_disab_TT()
 {
@@ -246,16 +292,9 @@ error_t arduino_disab_TT()
     return rc;
 }
 
-/**
- * @brief
- *
- */
-error_t arduino_init_TT()
-{
-} // arduino_init_TT
 
 /**
- * @brief Set TT state
+ * @brief Set TT state. Use if you want to set state on a PUT.
  * @param[in] state Desired state
  * @return error_t
  */
@@ -264,8 +303,9 @@ error_t arduino_set_TT_state( uint32_t state )
     return ERR_OK;
 }
 
+
 /**
- * @brief Get TT state
+ * @brief Get TT state. Use if you want to return state on a GET.
  * @param[in] m Pointer to input mbuf
  * @param[in] len Length of input
  * @return error_t
@@ -287,41 +327,41 @@ error_t arduino_get_TT_state(struct mbuf *m, uint8_t *len)
 			
 		default:
 			return ERR_FAIL;
-			
-	} // switch
+	}
 	rc = rsp_msg( m, len, count, NULL, buf );
     return rc;
 }
 
+
 /**
- * @brief Set TT config
- * @param[in] m Pointer to input mbuf
- * @param[in] len Length of input
+ * @brief Set TT config. Usually called on CoAP PUT to set configuration.
+ * @param[in] config configuration string
  * @return error_t
  */
-error_t arduino_set_TT_cfg(struct mbuf *m, uint8_t *len)
+error_t arduino_put_TT_cfg(char config)
 {
     return ERR_OK;
 }
 
+
 /**
- * @brief Get TT config
+ * @brief Get TT config. Usually called on CoAP GET to get configuration.
  * @param[in] m Pointer to input mbuf
  * @param[in] len Length of input
  * @return error_t
  */
 error_t arduino_get_TT_cfg(struct mbuf *m, uint8_t *len)
 {
+	// See arduino_get_TT_state
     return ERR_OK;
 }
 
 
 /**
- * @brief A function that reads a sensor and assembles a return message
+ * @brief Read sensor and return a CoAP response.
  * @param[out] m Pointer to return message
  * @param[out] len Length of return message
  * @return error_t
- * 
  */
 error_t arduino_get_TT( struct mbuf * m, uint8_t *len )
 {
@@ -345,6 +385,13 @@ error_t arduino_get_TT( struct mbuf * m, uint8_t *len )
     return rc;
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+//
+// Sensor low level code. Sensor specific helpers.
+// All code to access sensor goes here.
+//
+//////////////////////////////////////////////////////////////////////////
 
 /******************************************************************************/
 /*                     Private Methods                                        */
@@ -382,4 +429,3 @@ error_t TT_read( float * p )
     error_t rc = ERR_OK;
     return rc;
 }
-
