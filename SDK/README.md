@@ -1,7 +1,7 @@
 #Silver Spring Networks Developer Repository
 ## Applications
-[Java CoAP Client](SDK/Java%20CoAP%20Client)
+[Java CoAP Client](Java%20CoAP%20Client)
 
-[Windows CoAP Client](SDK/Windows%20CoAP%20Client)
+[Windows CoAP Client](Windows%20CoAP%20Client)
 
-[Starfish Data Platform Plot Application](SDK/Starfish%20Example%20Plot%20Application)
+[Starfish Data Platform Plot Application](Starfish%20Example%20Plot%20Application)
