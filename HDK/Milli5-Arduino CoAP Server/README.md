@@ -1,38 +1,42 @@
-# Itron Networked Solutions - Arduino MilliShield Software
+## Itron Arduino Milli-Shield
 
-**Note: The only version of Arduino IDE supported is for Windows 7, 8 and 10**
+### Current Version Info
+Current version is 1.4.1.
+See the changes.md file for details.
 
-This reference application consists of two folders:
+### Repository Structure
+
+The Milli Shield CoAP Server consists of two folders:
 
 Folder Name | Content
 ----------- | -----------
-mshield | The Arduino Sketch dependent on the Coap Server library
-ssni_coap_server | The SSNI COAP Server Library
+mshield | The Arduino Sketch dependent on the CoAP Server library
+ssni_coap_server | The Itron CoAP Server Library
 
-## Installation Instructions:
+### Installation Instructions:
 
-1. Download the folder `mshield` to your local machine and save it at your preferred location e.g.`C:\mshield`
+1. From the Milli5-Arduino CoAP Server repository, copy the sub-folder `mshield` to `C:\Users\<user>\Documents\Arduino`
+**Note:** Replace <user> with your Windows user name.
 
-1. Download the folder `ssni_coap_server` to this location:
+1. Download the folder `ssni_coap_server` to `C:\Users\<user>\Documents\Arduino\libraries`
 
-	`C:\Users\<user>\Documents\Arduino\libraries`
+1. Download and install the Arduino IDE 1.8.7 from https://www.arduino.cc/en/Main/Software
 
-	**Note**: Replace `<user>` with your username
+1. In the preferences, locate the field "Additionial Board Manager URLs".
+Add this URL to the list: `https://adafruit.github.io/arduino-board-index/package_adafruit_index.json`
 
-1. Download and install the Arduino IDE 1.8.2 from http://www.arduino.org/downloads
+1. Using the board manager, add the Adafruit SAMD boards. Select the Adafruit Metro M0 Express board.
 
-1. Click on `mshield.ino` located in the `mshield` folder
+1. In the folder Arduino\mshield, click on mshield.ino and your Arduino IDE will launch
 
-1. In the IDE, go to `Sketch/Include Library/Contributed Libraries` and select `ssni_coap_server`
+1. In the IDE, go to the Sketch menu and choose Include Library, and select ssni_coap_server from the Contributed Libraries section
 
-1. In the IDE, go to `Sketch/Include Library/Manage Libraries`
-   1. If your board is an Arduino M0, M0 Pro, Arduino/Genuino Zero or ZERO Pro; in the search bar, type RTC then locate RTCZero library, select v1.5.2 version and click install
-   1. If your board is an Arduino Due; in the search bar, type RTC then locate RTCDue library, select v1.1.O version and click install
-   1. Do you have the DHT11 sensor?
-      1. If yes, use `Manage Libraries` to locate and install the following:
-			* Adafruit Unified Sensor(v.1.0.2)
-			* DHT Sensor Library(v1.3.0)
-1. In the IDE, go `Tools/Board/Boards Manager` and the Boards Manager window should appear.
-   1. Use the search bar to locate your board e.g. M0 Pro
-   1. If your board is an Arduino M0, M0 Pro, Arduino/Genuino Zero or ZERO Pro; use the drop-down menu, select board support package 1.6.14 and click `Install`
-   1. If your board is an Arduino Due; use the drop-down menu, select board support package 1.6.11 and click `Install`
+1. In the IDE, go to Sketch/Include Library/Manage Libraries
+1. In the search bar, type RTCZero
+ 1. Click on "More info"
+ 1. In the drop-down menu, select v1.5.2 and click Install
+1. Do you have the DHT11 sensor?
+ 1. If yes, use Manage Libraries to locate and install the following libraries:
+ 1. Adafruit Unified Sensor v1.0.2
+ 1. DHT Sensor Library v1.3.0
+1. Build and upload the application to your Adafruit Metreo M0 Express board. Explore and have fun!

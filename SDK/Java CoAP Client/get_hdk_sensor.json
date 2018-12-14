@@ -11,7 +11,7 @@
       "deviceId": "<deviceId>",
       "deviceHost": "SSN<macAddress>.shared-starfish-test-install.eng.ssnsgs.net",
       "devicePort": "4849",
-      "devicePath": "/sensor/arduino/temp",
+      "devicePath": "/sbsr/arduino/temp",
       "deviceQuery": "sens"
     }
   ]
