@@ -1,0 +1,7 @@
+<suite name="Payload" verbose="1" >
+    <test name="Lnic"   >
+        <packages>
+            <package name="com.ssn.mqtt.payload" />
+        </packages>
+    </test>
+</suite>

@@ -1,0 +1,51 @@
+{
+  "head": [
+    {"h_field": "timestamp", "type": "timemillis"},
+    {"h_field": "seq", "type": "uint32"},
+    {"h_field": "length", "type": "uint16"},
+    {"h_field": "pad", "type": "uint16"},
+    {"h_field": "type", "type": "uint8"}
+  ],
+  "0001": {
+    "name": "temperature",
+    "type": "number",
+    "multiplier": 0.01
+  },
+  "0002": {
+    "name": "shock",
+    "type": "numberarray",
+    "numberofelements": 3,
+    "elementnames": ["x", "y", "z"],
+    "multiplier": 1
+  },
+  "0003": {
+    "name": "humidity",
+    "type": "number",
+    "multiplier": 1
+  },
+  "0004": {
+    "name": "alert",
+    "type": "lookup",
+    "lookup": {
+      "00000001": "freefall",
+      "00000002": "shock",
+      "00000004": "tiltset",
+      "00000008": "tiltcleared",
+      "00000010": "temphigh",
+      "00000020": "templow",
+      "00000040": "tempcleared"
+    }
+  },
+  "0005": {
+    "name": "tilt",
+    "type": "numberarray",
+    "numberofelements": 3,
+    "elementnames": ["x", "y", "z"],
+    "multiplier": 1
+  },
+  "0006": {
+    "name": "shock_sum",
+    "type": "number",
+    "multiplier": 1
+  }
+}
