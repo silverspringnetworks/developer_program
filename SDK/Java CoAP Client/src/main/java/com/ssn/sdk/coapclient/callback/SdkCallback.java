@@ -93,21 +93,20 @@ public class SdkCallback extends ClientCallback
             else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/rl78/methane"))
             {
                 // Remove the CBOR wrapper
-                byte[] ch4PayloadAsByteArray;
+                String innerPayloadAsStr;
                 try
                 {
-                    ch4PayloadAsByteArray = pu.stripOffCborWrapperByte(payloadAsByteArray);
+                    innerPayloadAsStr = pu.stripOffCborWrapperString(payloadAsByteArray);
                 }
                 catch (CborException excptn)
                 {
                     log.error("*** Error removing CBOR wrapper from r178 payload: <{}>", excptn.getMessage());
                     return;
                 }
-                String ch4PayloadAsStr = new String(ch4PayloadAsByteArray, CoapMessage.CHARSET);
-                log.info("*** CH4 Inner payload As String: <{}>", ch4PayloadAsStr);
+                log.info("*** CH4 Inner payload As String: <{}>", innerPayloadAsStr);
 
                 StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
-                sfc.sendObservation(payloadAsStr, "com.ssn.sdk.coapclient.payload.ChAlertPayloadTransformer");
+                sfc.sendObservation(innerPayloadAsStr, "com.ssn.sdk.coapclient.payload.ChAlertPayloadTransformer");
             }
             else if (arguments.getDevicePath().toLowerCase().contains("wfci"))
             {

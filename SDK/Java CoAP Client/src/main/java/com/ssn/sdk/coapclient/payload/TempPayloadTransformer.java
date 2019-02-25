@@ -1,20 +1,20 @@
 package com.ssn.sdk.coapclient.payload;
 
 import co.nstant.in.cbor.CborDecoder;
-import co.nstant.in.cbor.CborException;
-import co.nstant.in.cbor.model.DataItem;
-import co.nstant.in.cbor.model.UnsignedInteger;
-import com.ssn.sdk.coapclient.util.PayloadUtilities;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+        import co.nstant.in.cbor.CborException;
+        import co.nstant.in.cbor.model.DataItem;
+        import co.nstant.in.cbor.model.UnsignedInteger;
+        import com.ssn.sdk.coapclient.util.PayloadUtilities;
+        import org.json.JSONArray;
+        import org.json.JSONObject;
+        import org.slf4j.Logger;
+        import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+        import java.io.ByteArrayInputStream;
+        import java.text.SimpleDateFormat;
+        import java.util.Date;
+        import java.util.List;
+        import java.util.TimeZone;
 
 
 /**
