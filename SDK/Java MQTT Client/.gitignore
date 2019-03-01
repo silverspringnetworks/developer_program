@@ -1,9 +1,7 @@
-# Maven target directory
-target
-
-# IntelliJ related
+# IDE and System Related
+.DS_Store
 .idea
 sdkmqttclient.iml
+logs
+target
 
-#Exempt directories
-.DS_Store

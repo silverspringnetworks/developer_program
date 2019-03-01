@@ -1,0 +1,51 @@
+<configuration scan="true" scan-period="30 seconds">
+
+    <properties>
+        <property name="default.log.dir">./logs</property>
+    </properties>
+
+    <appenders>
+        <RollingFile name="FILE">
+            <append>true</append>
+            <fileName>${default.log.dir}/sdkmqttclient.log</fileName>
+            <filePattern>${default.log.dir}/sdkmqttclient.%d{yyyy-MM-dd}.%i.log.gz
+            </filePattern>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ, GMT} [%thread] %-5level [%logger{0}] %X - %msg%n</pattern>
+            </PatternLayout>
+
+            <immediateFlush>true</immediateFlush>
+        </RollingFile>
+
+        <Console name="CONSOLE">
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ, GMT} [%thread] %-5level [%logger{0}] %X - %msg%n</pattern>
+            </PatternLayout>
+        </Console>
+    </appenders>
+
+    <!-- Reduce amount logged - reduce the noise -->
+    <loggers>
+        <root level="WARN">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+
+        <!-- We want this code to log a lot -->
+        <logger name="com.itron.enablement.sdk.mqtt" level="DEBUG"/>
+        <logger name="com.itron.enablement.sdk.mqtt.client" level="DEBUG"/>
+        <logger name="com.itron.enablement.sdk.mqtt.payload" level="DEBUG"/>
+        <logger name="com.itron.enablement.sdk.mqtt.sdp" level="DEBUG"/>
+        <logger name="com.itron.enablement.sdk.mqtt.sdp.TokenClient" level="DEBUG"/>
+        <logger name="com.itron.enablement.sdk.mqtt.util" level="DEBUG"/>
+        <logger name="com.itron.enablement.sdk.mqtt.client.MqttSdpDeviceCache" level="TRACE"/>
+
+
+    </loggers>
+
+</configuration>
