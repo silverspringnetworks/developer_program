@@ -47,125 +47,6 @@ RTCDue rtc(XTAL);
 static int32_t seconds_relative_utc = 0;
 
 
-/*
- * crtime
- *
- * @brief CoAP Resource Arduino time
- *
- */
-error_t crtime(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
-{
-    struct optlv *o;
-
-    /* No URI path beyond /time is supported, so reject if present. */
-    o = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_PATH, &it);
-    if (o)
-    {
-        rsp->code = COAP_RSP_404_NOT_FOUND;
-        goto err;
-    }            
-
-    /* All methods require a query, so return an error if missing. */
-    if (!(o = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_QUERY, NULL))) 
-    {
-        rsp->code = COAP_RSP_405_METHOD_NOT_ALLOWED;
-        goto err;
-    }
-    
-    /*
-     * PUT for setting Arduino time
-     */
-    if (req->code == COAP_REQUEST_PUT) 
-    {
-        error_t rc = ERR_OK;
-		char * p;
-		time_t epoch;
-        
-        /* PUT /time?1488953919 */
-		p = (char*) (o->ov);
-
-		// UTC time
-		epoch = (time_t) atoi(p);
-		print("Epoch: "); printnum(epoch); println("");
-		
-		// Convert to the local time zone
-		epoch += seconds_relative_utc;
-		rtc.setEpoch(epoch);
-		
-		// Print time/date
-		print_current_date();
-
-		// Check return code
-        if (!rc)
-        {
-            rsp->code = COAP_RSP_204_CHANGED;
-            rsp->plen = 0;
-        }
-        else
-        {
-            switch (rc)
-            {
-            case ERR_BAD_DATA:
-            case ERR_INVAL:
-                rsp->code = COAP_RSP_406_NOT_ACCEPTABLE;
-                break;
-            default:
-                rsp->code = COAP_RSP_500_INTERNAL_ERROR;
-                break;
-            }
-            goto err;
-        }
-    } // if PUT
-    
-    /*
-     * GET /time
-     */
-    else if (req->code == COAP_REQUEST_GET)
-    {
-        uint8_t rc, len = 0;
-		uint32_t count = 0;
-		
-        /* GET /time?whatever */
-		rc = rsp_msg( rsp->msg, &len, count, NULL, NULL );
-
-        dlog(LOG_DEBUG, "GET (status %d) read %d bytes.", rc, len);
-        if (!rc)
-		{
-            rsp->plen = len;
-            rsp->cf = COAP_CF_CSV;
-            rsp->code = COAP_RSP_205_CONTENT;
-        }
-		else
-		{
-            switch (rc)
-			{
-            case ERR_BAD_DATA:
-            case ERR_INVAL:
-                rsp->code = COAP_RSP_406_NOT_ACCEPTABLE;
-                break;
-            default:
-                rsp->code = COAP_RSP_500_INTERNAL_ERROR;
-                break;
-            }
-            goto err;
-        }
-    }
-    else 
-    {
-        /* no other operation is supported */
-        rsp->code = COAP_RSP_405_METHOD_NOT_ALLOWED;
-        goto err;
-    }
-
-done:
-    return ERR_OK;
-
-err:
-    rsp->plen = 0;
-    return ERR_OK;
-} // crtime
-
-
 /**
  * @brief Set time zone
  *
@@ -267,7 +148,7 @@ void print_current_date(void)
 	a = rtc.getYear();
 	b = rtc.getDay();
 	c = rtc.getMonth();
-	sprintf( buffer, "Date: %02d:%02d:%d [mon:day:year]", c, b, a );
+	sprintf( buffer, "Date: %02d:%02d:%02d [mon:day:year]", c, b, a );
 	println(buffer);
 	
 } // print_current_date

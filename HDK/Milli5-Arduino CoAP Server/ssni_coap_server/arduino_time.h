@@ -45,12 +45,6 @@ extern RTCDue rtc;
 #define setEpoch setClock
 #endif
 
-/**
- *
- * @brief CoAP Resource Arduino time
- *
- */
-error_t crtime( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it );
 
 /**
  * @brief Set time zone

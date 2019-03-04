@@ -33,12 +33,14 @@ Networks, Inc.
 #include "coap_server.h"
 #include "coappdu.h"
 #include "coapmsg.h"
+#include "coapsensoruri.h"
+#include "coap_rbt_msg.h"
 #include "temp_sensor.h"
 #include "log.h"
 #include "arduino_time.h"
 
 
-#define VERSION_NUMBER "1.4.1"
+//NOTE: CoAP Server Version is defined in coapsensoruri.h
 
 
 //////////////////////////////////////////////////////////////////////////
