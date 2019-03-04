@@ -15,12 +15,12 @@ parameters and the IoT device as well as command line options. You can run the c
 
 To run the client use a command of this form in a command shell (in this case to get the list of options):
 ```$xslt
-java -jar sdkcoapclient-1.0.0-SNAPSHOT.one-jar.jar --help
+java -jar sdkcoapclient-1.4.2.one-jar.jar --help
 ```
 To run the client with a config file use the following command form (in this case to issue the CoAP
 activity defined by the coap.json file):
 ```$xslt
-java -jar sdkcoapclient-1.0.0-SNAPSHOT.one-jar.jar --conf coap.json
+java -jar sdkcoapclient-1.4.2.one-jar.jar --conf coap.json
 ```
 
 #### Prerequisites 
@@ -75,7 +75,7 @@ This will build the Java CoAP Client. The resultant jar can found in the target 
 (using the sample directory used above):
 
 ```$xslt
-C:\projects\developer_program\SDK\Java CoAP Client\target\sdkcoapclient-1.0.0-SNAPSHOT.one-jar.jar
+C:\projects\developer_program\SDK\Java CoAP Client\target\sdkcoapclient-1.4.2.one-jar.jar
 ```
 The jar is built as an all in one jar, it contains all libraries and dependencies need to run the
 client. To test the client, move the jar file from the target directory to a working directory
@@ -83,11 +83,16 @@ client. To test the client, move the jar file from the target directory to a wor
 following command:
 
 ```$xslt
-java -jar C:\tools\sdkcoapclient-1.0.0-SNAPSHOT.one-jar.jar --help
+java -jar C:\tools\sdkcoapclient-1.4.2.one-jar.jar --help
 ```
 
 #### Determine Starfish Client Id and Client Secret
-**TODO**
+Your Starfish Client Id and Client Secret can be obtained from your Starfish Developer Program account.
+Hopefully you captured these when you created your account. If not, you will need to create a new set
+as Starfish does not store your client Id and Secret.
+After you log into the developer program portal, select the "Account Settings" tab.
+Towards the middle of thee page, locate and click on the "ClientID/Secret" tab.
+Click on the "Create New ClientID/Secret" button. Make sure to write you Client Id and Client Secret down!
 
 #### Determine Starfish Device Id
 **TODO**
@@ -197,15 +202,3 @@ The following sample configurations are included:
 | get_hdk_ping.json | CoAP Get on the device root - makes a simple ping to insure device connectivity |
 | get_hdk_sensor.json | CoAP Get on device temp sensor - returns one data sample |
 | get_hdk_observe.json | CoAP Observe on device temp sensor - returns multiple notifications |
-
-#### About Gateway Sessions
-TODO
-
-#### How to prepare sensor data for Starfish Data Platform
-TODO
-
-#### Debugging CoAP Devices
-TODO
-
-#### The Big Picture - Where does CoAP client fit?
-TODO

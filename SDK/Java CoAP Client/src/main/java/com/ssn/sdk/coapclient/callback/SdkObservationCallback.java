@@ -107,11 +107,6 @@ public class SdkObservationCallback extends SdkCallback
                 log.info("Sending observation to Logistics");
                 sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.LogisticsPayloadTransformer");
             }
-            else if (arguments.getDevicePath().toLowerCase().contains("wfci"))
-            {
-                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
-                sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.WfciPayloadTransformer");
-            }
             else
             {
                 log.info("Got data from unknown sensor: {}. Ignoring data!", arguments.getDevicePath());

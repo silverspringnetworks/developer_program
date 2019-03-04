@@ -74,10 +74,10 @@ public class TempPayloadTransformer
         // Core payload: <epoch>,<temp>,<unit>
         String[] parts = payloadAsStr.split(",", 3);
 
-        Long ts = new Long(parts[0]);
+        Long ts = new Long(parts[0]);       //NOTE: this epoch is in seconds
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date dt = new Date(ts);
+        Date dt = new Date(ts*1000);        //NOTE: convert to milli-seconds
         String timestamp = sdf.format(dt);
         logger.debug("timestamp: {}", timestamp);
 
