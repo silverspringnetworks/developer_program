@@ -108,11 +108,6 @@ public class SdkCallback extends ClientCallback
                 StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
                 sfc.sendObservation(innerPayloadAsStr, "com.ssn.sdk.coapclient.payload.ChAlertPayloadTransformer");
             }
-            else if (arguments.getDevicePath().toLowerCase().contains("wfci"))
-            {
-                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
-                sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.WfciPayloadTransformer");
-            }
             else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/sens") || arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/log"))
             {
                 StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());

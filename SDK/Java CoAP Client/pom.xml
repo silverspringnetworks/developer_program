@@ -10,14 +10,14 @@
         <product.verison>1.4.2</product.verison>
     </properties>
 
-    <groupId>de.uzl.itm</groupId>
+    <groupId>com.ssn.sdk</groupId>
     <artifactId>sdkcoapclient</artifactId>
     <version>${product.verison}</version>
     <packaging>jar</packaging>
 
     <name>Itron Reference Java CoAP Client</name>
     <description>
-      CoAP Client for use with Itron's Developer Program.
+        Itron Developer Program CoAP Client
     </description>
 
     <dependencies>

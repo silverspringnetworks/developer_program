@@ -1,20 +1,20 @@
 package com.ssn.sdk.coapclient.payload;
 
 import co.nstant.in.cbor.CborDecoder;
-        import co.nstant.in.cbor.CborException;
-        import co.nstant.in.cbor.model.DataItem;
-        import co.nstant.in.cbor.model.UnsignedInteger;
-        import com.ssn.sdk.coapclient.util.PayloadUtilities;
-        import org.json.JSONArray;
-        import org.json.JSONObject;
-        import org.slf4j.Logger;
-        import org.slf4j.LoggerFactory;
+import co.nstant.in.cbor.CborException;
+import co.nstant.in.cbor.model.DataItem;
+import co.nstant.in.cbor.model.UnsignedInteger;
+import com.ssn.sdk.coapclient.util.PayloadUtilities;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-        import java.io.ByteArrayInputStream;
-        import java.text.SimpleDateFormat;
-        import java.util.Date;
-        import java.util.List;
-        import java.util.TimeZone;
+import java.io.ByteArrayInputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 
 /**
@@ -74,10 +74,10 @@ public class TempPayloadTransformer
         // Core payload: <epoch>,<temp>,<unit>
         String[] parts = payloadAsStr.split(",", 3);
 
-        Long ts = new Long(parts[0]);
+        Long ts = new Long(parts[0]);       //NOTE: this epoch is in seconds
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date dt = new Date(ts);
+        Date dt = new Date(ts*1000);        //NOTE: convert to milli-seconds
         String timestamp = sdf.format(dt);
         logger.debug("timestamp: {}", timestamp);
 
