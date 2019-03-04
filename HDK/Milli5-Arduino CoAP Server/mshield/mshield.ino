@@ -64,10 +64,9 @@
    \subsection step9  Step 8b:   In the search bar, type RTCZero
    \subsection step10  Step 8c:  Click on "More info"
    \subsection step11  Step 8d:  In the drop-down menu, select v1.5.2 and click Install
-   \subsection step12 Step 9a: Do you have the DHT11 sensor?
-   \subsection step13 Step 9b:   If yes, use Manage Libraries to locate and install the following libraries:
-   \subsection step14 Step 9c:     Adafruit Unified Sensor v1.0.2
-   \subsection step15 Step 9d:     DHT Sensor Library v1.3.0
+   \subsection step12 Step 9a: The following libraries are needed to support the DHT-11 temp sensor (these are needed even if you do not hook a DHT-11 up):
+   \subsection step14 Step 9b:   Adafruit Unified Sensor v1.0.2
+   \subsection step15 Step 9c:   DHT Sensor Library v1.3.0
    \subsection step16 Step 10:  Build and upload the application to your Adafruit Metreo M0 Express board. Explore and have fun!
 */
 
@@ -138,7 +137,8 @@ void setup()
 
 	// Log Banner: version number, time and date
 	char ver[64];
-	sprintf(ver, "Arduino MilliShield CoAP Server Version: %s", VERSION_NUMBER);
+	strcpy(ver, COAP_SERVER_VERSION_STRING);
+	strcat(ver, COAP_SERVER_VERSION_NUMBER);
 	println(ver);
 	sprintf(ver, "Build Time: %s  Date: %s", __TIME__, __DATE__);
 	println(ver);
@@ -152,6 +152,10 @@ void setup()
 
   int freeram = free_ram();
   dlog(LOG_DEBUG, "Free Ram: %d", freeram);
+  
+  // Send the reboot event to the mnic
+  coap_put_ic_reboot_event();
+  delay(50);
 } // setup
 
 

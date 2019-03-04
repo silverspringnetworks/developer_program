@@ -39,9 +39,9 @@ Networks, Inc.
 
 
 /*! @brief
- * Access is serialised via events, only one client too. Only need to handle
+ * Access is serialized via events, only one client too. Only need to handle
  * one observe per sensor. We have 3 sensors.
- * To keep memory usage down, only support 1 callback function.
+ * To keep memory usage down, we only support 1 callback function. This can be changed.
  */
 #define NUM_ARDUINO_RESOURCES   (crdt_max_sens - crdt_min_sens + 1)
 static void *coap_hdl[NUM_ARDUINO_RESOURCES] = { NULL };
@@ -49,9 +49,13 @@ static uint8_t hdr_rsv_bytes;
 struct coap_stats coap_stats;
 
 
+// System handler forwards
 static error_t crtitle(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
 static error_t crwellknown(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
 static error_t crsystem(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
+// Implemented in the "Sketch"
+error_t crarduino( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp );
+
 
 /* CoRE Link Attributes - RFC 6690 
  * Resource Type 'rt' Attribute - 
@@ -67,94 +71,60 @@ static error_t crsystem(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
    with a resource or a set of resources.  
  */
 
-#define CLA_TITLE   "title=\"Info\";ct=0"
 
-#define S_URI_SYSTEM        "system"
-
+#define S_URI_SYSTEM			"sys"
+#define S_TIME_URI				"time"
 #define S_STAT_URI              "stats"
+#define L_URI_ARDUINO			"arduino"
+
 #define S_STAT_URI_Q_MODULE     "mod"
 #define S_STAT_URI_Q_MOD_COAP   S_STAT_URI_Q_MODULE "=coap"
 #define S_STAT_URI_Q_MOD_PWR    S_STAT_URI_Q_MODULE "=pwr"
 #define S_STAT_URI_Q_MOD_HDLC   S_STAT_URI_Q_MODULE "=hdlc"
 
-#define S_TIME_URI          "time"
-#define S_STATS_URI         "stats"
-#define S_TIME_URI_Q_ABS    "abs"
-#define S_TIME_URI_Q_DELTA  "delta"
-#define S_SV_URI            "sysvar"
-#define S_SV_URI_Q_ID       "id="
-
-#define S_UPG_URI   			"upg"
-#define S_UPG_URI_Q_INFO        "info"
-#define S_UPG_URI_Q_INFO_VER    S_UPG_URI_Q_INFO "=ver"
-#define S_UPG_URI_Q_INFO_STATE    S_UPG_URI_Q_INFO "=sts"
-#define S_UPG_URI_Q_STATE       "st"
-#define S_UPG_URI_Q_STATE_INIT     S_UPG_URI_Q_STATE "=init"
-#define S_UPG_URI_Q_STATE_VERIFY   S_UPG_URI_Q_STATE "=verify"
-#define S_UPG_URI_Q_STATE_ACTIVATE S_UPG_URI_Q_STATE "=activate"
-#define S_UPG_URI_Q_IMGOFFSET   "off="
-
 #define CLA_SYSTEM  "if=" "\"" S_URI_SYSTEM "\"" ";title=\"System\";ct=42;rev=1;"
-
-#define L_URI_LOGISTICS     "logistics"
-#define L_URI_Q_CFG         "cfg"
-
-#define L_SENS_URI              "sens"
-#define L_SENS_URI_Q_ID         "id"
-#define L_SENS_URI_Q_CFG_TILT   L_URI_Q_CFG "=tilt"
-#define L_SENS_URI_Q_CFG_SHOCK  L_URI_Q_CFG "=shock"
-#define L_SENS_URI_Q_CFG_TEMP   L_URI_Q_CFG "=temp"
-#define L_SENS_URI_Q_CFG_HUMID  L_URI_Q_CFG "=humid"
-#define L_SENS_URI_Q_ID_ALL     L_SENS_URI_Q_ID "=all"
-#define L_SENS_URI_Q_ID_TILT    L_SENS_URI_Q_ID "=tilt"
-#define L_SENS_URI_Q_ID_SHOCK   L_SENS_URI_Q_ID "=shock"
-#define L_SENS_URI_Q_ID_TEMP    L_SENS_URI_Q_ID "=temp"
-
-#define L_LOG_URI               "log"
-#define L_LOG_URI_Q_RW          "rw="
-#define L_LOG_URI_Q_SN          "sn="
-#define L_LOG_URI_Q_LOGN        "logn="
-#define L_LOG_URI_Q_NON         "non="
-#define L_LOG_URI_Q_CFG_GLBL    L_URI_Q_CFG "=glbl"
-#define L_LOG_URI_Q_NON         "non="
-
-
-// Arduino URI sensors
-#define L_URI_ARDUINO "arduino"
 #define CLA_ARDUINO   "if=" "\"" L_URI_ARDUINO "\"" ";title=\"Arduino Sensors\";ct=42;"
+
 
 
 /* 
  * TODO CLA_LOGISTICS: Check ct, and see if format above can/should be
- * optimised. See https://tools.ietf.org/html/rfc6690.
+ * optimized. See https://tools.ietf.org/html/rfc6690.
  * Use #defines L_URI*
  */
 
-#define L_URI_MBUS_WATER "mbus_water"
-#define CLA_MBUS_WATER "if=" "\"" L_URI_MBUS_WATER "\"" ";title=\"Mbus Water Meter\";ct=42;"
+//#define L_URI_MBUS_WATER "mbus_water"
+//#define CLA_MBUS_WATER "if=" "\"" L_URI_MBUS_WATER "\"" ";title=\"Mbus Water Meter\";ct=42;"
 
-#define L_URI_Q_TDATA       "tdata"
-#define L_URI_Q_TDATA_ALL   L_URI_Q_TDATA "=all"
+//#define L_URI_Q_TDATA       "tdata"
+//#define L_URI_Q_TDATA_ALL   L_URI_Q_TDATA "=all"
 
 
-/* Simple list of callbacks */
+/* Simple list of callback counts. Note: update this list when adding additional handlers. */
+#define COAP_N_BASE_CBR		(2)
+#define COAP_N_SYS_CBR		(1)
+#define COAP_N_SENSOR_CBR	(1)
 
-#define COAP_N_BASE_CBR     (2)
-#define COAP_N_SYS_CBR      (1)
-#define COAP_N_LOG_CBR      (1)
+#define COAP_MAX_CBR        (COAP_N_BASE_CBR + COAP_N_SYS_CBR + COAP_N_SENSOR_CBR)
 
-#define COAP_MAX_CBR        (COAP_N_BASE_CBR + COAP_N_SYS_CBR + COAP_N_LOG_CBR)
 
 struct coap_cb_reg coap_registry[COAP_MAX_CBR];
 static int coap_reg_size;
+
+// RTC Clock
+extern RTCZero rtc;
+
 
 error_t coap_uri_register(const char *path, coap_cb cbfunc, const char *corelink)
 {
     int idx;
 
-    if (coap_reg_size < COAP_MAX_CBR) {
+    if (coap_reg_size < COAP_MAX_CBR)
+	{
         idx = coap_reg_size++;    
-    } else {
+    }
+	else
+	{
         return ERR_NO_MEM;
     }
     
@@ -165,10 +135,8 @@ error_t coap_uri_register(const char *path, coap_cb cbfunc, const char *corelink
     return ERR_OK;
 }
 
-// Implemented in the Sketch
-error_t crarduino( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp );
 
-// Init the CoAP registry
+// Initialize the CoAP registry
 void coap_registry_init(void)
 {
 	/* Clear the registry */
@@ -191,11 +159,10 @@ void coap_registry_init(void)
 	* while satisfying .well-known/core discovery.
 	*/
 	(void)coap_uri_register(L_URI_ARDUINO, crarduino, CLA_ARDUINO);
-	
-} // coap_registry_init()
+}
 
 
-/*** Dispatch request to registered handler ***/
+// CoAP Dispatcher. Dispatch request to registered handler
 error_t coap_s_uri_proc(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
 {
 
@@ -256,33 +223,41 @@ done:
 }
 
 
-
-
 /*** Basic handlers ***/
-static char id[] = {"Arduino MilliShield"}; // TODO: What ID is this?
+
+
+// crtitle. Handles "/{prefix}". For example "/snsr".
 static error_t crtitle(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
 {
-    char *d;
-    if (req->code == COAP_REQUEST_GET) {
+    if (req->code == COAP_REQUEST_GET)
+	{
+		char *d;
+		char id[64];
+		
+		strcpy(id, COAP_SERVER_VERSION_STRING);
+		strcat(id, COAP_SERVER_VERSION_NUMBER);
+		
         d = (char*) m_append(rsp->msg, strlen(id));
-        if (!d) {
+        if (!d)
+		{
             coap_stats.no_mbufs++;
             rsp->code = COAP_RSP_500_INTERNAL_ERROR;
         }
-        else {
+        else
+		{
             memcpy(d, id, strlen(id));
             rsp->plen = strlen(id);
             rsp->cf = COAP_CF_TEXT_PLAIN;
             rsp->code = COAP_RSP_205_CONTENT;
-            /* final as per request */
         }            
     }
-    else {
+    else
+	{
         rsp->code = COAP_RSP_403_FORBIDDEN;
     }
     return ERR_OK;
-
 }
+
 
 static error_t crwellknown(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
 {
@@ -348,32 +323,32 @@ static error_t crwellknown(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
 }
 
 
-
-
-/*
- * Do we want to handle unexpected options, like COAP_OPTION_URI_QUERY here,
- * and return 4.03 is appropriate, for example?
- */
+ // crsystem_time. Handles "/{prefix}/sys/time". For example "/snsr/sys/time".
 static error_t crsystem_time(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
 {
     struct optlv *o;
-    uint32_t now;
 
     /* No URI path beyond /time is supported, so reject if present. */
-    if ((o = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_PATH, &it))) {
+    if ((o = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_PATH, &it)))
+	{
         rsp->code = COAP_RSP_404_NOT_FOUND;
-        goto err;
+        rsp->plen = 0;
+        return ERR_OK;
     }            
-
-    now = get_rtc_epoch();
    
-    if (req->code == COAP_REQUEST_GET) {
+    if (req->code == COAP_REQUEST_GET)
+	{
+		uint32_t now;
         void *d;
         int len;
+		
+		now = get_rtc_epoch();
+		dlog(LOG_DEBUG, "Epoch for GET of sys time: %08x", now);
         now = htonl(now);
         len = sizeof(now);
         d = m_append(rsp->msg, len);
-        if (!d) {
+        if (!d)
+		{
             coap_stats.no_mbufs++;
             return ERR_NO_MEM;
         }
@@ -381,37 +356,42 @@ static error_t crsystem_time(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp,
         rsp->plen = len;
         rsp->cf = COAP_CF_APPLICATION_OCTET_STREAM;
         rsp->code = COAP_RSP_205_CONTENT;
-    } else if (req->code == COAP_REQUEST_PUT) {
+    }
+	else if (req->code == COAP_REQUEST_PUT)
+	{
         m_adj(req->msg, req->hdrlen);
         coap_sys_time_data_t *td = mtod(req->msg, coap_sys_time_data_t *);
+        //ddump(LOG_DEBUG, "PUT /sys/time Payload", (void *)td, sizeof(coap_sys_time_data_t));
 
         /* Ensure type and length correct */
-        if ((req->msg->m_pktlen == 0) || ((td->tl.u.rdt != crdt_time_abs) && 
-                    (td->tl.u.rdt != crdt_time_delta)) || 
-            (td->tl.l != 
-                (sizeof(coap_sys_time_data_t) - sizeof(coap_sens_tl_t)))) {
+        if ((req->msg->m_pktlen == 0) || ((td->tl.u.rdt != crdt_time_abs) && (td->tl.u.rdt != crdt_time_delta)) || 
+            (td->tl.l != (sizeof(coap_sys_time_data_t) - sizeof(coap_sens_tl_t))))
+		{
             rsp->code = COAP_RSP_406_NOT_ACCEPTABLE;
-        } else if (td->tl.u.rdt == crdt_time_abs) {
-            // TODO: how to implement this?
-            //if (rtc_set_time(ntohl(td->sec), ntohl(td->msec)) == ERR_OK)
-            if (1)
-            {
-                dlog(LOG_DEBUG, "Time changed %lu.%lu", ntohl(td->sec), 
-                        ntohl(td->msec));
-                rsp->code = COAP_RSP_204_CHANGED;
-            } else {
-                /* Handle delta here */
-                rsp->code = COAP_RSP_406_NOT_ACCEPTABLE;
-            }
         }
-    } else {
+		else if (td->tl.u.rdt == crdt_time_abs)
+		{
+			time_t epoch;
+			
+			// Expect UTC time
+			epoch = (time_t) ntohl(td->sec);
+			dlog(LOG_DEBUG, "Setting RTC to epoch: %08x", epoch);
+			
+			rtc.setEpoch(epoch);
+			
+			print_current_date();
+			print_current_time();
+			
+			rsp->code = COAP_RSP_204_CHANGED;
+			rsp->plen = 0;
+        }
+    }
+	else
+	{
         rsp->code = COAP_RSP_501_NOT_IMPLEMENTED;
+        rsp->plen = 0;
     }
     
-    return ERR_OK;
-err:
-    rsp->plen = 0;
-
     return ERR_OK;
 }
 
@@ -533,20 +513,15 @@ err:
 }
 
 
-
-
-/*
- * Do we want to handle unexpected options, like COAP_OPTION_URI_QUERY here,
- * and return 4.03 is appropriate, for example?
- */
+// The "sys" dispatcher.
 static error_t crsystem(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
 {
     struct optlv *o;
     void *it = NULL;
-
+	
     /* No observes on system */
-    if ((o = copt_get_next_opt_type((const sl_co*)&(req->oh), 
-                                    COAP_OPTION_OBSERVE, NULL))) {
+    if ((o = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_OBSERVE, NULL)))
+	{
         copt_del_opt_type((sl_co*)&(rsp->oh), COAP_OPTION_OBSERVE);
     }
     /* 
@@ -554,16 +529,25 @@ static error_t crsystem(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
      * reject if present. 
      */
     copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_PATH, &it);
-    if ((o = copt_get_next_opt_type((const sl_co*) &(req->oh), COAP_OPTION_URI_PATH, &it))) {
-        if (!coap_opt_strcmp(o, S_TIME_URI)) {
+	
+    if ((o = copt_get_next_opt_type((const sl_co*) &(req->oh), COAP_OPTION_URI_PATH, &it)))
+	{
+        if (!coap_opt_strcmp(o, S_TIME_URI))
+		{
             return crsystem_time(req, rsp, it);
-        } else if (!coap_opt_strcmp(o, S_STAT_URI)) {
+        }
+		else if (!coap_opt_strcmp(o, S_STAT_URI))
+		{
             /* placeholder for stats */
             return crsystem_stats(req, rsp, it);
-        } else {
+        }
+		else
+		{
             rsp->code = COAP_RSP_404_NOT_FOUND;
         }
-    } else {
+    }
+	else
+	{
         rsp->code = COAP_RSP_404_NOT_FOUND;
     }
 

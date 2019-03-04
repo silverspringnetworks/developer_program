@@ -61,8 +61,11 @@ typedef enum
 	CELSIUS_SCALE = 0x43,
 	FAHRENHEIT_SCALE = 0x46,
 	NUMBER_OF_SCALES = 2
-
 } temp_scale_t;
+
+// Max temperature of the DHTxx series is 80.0C. If no sensor we return 100.0C.
+#define NO_SENSOR_TEMP		100.0
+
 
 typedef struct temp_sensor_cfg
 {

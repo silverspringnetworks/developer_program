@@ -623,19 +623,22 @@ error_t temp_sensor_read(float * p)
 	// Check for NaN
 	if (isnan(event.temperature)) 
 	{
-		println("Error reading temperature!");
-		rc = ERR_FAIL;
+		//println("Error reading temperature!");
+		//rc = ERR_FAIL;
+		re = NO_SENSOR_TEMP;
+		rc = ERR_OK;
 	}
 	else 
 	{
 		re = event.temperature;
-		if ( FAHRENHEIT_SCALE == temp_scale )
-		{
-			// Convert from Celsius to Fahrenheit
-			re *= 1.8;
-			re += 32;
-		}
 		rc = ERR_OK;
+	}
+	
+	if (FAHRENHEIT_SCALE == temp_scale)
+	{
+		// Convert from Celsius to Fahrenheit
+		re *= 1.8;
+		re += 32;
 	}
 	
 	// Assign output

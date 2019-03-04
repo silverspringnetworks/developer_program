@@ -3,6 +3,21 @@
 
 ### Changes
 
+#### Version 1.4.4
+- Released on Mar 4, 2019
+- Improved the CoAP response if a DHT-xx is not hooked up. The original behavior was to return an internal server error.
+The temp sensor code now returns a sensor value of 100C (212F) if a sensor is not hooked up.
+The max temperature that can be returned by the DHT-xx family is 80C.
+- Added the CoAP Server Reset request.
+This is code that sends a PUT request to the milli shield to inform it of an app processor (Adafruit board) reset.
+See coap_rbt_msg.cpp for the code.
+This file also demonstrates the correct way for a CoAP server to inform the milli of a request or response.
+- Added support for setting "system time". The CoAP server now supports the /snsr/sys/time resource.
+This is used by the milli to set the app processor time and allows external clients to GET the app processor time.
+- Fixed the generic CoAP Server resource /snsr. A GET on this resource now returns the CoAP Server version string.
+Note that the version define has been moved from mshield.h to coapsensoruri.h.
+
+
 #### Version 1.4.1
 - Released on Dec 14, 2018.
 - Added support for the Adafruit Metro M0 Express board.

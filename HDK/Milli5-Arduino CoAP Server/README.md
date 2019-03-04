@@ -1,7 +1,7 @@
 ## Itron Arduino Milli-Shield
 
 ### Current Version Info
-Current version is 1.4.1.
+Current version is 1.4.4.
 See the changes.md file for details.
 
 ### Repository Structure
@@ -35,8 +35,8 @@ Add this URL to the list: `https://adafruit.github.io/arduino-board-index/packag
 1. In the search bar, type RTCZero
  1. Click on "More info"
  1. In the drop-down menu, select v1.5.2 and click Install
-1. Do you have the DHT11 sensor?
- 1. If yes, use Manage Libraries to locate and install the following libraries:
+1. The following libraries are needed to support the DHT-11 temp sensor (these are needed even if you do not hook a DHT-11 up):
+ 1. Use Manage Libraries to locate and install the following libraries:
  1. Adafruit Unified Sensor v1.0.2
  1. DHT Sensor Library v1.3.0
 1. Build and upload the application to your Adafruit Metreo M0 Express board. Explore and have fun!

@@ -33,9 +33,14 @@ Networks, Inc.
 #include "errors.h"
 #include "coapmsg.h"
 
+
+// CoAP Server Version Title
+#define COAP_SERVER_VERSION_NUMBER "1.4.4"
+#define COAP_SERVER_VERSION_STRING "Itron Reference CoAP Server: "
+
+
 /* Sensor id */
-#define COAP_SIM_SID    "sensor"
-#define MAX_URI_LEN     256         /* Longest Uri-Path+Uri-Query we'll handle */
+#define MAX_URI_LEN			256         /* Longest Uri-Path+Uri-Query we'll handle */
 
 #define L_URI_Q_CFG         "cfg"
 #define L_URI_Q_SENS        "sens"
