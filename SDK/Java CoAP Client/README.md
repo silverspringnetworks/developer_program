@@ -2,7 +2,7 @@
 ### Itron Developer Program SDK
 
 ### Current Version Info
-Current version is 1.4.1.
+Current version is 1.4.2.
 See the changes.md file for details.
 
 #### Overview
