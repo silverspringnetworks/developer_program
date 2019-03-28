@@ -76,7 +76,7 @@ public class TempPayloadTransformer
         Long ts = new Long(parts[0]);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date dt = new Date(ts);
+        Date dt = new Date(ts*1000);
         String timestamp = sdf.format(dt);
         logger.debug("timestamp: {}", timestamp);
 
