@@ -40,15 +40,8 @@ Networks, Inc.
 #include <sys/types.h>
 #include <stdint.h>      /* this defines uint32_t, etc */
 #include <stdlib.h>
-
 #include <assert.h>
-#ifndef BIG_ENDIAN
-#define BIG_ENDIAN 1
-#endif
 
-#ifndef BYTE_ORDER
-#define BYTE_ORDER BIG_ENDIAN
-#endif
 
 #ifndef min
 #define min(a, b) ((a)<(b)?(a):(b))
@@ -127,7 +120,9 @@ Networks, Inc.
     ((((x) & 0xff00) >> 8) | \
      (((x) & 0x00ff) << 8)))
 
-#if BYTE_ORDER == BIG_ENDIAN
+
+// Network order macros. Always use the gcc pre-defined macros!
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #define ntohll(x)  ((uint64_t)(x))
 #define htonll(x)  ((uint64_t)(x))
 #define ntohl(x)   ((uint32_t)(x))
@@ -142,7 +137,7 @@ Networks, Inc.
 #define htole32(x) bswap32((uint32_t)(x))
 #define htole16(x) bswap16((uint16_t)(x))
 
-#else /* #if BYTE_ORDER == LITTLE_ENDIAN */
+#else /* #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__ */
 #define ntohll(x)  bswap64((uint64_t)(x))
 #define htonll(x)  bswap64((uint64_t)(x))
 #define ntohl(x)   bswap32((uint32_t)(x))
@@ -156,6 +151,6 @@ Networks, Inc.
 #define htole32(x) ((uint32_t)(x))
 #define htole16(x) ((uint16_t)(x))
 
-#endif /* #if BYTE_ORDER == LITTLE_ENDIAN */
+#endif
 
 #endif  /* _INCLUDES_H_ */

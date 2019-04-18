@@ -35,7 +35,7 @@ Networks, Inc.
 
 
 // CoAP Server Version Title
-#define COAP_SERVER_VERSION_NUMBER "1.4.4"
+#define COAP_SERVER_VERSION_NUMBER "1.4.5"
 #define COAP_SERVER_VERSION_STRING "Itron Reference CoAP Server: "
 
 
