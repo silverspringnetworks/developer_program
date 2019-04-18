@@ -3,6 +3,14 @@
 
 ### Changes
 
+#### Version 1.4.5
+- Released on Apr 18, 2019
+- Fixed the bug where the milli provided date (the epoch) is corrupted when the milli sends a /snsr/sys/time PUT
+request to the mshield app. This bug occurs only when mshield is built with the Arduino IDE tool chain.
+This bug does not occur when mshield is built using the Atmel Studio tool chain.
+Internal bug reference: REFCOAPSERVER-19.
+
+
 #### Version 1.4.4
 - Released on Mar 4, 2019
 - Improved the CoAP response if a DHT-xx is not hooked up. The original behavior was to return an internal server error.
