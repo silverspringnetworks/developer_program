@@ -25,7 +25,7 @@ ssni_coap_server | The Itron CoAP Server Library
 1. In the preferences, locate the field "Additionial Board Manager URLs".
 Add this URL to the list: `https://adafruit.github.io/arduino-board-index/package_adafruit_index.json`
 
-1. Using the board manager, add the Adafruit SAMD boards. Select the Adafruit Metro M0 Express board.
+1. Using the board manager, add the Adafruit SAMD boards, and the Arduino SAMD boards. Select the Adafruit Metro M0 Express board.
 
 1. In the folder Arduino\mshield, click on mshield.ino and your Arduino IDE will launch
 
