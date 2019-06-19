@@ -26,12 +26,12 @@ The MQTT Client is very happy running in a VM environment (such as an AWS EC2).
 
 To run the client use a command of this form in a shell or command prompt window:
 ```$xslt
-java -jar sdkmqttclient-1.0.0.one-jar.jar -Dconfig.properties=<path to properties file>
+java -D"config.properties=<path to properties file>" -jar sdkmqttclient-1.0.2.one-jar.jar
 ```
 For example, if your properties file is named "test.properties" and is located in the same
 directory as the jar file:
 ```$xslt
-java -jar sdkmqttclient-1.0.0.one-jar.jar -Dconfig.properties=./test.properties
+java -D"config.properties=./test.properties" -jar sdkmqttclient-1.0.2.one-jar.jar
 ```
 
 
