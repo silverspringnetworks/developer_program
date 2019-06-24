@@ -24,7 +24,7 @@ Starfish Data Platform "observations" API.
 The MQTT Client is very happy running in a VM environment (such as an AWS EC2).
 
 
-To run the client use a command of this form in a shell or command prompt window:
+To run the client use a command of this form in a Linux shell or Windows Command Prompt window:
 ```$xslt
 java -Dconfig.properties=<path to properties file> -jar sdkmqttclient-1.0.2.one-jar.jar
 ```
@@ -32,6 +32,12 @@ For example, if your properties file is named "test.properties" and is located i
 directory as the jar file:
 ```$xslt
 java -Dconfig.properties=./test.properties -jar sdkmqttclient-1.0.2.one-jar.jar
+```
+
+To run the client using Windows PowerShell requires additional quoting (this is 
+standard conversion of Command Prompt to PowerShell):
+```$xslt
+java -D'config.properties'=<path to properties file> -jar sdkmqttclient-1.0.2.one-jar.jar
 ```
 
 
@@ -54,7 +60,7 @@ The steps needed to build and prep the MQTT Client for use:
 #### Build Java MQTT Client
 You have probably already cloned the Itron developer program GitHub repository. If not, now's the time!
 
-The Java CoAP Client is available on GitHub as part of the developer_program repository.
+The Java MQTT Client is available on GitHub as part of the developer_program repository.
 First, clone the GitHub repository. Point your browser to the following URL:
 `https://github.com/silverspringnetworks/developer_program`.
 
