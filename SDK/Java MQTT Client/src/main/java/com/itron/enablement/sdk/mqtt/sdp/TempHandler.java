@@ -18,7 +18,7 @@ public class TempHandler
     }
 
 
-    public void sendObservation(byte[] payload, String payloadTransformerName, String deviceId)
+    public void sendObservation(byte[] payload, String payloadTransformerName, String deviceId, String nic_macID)
     {
         // Transform observations payload
         Object pti = null;
@@ -29,9 +29,9 @@ public class TempHandler
             // Use reflection to load and call the transformer class
             ptc = Class.forName(payloadTransformerName);
             pti = ptc.newInstance();
-            Method method = ptc.getMethod("buildPayload", byte[].class);
+            Method method = ptc.getMethod("buildPayload", byte[].class, String.class);
 
-            payloadJson = (String) method.invoke(pti, payload);
+            payloadJson = (String) method.invoke(pti, payload, nic_macID);
         }
         catch (Exception excptn)
         {
