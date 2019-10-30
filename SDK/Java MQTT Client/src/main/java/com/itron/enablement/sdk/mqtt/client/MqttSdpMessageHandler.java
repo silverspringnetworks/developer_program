@@ -86,7 +86,7 @@ public class MqttSdpMessageHandler implements MqttCallback
                 String deviceId = MqttSdpDeviceCache.getDeviceCache().get(nic_macID);
                 logger.debug("Device Id: {}", deviceId);
                 // Transform wfci observation and send to Starfish Data Platform.
-                sendTempData2Sdp(message, deviceId);
+                sendTempData2Sdp(message, deviceId, nic_macID);
                 break;
             }
             case "ncmth1":
@@ -117,13 +117,13 @@ public class MqttSdpMessageHandler implements MqttCallback
     }
 
 
-    private void sendTempData2Sdp(MqttMessage message, String deviceId)
+    private void sendTempData2Sdp(MqttMessage message, String deviceId, String nic_macID)
     {
         // Transform the payload and send it to SDP
         TempHandler temph = new TempHandler(getBridgeConfiguration());
         String payloadTransformer = "com.itron.enablement.sdk.mqtt.payload.TempPayloadTransformer";
         byte[] payloadAsByteArray = message.getPayload();
-        temph.sendObservation(payloadAsByteArray, payloadTransformer, deviceId);
+        temph.sendObservation(payloadAsByteArray, payloadTransformer, deviceId, nic_macID);
     }
 
 

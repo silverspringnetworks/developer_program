@@ -27,11 +27,12 @@ public class TempPayloadTransformer
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(TempPayloadTransformer.class.getName());
 
 
-    public String buildPayload(byte[] payloadAsByteArray)
+    public String buildPayload(byte[] payloadAsByteArray, String macId)
     {
         final String obsRootLabel   = "observations";
         final String timestampLabel = "timestamp";
         final String tempLabel      = "temperature";
+        final String macIdLabel     = "macId";
         String payloadAsStr;
 
         // This code provides an example of how to strip off a CBOR wrapper.
@@ -84,6 +85,7 @@ public class TempPayloadTransformer
         JSONObject joObservation = new JSONObject();
         joObservation.put(timestampLabel, timestamp);
         joObservation.put(tempLabel, parts[1]);
+        joObservation.put(macIdLabel, macId);
 
         JSONArray joaObservations = new JSONArray();
         joaObservations.put(joObservation);
