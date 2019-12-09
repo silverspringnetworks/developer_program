@@ -1,19 +1,21 @@
 """Python setup script for bluepy"""
 
-from setuptools.command.install import install
-from setuptools.command.develop import develop
+from setuptools.command.build_py import build_py
 from setuptools import setup
 import subprocess
 import shlex
 import sys
 import os
 
+VERSION='1.3.0'
 
 def pre_install():
     """Do the custom compiling of the bluepy-helper executable from the makefile"""
     try:
         print("Working dir is " + os.getcwd())
-        for cmd in [ "make -C ./bluepy clean", "make -C bluepy" ]:
+        with open("bluepy/version.h","w") as verfile:
+            verfile.write('#define VERSION_STRING "%s"\n' % VERSION)
+        for cmd in [ "make -C ./bluepy clean", "make -C bluepy -j1" ]:
             print("execute " + cmd)
             msgs = subprocess.check_output(shlex.split(cmd), stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
@@ -23,38 +25,39 @@ def pre_install():
         print("Output was:\n%s" % e.output)
         sys.exit(1)
 
-def post_install():
-    """Post installation tasks"""
+class my_build_py(build_py):
+    def run(self):
+        pre_install()
+        build_py.run(self)
+
+setup_cmdclass = {
+    'build_py' : my_build_py,
+}
+
+# Force package to be *not* pure Python
+# Discusssed at issue #158
+
+try:
+    from wheel.bdist_wheel import bdist_wheel
+
+    class BluepyBdistWheel(bdist_wheel):
+        def finalize_options(self):
+            bdist_wheel.finalize_options(self)
+            self.root_is_pure = False
+
+    setup_cmdclass['bdist_wheel'] = BluepyBdistWheel
+except ImportError:
     pass
 
-def setup_command(command_subclass):
-    """Decorator for customizing setuptools.command subclasses"""
-    orig_run = command_subclass.run
-    def custom_run(self):
-
-        pre_install()        
-        orig_run(self)
-        post_install()
-
-    command_subclass.run = custom_run
-    return command_subclass
-
-@setup_command
-class BluepyInstall(install):
-    pass
-
-@setup_command
-class BluepyDevelop(develop):
-    pass
 
 setup (
     name='bluepy',
-    version='1.0.5',
+    version=VERSION,
     description='Python module for interfacing with BLE devices through Bluez',
     author='Ian Harvey',
     author_email='website-contact@fenditton.org',
     url='https://github.com/IanHarvey/bluepy',
-    download_url='https://github.com/IanHarvey/bluepy/tarball/v/1.0.5',
+    download_url='https://github.com/IanHarvey/bluepy/tarball/v/%s' % VERSION,
     keywords=[ 'Bluetooth', 'Bluetooth Smart', 'BLE', 'Bluetooth Low Energy' ],
     classifiers=[
         'Programming Language :: Python :: 2.7',
@@ -62,17 +65,17 @@ setup (
         'Programming Language :: Python :: 3.4',
     ],
     packages=['bluepy'],
+    
     package_data={
-        'bluepy': ['bluepy-helper', '*.json', 'bluez-src.tgz', 'bluepy-helper.c', 'Makefile']
+        'bluepy': ['bluepy-helper', '*.json', 'bluez-src.tgz', 'bluepy-helper.c', 'version.h', 'Makefile']
     },
-    cmdclass={'install': BluepyInstall, 'develop': BluepyDevelop},
+    cmdclass=setup_cmdclass,
     entry_points={
         'console_scripts': [
+            'thingy52=bluepy.thingy52:main',
             'sensortag=bluepy.sensortag:main',
             'blescan=bluepy.blescan:main',
         ]
     }
 )
-
-
 

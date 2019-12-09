@@ -1,3 +1,0 @@
-#!/bin/sh
-sensortag --all -n $1 -t $2 -f $4 $3 > $5 2>&1
-

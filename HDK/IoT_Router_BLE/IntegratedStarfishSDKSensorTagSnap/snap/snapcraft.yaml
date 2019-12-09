@@ -1,34 +1,31 @@
 name: starfish-sensortag-app 
-version: '0.1' 
+version: '0.4' 
 #list of architectures the snap may run on. Defaults to [all].
 #architectures: 
 #	- all | amd64 | i386 | armhf
-architectures: [ armhf ]
-summary: Fetching TI-Sensortag data and posting to Starfish Data Platform
+architectures: [ armhf ]  
+summary: Fetching TI CC2650 Sensortag data and posting it to the Starfish Data Platform
 description: |
-     This snap app fetch the sensor's data from TI-Sensortag CC2650 and 
-     Post the same to Starfish Data Platform
-grade:  devel
-confinement: devmode
+     This snap application fetches the sensor's data from the TI CC2650 Sensortag and 
+     posts it to the Itron Starfish Data Platform
+grade:  stable
+confinement: strict
+base: core18
 
 apps:
   run:
     command: bin/nodeapp
-    plugs: [bluetooth-control, network-bind, network]
+    plugs: [bluetooth-control, network-bind, network]  
+  sensortag:
+    command: bin/sensortag
+    plugs: [ bluetooth-control ]
   hciconfig:
     command: usr/bin/hciconfig
     plugs: [  bluetooth-control ]
   hcitool:
     command: usr/bin/hcitool
     plugs: [ bluetooth-control ]
-  bluetoothctl:
-    command: usr/bin/bluetoothctl
-    plugs: [ client ]
-  bluez:
-    command: "usr/lib/bluetooth/bluetoothd -E"
-    daemon: simple
-    slots: [ service ]
-
+  
 plugs:
   client:
       interface: bluez
@@ -39,19 +36,24 @@ slots:
 
 parts:
   starfish-sdk-wrapper:
-    source: .
+    source: node
+    source-type: local
     plugin: nodejs
+    node-engine: 8.15.0    
     node-packages: 
-      - request-promise-native
-      - inotify
-      - jsonwebtoken
-      -  request@^2.34
-
+      - inotify@1.4.6
+      - jsonwebtoken@8.5.1
+      - request@2.88.0
+      - request-promise-native@1.0.7 
+      - starfish-sdk@0.9.4
+      
   bluepy:
     plugin: python3
-    source: bluepy
-    build-packages: [libglib2.0-dev]
-
+    source: https://github.com/IanHarvey/bluepy
+    source-type: git    
+    source-tag: 'v/1.3.0'
+    build-packages: [libglib2.0-dev, libc6]
+    
   bluez:
     plugin: autotools
     source: https://www.kernel.org/pub/linux/bluetooth/bluez-5.43.tar.xz
@@ -70,6 +72,7 @@ parts:
       - libglib2.0-dev
       - libdbus-1-dev
       - libical-dev
+      - libreadline-dev
       - libreadline6-dev
       - libudev-dev
       - pkg-config
@@ -86,10 +89,3 @@ parts:
       - usr/bin/hcitool
       - usr/share/doc/libical1a/copyright
       - $libical1a
-
-  move:
-     plugin: dump
-     source: bin
-     organize:
-       sensortagUpdate: bin/sensortagUpdate  
-
