@@ -1,7 +1,6 @@
 from bluepy.btle import UUID, Peripheral, DefaultDelegate, AssignedNumbers
 import struct
 import math
-import sys
 
 def _TI_UUID(val):
     return UUID("%08X-0451-4000-b000-000000000000" % (0xF0000000+val))
@@ -424,7 +423,6 @@ def main():
     parser.add_argument('-n', action='store', dest='count', default=0,
             type=int, help="Number of times to loop data")
     parser.add_argument('-t',action='store',type=float, default=5.0, help='time between polling')
-    parser.add_argument('-f','--path',action='store', default="/home/try.txt", help='path to store sensor data')
     parser.add_argument('-T','--temperature', action="store_true",default=False)
     parser.add_argument('-A','--accelerometer', action='store_true',
             default=False)
@@ -439,7 +437,7 @@ def main():
     parser.add_argument('--all', action='store_true', default=False)
 
     arg = parser.parse_args(sys.argv[1:])
-    #print(sys.argv[1:]);	
+
     print('Connecting to ' + arg.host)
     tag = SensorTag(arg.host)
 
@@ -469,39 +467,31 @@ def main():
     # Some sensors (e.g., temperature, accelerometer) need some time for initialization.
     # Not waiting here after enabling a sensor, the first read value might be empty or incorrect.
     time.sleep(1.0)
+
     counter=1
     while True:
-       f = open(arg.path, 'w')
-       f.truncate()
        if arg.temperature or arg.all:
-           f.write('Temp: ' + str(tag.IRtemperature.read()) + '\n')
+           print('Temp: ', tag.IRtemperature.read())
        if arg.humidity or arg.all:
-           f.write('Humidity: ' + str(tag.humidity.read()) + '\n')
+           print("Humidity: ", tag.humidity.read())
        if arg.barometer or arg.all:
-           f.write('Barometer: ' + str(tag.barometer.read()) + '\n')
+           print("Barometer: ", tag.barometer.read())
        if arg.accelerometer or arg.all:
-           f.write('Accelerometer: ' + str(tag.accelerometer.read()) + '\n')
+           print("Accelerometer: ", tag.accelerometer.read())
        if arg.magnetometer or arg.all:
-           f.write('Magnetometer: ' + str(tag.magnetometer.read()) + '\n')
+           print("Magnetometer: ", tag.magnetometer.read())
        if arg.gyroscope or arg.all:
-           f.write('Gyroscope: ' + str(tag.gyroscope.read()) + '\n')
+           print("Gyroscope: ", tag.gyroscope.read())
        if (arg.light or arg.all) and tag.lightmeter is not None:
-           f.write('Light: ' + str(tag.lightmeter.read()) + '\n')
+           print("Light: ", tag.lightmeter.read())
        if arg.battery or arg.all:
-           f.write('Battery: ' + str(tag.battery.read()) + '\n')
+           print("Battery: ", tag.battery.read())
        if counter >= arg.count and arg.count != 0:
-           f.close()
            break
        counter += 1
-       f.close()
        tag.waitForNotifications(arg.t)
 
-    tag.waitForNotifications(arg.t)
     tag.disconnect()
-    f = open(arg.path, 'w')
-    f.truncate()
-    f.write("Closing Session")
-    f.close()
     del tag
 
 if __name__ == "__main__":
