@@ -1,0 +1,99 @@
+name: starfish-sensoneo-app 
+version: '0.1' 
+#list of architectures the snap may run on. Defaults to [all].
+#architectures: 
+#	- all | amd64 | i386 | armhf
+architectures: [ armhf ]  
+summary: Fetching Sensoneo Quatro data and posting it to the Starfish Data Platform
+description: |
+     This snap application fetches the sensor's data from the Sensoneo Quatro and 
+     posts it to the Itron Starfish Data Platform
+grade:  stable
+confinement: strict
+base: core18
+
+apps:
+  run:
+    command: bin/nodeapp
+    plugs: [ bluetooth-control, network-bind, network ]
+  blescan:
+    command: bin/blescan
+    plugs: [ bluetooth-control ]
+  sensoneo:
+    command: bin/sensoneo
+    plugs: [ bluetooth-control ]
+  hciconfig:
+    command: usr/bin/hciconfig
+    plugs: [  bluetooth-control ]
+  hcitool:
+    command: usr/bin/hcitool
+    plugs: [ bluetooth-control ]  
+  
+plugs:
+  client:
+      interface: bluez
+
+slots:
+  service:
+      interface: bluez
+
+parts:
+  starfish-sdk-wrapper:
+    source: node
+    source-type: local
+    plugin: nodejs
+    node-engine: 8.15.0    
+    node-packages: 
+      - inotify@1.4.6
+      - jsonwebtoken@8.5.1
+      - request@2.88.0
+      - request-promise-native@1.0.7 
+      - starfish-sdk@0.9.4
+      
+  bluepy:
+    plugin: python3
+    source: bluepy
+    source-type: local
+    build-packages: [libglib2.0-dev, libc6]
+    
+  bluez:
+    plugin: autotools
+    source: https://www.kernel.org/pub/linux/bluetooth/bluez-5.43.tar.xz
+    configflags:
+      - --prefix=/usr
+      - --libexec=/usr/lib/
+      - --enable-experimental
+      - --enable-snappy
+      - --enable-threads
+      - --disable-cups
+      - --disable-monitor
+      - --enable-obex
+      - --disable-systemd
+      - --disable-silent-rules
+    build-packages:
+      - libglib2.0-dev
+      - libdbus-1-dev
+      - libical-dev
+      - libreadline-dev
+      - libreadline6-dev
+      - libudev-dev
+      - pkg-config
+      - quilt
+    stage-packages:
+      - libical1a
+    filesets:
+      libical1a:
+        - usr/lib/*/libical*
+    prime:
+      - usr/lib/bluetooth/bluetoothd
+      - usr/bin/bluetoothctl
+      - usr/bin/hciconfig
+      - usr/bin/hcitool
+      - usr/share/doc/libical1a/copyright
+      - $libical1a
+      
+  move:
+     plugin: dump
+     source: bin
+     organize:
+       SensoneoUpdate.sh: bin/SensoneoUpdate.sh
