@@ -1,7 +1,12 @@
-# IDE and System Related
-.DS_Store
-.idea
-sdkmqttclient.iml
-logs
+# Maven target directory
 target
 
+# IntelliJ related
+.idea
+sdkmqttclient.iml
+
+#Exempt directories
+.DS_Store
+logs
+config
+mqttspy_scripts
