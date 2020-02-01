@@ -1,0 +1,14 @@
+# Default
+* text=auto
+
+# Python Files
+*.py text eol=lf
+
+# Binary Files
+*.jpg binary
+*.gif binary
+*.png binary
+*.jar binary
+*.uf2 binary
+*.bin binary
+*.dll binary
