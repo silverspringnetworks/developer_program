@@ -76,7 +76,7 @@ public class SdkObservationCallback extends SdkCallback
             // Select the payload trasnformer to use based on the resource path.
             if (arguments.getDevicePath().equalsIgnoreCase("/snsr/arduino/temp"))
             {
-                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId());
                 sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.TempPayloadTransformer");
             }
             // CH4 methane paylod (New Cosmos rl78 device)
@@ -98,12 +98,12 @@ public class SdkObservationCallback extends SdkCallback
                 log.info("*** CH4 Inner payload As String: <{}>", ch4PayloadAsStr);
 
                 // Pass the rl78 data on as a string
-                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId());
                 sfc.sendObservation(ch4PayloadAsStr, "com.ssn.sdk.coapclient.payload.ChAlertPayloadTransformer");
             }
             else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/sens") || arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/log"))
             {
-                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId());
                 log.info("Sending observation to Logistics");
                 sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.LogisticsPayloadTransformer");
             }

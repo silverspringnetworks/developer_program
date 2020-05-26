@@ -3,15 +3,16 @@
   "proxyPort": "5683",
   "clientPort": "6000",
   "observe": "true",
+  "non": "",
   "maxNotifications": "5",
   "method" : "GET",
-  "timeout": "3000",
+  "timeout": "900",
   "clientId": "<clientId>",
   "clientSecret": "<clientSecret>",
   "devices": [
     {
       "deviceId": "<deviceId>",
-      "deviceHost": "SSN<macAddress>.shared-starfish-test-install.eng.ssnsgs.net",
+      "deviceHost": "SSN<macAddress>.SG.YEL01.SSN.SSNSGS.NET",
       "devicePort": "4849",
       "devicePath": "/snsr/arduino/temp",
       "deviceQuery": "sens"

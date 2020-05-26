@@ -3,7 +3,7 @@
 
 
 ### Current Version Info
-Current version is 1.0.2.
+Current version is 1.0.4.
 See the changes.md file for details.
 
 
@@ -26,18 +26,18 @@ The MQTT Client is very happy running in a VM environment (such as an AWS EC2).
 
 To run the client use a command of this form in a Linux shell or Windows Command Prompt window:
 ```$xslt
-java -Dconfig.properties=<path to properties file> -jar sdkmqttclient-1.0.2.one-jar.jar
+java -D"config.properties=<path to properties file>" -jar sdkmqttclient-1.0.4.one-jar.jar
 ```
 For example, if your properties file is named "test.properties" and is located in the same
 directory as the jar file:
 ```$xslt
-java -Dconfig.properties=./test.properties -jar sdkmqttclient-1.0.2.one-jar.jar
+java -D"config.properties=./test.properties" -jar sdkmqttclient-1.0.4.one-jar.jar
 ```
 
 To run the client using Windows PowerShell requires additional quoting (this is 
 standard conversion of Command Prompt to PowerShell):
 ```$xslt
-java -D'config.properties'=<path to properties file> -jar sdkmqttclient-1.0.2.one-jar.jar
+java -D'config.properties'=<path to properties file> -jar sdkmqttclient-1.0.4.one-jar.jar
 ```
 
 
@@ -79,7 +79,7 @@ The resultant jar can found in the target subdirectory
 (using the sample directory used above):
 
 ```$xslt
-C:\<project base>\developer_program\SDK\Java MQTT Client\target\sdkmqttclient-1.0.2.one-jar.jar
+C:\<project base>\developer_program\SDK\Java MQTT Client\target\sdkmqttclient-1.0.4.one-jar.jar
 ```
 The jar is built as an all in one jar, it contains all libraries and dependencies need to use the
 client.

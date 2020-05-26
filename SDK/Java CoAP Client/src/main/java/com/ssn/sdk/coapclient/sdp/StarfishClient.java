@@ -22,15 +22,8 @@ public class StarfishClient
     // Starfish Staging and Production environment observations endpoint
     private static final String stagingObservationsEndpoint = "https://api.data-platform.developer.ssni.com/api/solutions/sandbox/devices";
 
-    // Starfish Test environment observations endpoint
-    private static final String testObservationsEndpoint = "https://poc.api.dev.ssniot.cloud/api/solutions/sandbox/devices";
-
     // Logistics Staging and Production environment observations endpoint
-    // TODO: validate this is the proper endpoint
     private static final String stagingLogisticsObservationsEndpoint = "https://logistics.dev.ssniot.cloud";
-
-    // Starfish Test environment observations endpoint
-    private static final String testLogisticsObservationsEndpoint = "https://logistics.dev.ssniot.cloud";
 
     // Default observations URL
     private static String observationsUrl = stagingObservationsEndpoint;
@@ -42,26 +35,18 @@ public class StarfishClient
     private static String apMacAddress = null;
     private static String palletMacAddress = null;
 
-    private static boolean useTestEnvironment = false;
-
 
     /**
      *  Initializes an instance of {@link StarfishClient}.
      *
      */
-    public StarfishClient(String sfClientId, String sfClientSecret, String sfDeviceId, boolean sfUseTestEnvironment )
+    public StarfishClient(String sfClientId, String sfClientSecret, String sfDeviceId)
     {
         clientId = sfClientId;
         clientSecret = sfClientSecret;
         deviceId = sfDeviceId;
-        useTestEnvironment = sfUseTestEnvironment;
 
-        // Default
         observationsUrl = stagingObservationsEndpoint;
-        if (sfUseTestEnvironment)
-        {
-            observationsUrl = testObservationsEndpoint;
-        }
     }
 
 
@@ -91,7 +76,7 @@ public class StarfishClient
         // Send payload to Starfish Data Platform
         log.info("Sending observation to Starfish");
         log.debug("Starfish Payload: {}", payloadAsJson);
-        sendObservation2StarfishDataPlatform(deviceId, payloadAsJson, useTestEnvironment);
+        sendObservation2StarfishDataPlatform(deviceId, payloadAsJson);
     }
 
 
@@ -121,20 +106,20 @@ public class StarfishClient
         // Send payload to Starfish Data Platform
         log.info("Sending observation to Starfish");
         log.debug("Starfish Payload: {}", payloadAsJson);
-        sendObservation2StarfishDataPlatform(deviceId, payloadAsJson, useTestEnvironment);
+        sendObservation2StarfishDataPlatform(deviceId, payloadAsJson);
     }
 
 
     // Helper to send an observation payload to Starfish Data Platform
     //
-    public boolean sendObservation2StarfishDataPlatform(String deviceId, String payload, boolean useTestEnvironment)
+    public boolean sendObservation2StarfishDataPlatform(String deviceId, String payload)
     {
         try
         {
             if (deviceId != null)
             {
                 // Get a Starfish token
-                TokenClient tc = new TokenClient(useTestEnvironment);
+                TokenClient tc = new TokenClient();
                 String token;
                 try
                 {

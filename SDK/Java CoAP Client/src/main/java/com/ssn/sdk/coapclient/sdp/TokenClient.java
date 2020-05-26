@@ -22,27 +22,21 @@ public class TokenClient
 {
     private Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-    // Starfish Staging and Production enviornment tokens endpoint
+    // Starfish Staging and Production environment tokens endpoint
     private static final String stagingTokensEndpoint = "https://api.data-platform.developer.ssni.com/api/tokens";
 
-    // Starfish Test enviornment tokens endpoint
-    private static final String testTokensEndpoint = "https://poc.api.ssniot.cloud/api/tokens";
-
     // Default tokenUrl
-    private static String tokenUrl = stagingTokensEndpoint;
+    private static String tokenUrl;
 
 
     /**
      *  Initializes an instance of {@link TokenClient}.
      *
      */
-    public TokenClient(boolean useTestEnvironment)
+    public TokenClient()
     {
-        // Set test tokens endpoint if using the test environment
-        if (useTestEnvironment)
-        {
-            tokenUrl = testTokensEndpoint;
-        }
+        // Set test tokens endpoint
+        tokenUrl = stagingTokensEndpoint;
     }
 
 
