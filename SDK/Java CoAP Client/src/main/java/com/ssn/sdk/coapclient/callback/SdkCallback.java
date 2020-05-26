@@ -87,7 +87,7 @@ public class SdkCallback extends ClientCallback
         {
             if (arguments.getDevicePath().equalsIgnoreCase("/snsr/arduino/temp"))
             {
-                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId());
                 sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.TempPayloadTransformer");
             }
             else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/rl78/methane"))
@@ -105,12 +105,12 @@ public class SdkCallback extends ClientCallback
                 }
                 log.info("*** CH4 Inner payload As String: <{}>", innerPayloadAsStr);
 
-                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId());
                 sfc.sendObservation(innerPayloadAsStr, "com.ssn.sdk.coapclient.payload.ChAlertPayloadTransformer");
             }
             else if (arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/sens") || arguments.getDevicePath().equalsIgnoreCase("/snsr/logis/log"))
             {
-                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId(), arguments.isTestEnv());
+                StarfishClient sfc = new StarfishClient(arguments.getClientId(), arguments.getClientSecret(), arguments.getDeviceId());
                 sfc.sendObservation(payloadAsByteArray, "com.ssn.sdk.coapclient.payload.LogisticsPayloadTransformer");
             }
             else

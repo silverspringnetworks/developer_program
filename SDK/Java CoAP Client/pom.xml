@@ -7,21 +7,21 @@
 
     <properties>
         <ncoap.verison>1.8.3-SNAPSHOT</ncoap.verison>
-        <product.verison>1.4.2</product.verison>
+        <project.java.version>1.8</project.java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <jdk.version>1.7</jdk.version>
     </properties>
 
     <groupId>com.ssn.sdk</groupId>
     <artifactId>sdkcoapclient</artifactId>
-    <version>${product.verison}</version>
+    <version>1.4.3</version>
     <packaging>jar</packaging>
 
-    <name>Itron Reference Java CoAP Client</name>
-    <description>
-        Itron Developer Program CoAP Client
-    </description>
+    <name>sdkcoapclient</name>
+    <description>Itron Developer Program Reference CoAP Client</description>
 
     <dependencies>
-
         <dependency>
             <groupId>co.nstant.in</groupId>
             <artifactId>cbor</artifactId>
@@ -58,7 +58,6 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
-		
     </dependencies>
 
     <build>
@@ -79,14 +78,21 @@
                             <attachToBuild>true</attachToBuild>
                             <!-- Optional, default is "onejar" -->
                             <classifier>onejar</classifier>
-                            <!-- Change the filename of the executable jar file-->
-                            <!--<filename>sdkcoapclient-${project.version}</filename>-->
                         </configuration>
                         <goals>
                             <goal>one-jar</goal>
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>

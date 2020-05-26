@@ -2,7 +2,7 @@
 ### Itron Developer Program SDK
 
 ### Current Version Info
-Current version is 1.4.2.
+Current version is 1.4.3.
 See the changes.md file for details.
 
 #### Overview
@@ -15,12 +15,12 @@ parameters and the IoT device as well as command line options. You can run the c
 
 To run the client use a command of this form in a command shell (in this case to get the list of options):
 ```$xslt
-java -jar sdkcoapclient-1.4.2.one-jar.jar --help
+java -jar sdkcoapclient-1.4.3.one-jar.jar --help
 ```
 To run the client with a config file use the following command form (in this case to issue the CoAP
 activity defined by the coap.json file):
 ```$xslt
-java -jar sdkcoapclient-1.4.2.one-jar.jar --conf coap.json
+java -jar sdkcoapclient-1.4.3.one-jar.jar --conf coap.json
 ```
 
 #### Prerequisites 
@@ -75,7 +75,7 @@ This will build the Java CoAP Client. The resultant jar can found in the target 
 (using the sample directory used above):
 
 ```$xslt
-C:\projects\developer_program\SDK\Java CoAP Client\target\sdkcoapclient-1.4.2.one-jar.jar
+C:\projects\developer_program\SDK\Java CoAP Client\target\sdkcoapclient-1.4.3.one-jar.jar
 ```
 The jar is built as an all in one jar, it contains all libraries and dependencies need to run the
 client. To test the client, move the jar file from the target directory to a working directory
@@ -83,7 +83,7 @@ client. To test the client, move the jar file from the target directory to a wor
 following command:
 
 ```$xslt
-java -jar C:\tools\sdkcoapclient-1.4.2.one-jar.jar --help
+java -jar C:\tools\sdkcoapclient-1.4.3.one-jar.jar --help
 ```
 
 #### Determine Starfish Client Id and Client Secret
@@ -106,32 +106,33 @@ configuration file that defines the CoAP activity you want to
 achieve. For example you might have
 configuration files for the following activities:
 - Start a new session
-- End a session
 - Read data from an IoT sensor
 - Send a command packet to an IoT control
+- End a session
 
 A configuration file contains a JSON representation of a subset of command line options.
 Field names used in a configuration file are the same as used in command line options.
 
-The following configuration JSON gives an example using almost all options:
+The following configuration JSON gives an example using almost all command line options:
 
 ```$xslt
 {
-  "proxyHost": "74.121.23.204",
+  "proxyHost": "api.coap-staging.developer.ssni.com",
   "proxyPort": "5683",
   "clientPort": "6000",
-  "method" : "GET",
   "observe": "true",
+  "non": "",
   "maxNotifications": "5",
-  "timeout": "300",
+  "method" : "GET",
+  "timeout": "900",
   "clientId": "<clientId>",
   "clientSecret": "<clientSecret>",
   "devices": [
     {
-      "deviceId": "f969e33e-f334-49c9-99ee-15febc40cbed",
-      "deviceHost": "SSN00135005003cb8e1.TEAM-ATS-23X-INSTALL.ENG.SSNSGS.NET",
-      "devicePort": "5683",
-      "devicePath": "/sensor/arduino/temp",
+      "deviceId": "<deviceId>",
+      "deviceHost": "SSN<macAddress>.SG.YEL01.SSN.SSNSGS.NET",
+      "devicePort": "4849",
+      "devicePath": "/snsr/arduino/temp",
       "deviceQuery": "sens"
     }
   ]
@@ -149,12 +150,12 @@ All command line configuration options are described in this section.
 | proxyPort | The port number of the CoAP proxy.
 | clientPort | The UDP listening port used by the client. Default is 6000.
 | method | The CoAP method. Default is GET.
-| observe| Used in conjunction with the GET method. Include to establish an observe on a CoAP resource. Default is false.
+| observe | Used in conjunction with the GET method. Include to establish an observe on a CoAP resource. Default is false.
+| non | Indicates that the CoAP request message is sent as non-confirmable (NON). Default is CON.
 | maxNotifications | Sets a limit on how many observe notifications are read by the client. Default is 1. Note that after the client shuts down after maxNotifications have been received, the CoAP resources observe is not cancelled.
 | timeout | The time in seconds allowed for a response from a CoAP activity. If an observe has been established the client will shutdown on the timeout even if maxNotifications have not been received. It is up to the user to set the timeout value accordingly. Default is 60 seconds.
 | clientId | Your Starfish account client id.
 | clientSecret | Your Starfish account client secret.
-| test | Include this option to use the Starfish Test environment.
 
 **Note**: If no proxy is used, the proxyHost and proxyPort options must not be present in the
 configuration.
@@ -173,12 +174,13 @@ responses (when observing a resource) to the Starfish Data Platform.
 | devicePath | Path part of your devices CoAP server resource URI. Default is "/". |
 | deviceQuery | Query part of your devices CoAP server resource URI (the stuff that follows the ?). |
 
-**Note**: The host name will typically have this form: SSN+**mac-address**+.+**network-domain**. An example host name follows:
+**Note**: The host name will typically have this form: SSN+**mac-address**+.+**network-domain**.
+An example host name follows for the Starfish network domain follows:
 ```
-SSN00135005003cb8e1.TEAM-ATS-23X-INSTALL.ENG.SSNSGS.NET
+SSN00135005003cb8e1.SG.YEL01.SSN.SSNSGS.NET
 ```
 
-**Note**: network-domain for the developer program is: TODO
+**Note**: network-domain for the developer program is: SG.YEL01.SSN.SSNSGS.NET
 #### Usage Patterns
 A usage pattern is a sequence of invoking the CoAP client multiple times with different
 configurations. These patterns can be captured in a shell script allowing you to build
@@ -190,14 +192,13 @@ A typical pattern looks like this:
 - Delete the gateway session
 
 Configuration files for getting a session, deleting a session, and doing simple CoAP
-activities on a device are included in the source distribution.
+activities on a device are included in the source git repo.
 
-The following sample configurations are included:
+You will find the following sample configurations:
 
 | File Name | Description |
 | --- | --- |
 | getsession_token.json | Get new session based on client-id and client-secret |
-| getsession_caas.json | Get new session based on CAAS credentials |
 | deletesession.json | Delete an active session |
 | get_hdk_ping.json | CoAP Get on the device root - makes a simple ping to insure device connectivity |
 | get_hdk_sensor.json | CoAP Get on device temp sensor - returns one data sample |

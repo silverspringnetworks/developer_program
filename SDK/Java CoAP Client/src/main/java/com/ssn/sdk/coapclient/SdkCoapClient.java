@@ -56,7 +56,16 @@ public class SdkCoapClient extends CoapClient
         URI resourceURI = new URI("coap", null, host, port, path, query, null);
 
         // Confirmable
-        int messageType = arguments.isNon() ? MessageType.NON : MessageType.CON;
+        int messageType;
+        messageType = arguments.isNon() ? MessageType.NON : MessageType.CON;
+        /*if (arguments.isNon())
+        {
+            messageType = MessageType.NON;
+        }
+        else
+        {
+            messageType = MessageType.CON;
+        }*/
 
         // Set the client callback
         if (arguments.isObserve())
@@ -79,7 +88,7 @@ public class SdkCoapClient extends CoapClient
                 if ((arguments.getClientId() != null && arguments.getClientId().length() > 0))
                 {
 
-                    TokenClient tc = new TokenClient(arguments.isTestEnv());
+                    TokenClient tc = new TokenClient();
                     String token;
                     try
                     {
@@ -107,15 +116,17 @@ public class SdkCoapClient extends CoapClient
             coapRequest = new CoapRequest(messageType, messageCode, resourceURI, useProxy);
         }
 
-
-        if (messageCode == MessageCode.GET)
+        if (!arguments.isTestEnv())
         {
-            if (coapRequest != null)
+            if (messageCode == MessageCode.GET)
             {
-                coapRequest.setPreferredBlock2Size(BlockSize.SIZE_128);
+                if (coapRequest != null)
+                {
+                    coapRequest.setPreferredBlock2Size(BlockSize.SIZE_128);
+                }
             }
+            coapRequest.setEndpointID1();
         }
-        coapRequest.setEndpointID1();
 
         // observe resource or not?
         if (arguments.isObserve())

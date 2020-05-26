@@ -72,7 +72,7 @@ public class OptionsArgumentsWrapper
 
     @Option(name = "--non",
             usage = "Empty argument that causes the request to be sent non-confirmable")
-    private boolean non = false;
+    private boolean non = false;        // Default is CON
 
     @Option(name = "--timeout",
             usage = "Sets the maximum timeout (in seconds) before shutdown (default = 60)")
@@ -179,6 +179,12 @@ public class OptionsArgumentsWrapper
             observe = true;
             log.debug("Conf observe: {}", true);
         }
+        boolean hasnon = jo.has("non");
+        if (hasnon)
+        {
+            non = hasnon;
+            log.debug("Conf non: {}", hasnon);
+        }
         ioption = jo.optLong("maxNotifications");
         if (ioption != 0)
         {
@@ -202,11 +208,11 @@ public class OptionsArgumentsWrapper
             clientSecret = soption;
             log.debug("Conf clientSecret: {}", clientSecret);
         }
-        boption = jo.optBoolean("test");
-        if (boption)
+        boolean hastest = jo.has("test");
+        if (hastest)
         {
-            testenv = true;
-            log.debug("Conf test: {}", true);
+            testenv = hastest;
+            log.debug("Conf test: {}", hastest);
         }
 
         JSONArray darray = jo.getJSONArray("devices");
@@ -367,9 +373,7 @@ public class OptionsArgumentsWrapper
     /**
      * @return <code>true</code> if --test was given as console parameter or <code>false</code> otherwise
      */
-    public boolean isTestEnv() {
-        return testenv;
-    }
+    public boolean isTestEnv() { return testenv; }
 
     /**
      * @return the Logistics AP Mac Address or <code>''</code> if not set

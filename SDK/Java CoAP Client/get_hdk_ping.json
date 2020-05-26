@@ -3,13 +3,14 @@
   "proxyPort": "5683",
   "clientPort": "6000",
   "method" : "GET",
-  "timeout": "1000",
+  "timeout": "310",
+  "non" : "",
   "clientId": "<clientId>",
   "clientSecret": "<clientSecret>",
   "devices": [
     {
       "deviceId": "<deviceId>",
-      "deviceHost": "SSN<macAddress>.shared-starfish-test-install.eng.ssnsgs.net",
+      "deviceHost": "SSN<macAddress>.SG.YEL01.SSN.SSNSGS.NET",
       "devicePort": "4849",
       "devicePath": "/"
     }
