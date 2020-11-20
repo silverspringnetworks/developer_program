@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -85,7 +85,7 @@ static struct obs_t obs[MAX_OBSERVERS] = { };
  *
  * Returns 0 on success, -1 if not found.
  */
-error_t
+error_cs_t
 get_obs_by_sid_tok(const char *sid, uint8_t tkl, const uint8_t *token, 
                   void **client, uint8_t *nxt)
 {
@@ -128,7 +128,7 @@ get_obs_by_sid_tok(const char *sid, uint8_t tkl, const uint8_t *token,
  *
  * Returns 0 on success, -1 if not found.
  */
-error_t
+error_cs_t
 get_obs_by_uri(const char *uri, uint8_t *tkl, uint8_t *token, void **client, uint8_t *nxt)
 {
     uint8_t i;
@@ -209,7 +209,7 @@ add_obs(int slot, const char *urip, struct coap_msg_ctx *req, void *client)
  * Currently only called from main (net_mgr) task on NIC, so no need for
  * locking.
  */
-error_t 
+error_cs_t 
 enable_obs(const char *urip, struct coap_msg_ctx *req, void *client)
 {
     int i;
@@ -286,7 +286,7 @@ error:
  * Currently only called from main (net_mgr) task on NIC, so no need for
  * locking. However, as per enable_obs and client pointer.
  */
-error_t 
+error_cs_t 
 disable_obs(const char *urip, struct coap_msg_ctx *req, void **client, uint8_t force)
 {
     int i;

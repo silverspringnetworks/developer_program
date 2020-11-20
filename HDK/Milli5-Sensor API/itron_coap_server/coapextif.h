@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -140,7 +140,7 @@ typedef struct packed_t coap_humid_cfg_data {
     
 
 /* ACK callback */
-typedef error_t (*coap_ack_cb_t)(void *cbctx, struct mbuf *m);
+typedef error_cs_t (*coap_ack_cb_t)(void *cbctx, struct mbuf *m);
 
 typedef struct {
     coap_ack_cb_t cb;       /* callback function */
@@ -148,7 +148,7 @@ typedef struct {
 } coap_ack_cb_info_t;
 
 /* Observe callback. */
-typedef error_t (*coap_obs_cb_t)(coap_res_data_type_t sdt, void *sh, 
+typedef error_cs_t (*coap_obs_cb_t)(coap_res_data_type_t sdt, void *sh, 
                                  struct mbuf *m, uint8_t last, uint32_t dt,
                                  coap_ack_cb_info_t *cbi);
 

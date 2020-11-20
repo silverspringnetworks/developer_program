@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc.
+Copyright (c) Itron, Inc.
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -31,7 +31,7 @@ Networks, Inc.
 #include "hbuf.h"
 #include "errors.h"
 #include "exp_coap.h"
-#include "arduino_pins.h"
+#include "portability.h"
 #include "coap_rbt_msg.h"
 
 
@@ -58,7 +58,7 @@ extern struct coap_stats coap_stats;
  * Given that there are HDLC retries, we're not going to attempt CoAP retries.
  * Could be added later if required.
  */
-error_t coap_put_ic_reboot_event(void)
+error_cs_t coap_put_ic_reboot_event(void)
 {
 	struct mbuf *req;
 	uint8_t     *ptr;

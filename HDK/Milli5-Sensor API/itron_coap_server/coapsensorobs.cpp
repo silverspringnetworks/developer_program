@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -34,7 +34,8 @@ Networks, Inc.
 #include "coapobserve.h"
 #include "coapextif.h"
 #include "coapsensorobs.h"
-#include "arduino_pins.h"
+#include "coapsensoruri.h"
+#include "portability.h"
 #include "arduino_time.h"
 
 
@@ -47,6 +48,9 @@ observe_reg_info_t observe_info[MAX_OBSERVERS];
 
 // Next empty slot in the observe info table
 static uint8_t observe_info_index = 0;
+
+// URL Classifier
+extern char		classifier[CLASSIFIER_MAX_LEN];
 
 
 /*
@@ -61,29 +65,11 @@ struct mbuf *pending_rsp;
 
 
 
-// Holds base epoch time - used to determine when to fire a notification.
-//static time_t   base_epoch = 0;
-// Observation flag
-//static boolean	obs_flag = false;
-// Sequence number
-//static uint32_t start_sn;
-
-// Observation polling frequency
-//uint32_t obs_frequency = OBSERVATION_FREQUENCY;
-
-//#define MAX_OBSERVE_URI_LENGTH 32
-// This array will contain the URI used to obtain Token etc for the response
-//static char 			obs_uri[MAX_OBSERVE_URI_LENGTH];
-// This function will be used to read a sensor and obtain the response message
-//static ObsFuncPtr		pObsFunc;
-
-
-
 // This function assembles an URI and sets the function used to read a sensor
 uint8_t set_observer_sapi(const char *sensor_type, ObsFuncPtr p, uint32_t frequency, uint8_t sensor_id)
 {
 	// Assemble the full resource URI; e.g. "/arduino/temp". Link to master observe table.
-	sprintf(observe_info[observe_info_index].obs_uri, "/arduino/%s", sensor_type);
+	sprintf(observe_info[observe_info_index].obs_uri, "/%s/%s", classifier, sensor_type);
 	
 	observe_info[observe_info_index].pObsFunc = p;
 	observe_info[observe_info_index].frequency = frequency;
@@ -109,15 +95,6 @@ void set_observer( const char *uri_rsrc_name, ObsFuncPtr p )
 	observe_info[observe_info_index].obs_flag = 0;
 	observe_info[observe_info_index].ack_seqno = 0;
 	observe_info[observe_info_index].base_epoch = get_rtc_epoch();
-	
-	
-	// Assemble the resource URI, e.g. "/arduino/temp"
-	//sprintf(obs_uri, "/arduino/%s", uri_rsrc_name);
-	
-	// Set the pointer to the Observe function
-	//pObsFunc = p;
-	
-	//base_epoch = get_rtc_epoch();
 }
 
 
@@ -137,8 +114,14 @@ boolean do_observe()
 			{
 				observe_info[indx].base_epoch = epoch;
 			}
+			
+			// If frequency is zero - skip doing Observe Response
+			if (observe_info[indx].frequency == 0)
+			{
+				continue;
+			}
 		
-			// Check if the current minute is different from the previous minute
+			// Check if the current epoch is greater then frequency interval
 			if (epoch >= (observe_info[indx].base_epoch+observe_info[indx].frequency))
 			{
 				// Record the current minute
@@ -155,40 +138,15 @@ boolean do_observe()
 			}
 		}
 	}
-	/*
-	// Check if we are doing Observe
-	if (obs_flag)
-	{
-		time_t epoch = get_rtc_epoch();
-		if (base_epoch == 0)
-		{
-			base_epoch = epoch;
-		}
-		
-		// Check if the current minute is different from the previous minute
-		if ( epoch >= (base_epoch+obs_frequency) )
-		{
-			// Record the current minute
-			dlog(LOG_DEBUG, "Observe notification at epoch: %d", base_epoch);
-			base_epoch = epoch;
-
-			// Send response
-			coap_observe_rsp();
-			
-			int freeram = free_ram();
-			dlog(LOG_DEBUG, "Free Ram: %d", freeram);
-		}
-	}
-	*/
 	
 	// Return the delay for reading time flag
 	return atleastone;
 	
-} // do_observe
+}
 
 
 // Register for Observe used by SAPI handlers.
-error_t coap_obs_reg_sapi(uint8_t observer_id)
+error_cs_t coap_obs_reg_sapi(uint8_t observer_id)
 {
 	// Record the minute that we turn on Observe
 	// Make sure we don't send Observe response more than once per minute
@@ -209,7 +167,7 @@ error_t coap_obs_reg_sapi(uint8_t observer_id)
 
 
 // Register for Observe. Used for backward compatibility. Observer Id is 0 for backward compatibility.
-error_t coap_obs_reg()
+error_cs_t coap_obs_reg()
 {
 	// Record the minute that we turn on Observe
 	// Make sure we don't send Observe response more than once per minute
@@ -230,7 +188,7 @@ error_t coap_obs_reg()
 
 
 // Register for Observe used by SAPI handlers.
-error_t coap_obs_dereg_sapi(uint8_t observer_id)
+error_cs_t coap_obs_dereg_sapi(uint8_t observer_id)
 {
 	// Flag that we are not doing Observe
 	observe_info[observer_id].obs_flag = 0;
@@ -244,7 +202,7 @@ error_t coap_obs_dereg_sapi(uint8_t observer_id)
 
 
 // De-Register for Observe. Used for backward compatibility. Observer Id is 0 for backward compatibility.
-error_t coap_obs_dereg()
+error_cs_t coap_obs_dereg()
 {
 	// Flag that we are not doing Observe
 	observe_info[0].obs_flag = 0;
@@ -260,7 +218,7 @@ error_t coap_obs_dereg()
 /*
  * Handle CoAP ACK received.
  */
-error_t observe_rx_ack(void *cbctx, struct mbuf *m)
+error_cs_t observe_rx_ack(void *cbctx, struct mbuf *m)
 {
 	// Bump the sequence number.
 	uint32_t seq_number = *((uint32_t *)cbctx);
@@ -271,7 +229,7 @@ error_t observe_rx_ack(void *cbctx, struct mbuf *m)
 }
 
 
-// Generate Observe response message
+// Generate CoAP Observe response message
 /*
  * Find the correct entry in the obs array. If not present, just return.
  * Allocate a RSP context.
@@ -282,7 +240,7 @@ error_t observe_rx_ack(void *cbctx, struct mbuf *m)
  * Register for callback when ACK received.
  * Set pending_rsp, freeing any existing one first.
  */
-error_t coap_observe_rsp(uint8_t observer_id)
+error_cs_t coap_observe_rsp(uint8_t observer_id)
 {
 	struct coap_msg_ctx rsp;
     coap_ack_cb_info_t 	cbi;			// Callback info
@@ -290,7 +248,7 @@ error_t coap_observe_rsp(uint8_t observer_id)
     uint8_t 			nxt = 0;		// The next observer
     struct mbuf *		m = NULL;		// Observe response message
     struct optlv 		opt;
-    error_t 			rc = ERR_OK;
+    error_cs_t 			rc = ERR_OK;
 
 	// Safety check. If a message is already in progress do nothing.
     if (pending_rsp) 
@@ -372,7 +330,7 @@ error_t coap_observe_rsp(uint8_t observer_id)
      */
 	rsp.plen = m->m_pktlen; /* payload includes type and length */
     rsp.code = COAP_RSP_205_CONTENT;
-	rsp.cf = COAP_CF_CSV;
+	rsp.cf = COAP_CF_APPLICATION_CBOR;
     rsp.type = COAP_T_NCONF_VAL; // TODO: CON or NON?
 
     /*
@@ -408,9 +366,9 @@ error_t coap_observe_rsp(uint8_t observer_id)
     pending_rsp = rsp.msg;
     copt_del_all((sl_co*)&(rsp.oh));
 
-	/* Notify milli nic of observe request, wait for 1ms, then high again */
+	/* Notify Itron NIC of observe response request */
 	digitalWrite(MNIC_WAKEUP_PIN,LOW);
-	delay(1);
+	delay(MILLI_WAKE_DELAY);
 	digitalWrite(MNIC_WAKEUP_PIN,HIGH);
     return ERR_OK;
 

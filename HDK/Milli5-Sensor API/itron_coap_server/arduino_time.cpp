@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -35,37 +35,30 @@ Networks, Inc.
 #include "arduino_time.h"
 
 
+// Atmel SAMDxxx chip family RTC support
 #if defined(ARDUINO_ARCH_SAMD)
+#include <RTCZero.h>
 RTCZero rtc;
 #endif
 
-#if defined(ARDUINO_ARCH_SAM)
-RTCDue rtc(XTAL);
+// STM32 L4xx chip family RTC support
+#if defined(STM32L4xx)
+#include <STM32RTC.h>
+STM32RTC& rtc = STM32RTC::getInstance();
 #endif
+
 
 // Time relative UTC
 static int32_t seconds_relative_utc = 0;
 
-
-/**
- * @brief Set time zone
- *
- */
-error_t set_time_zone( int32_t zone )
-{
-	seconds_relative_utc = zone*60*60;
-	
-} // set_time_zone
-
-
 /*
- *
- * @brief Init the RTC time
+ * @brief Initialize the RTC. Note this depends on the ARM MCU and associated RTC code. 
  *
  */
-error_t rtc_time_init( int32_t zone )
+#if defined(ARDUINO_ARCH_SAMD)
+error_cs_t init_rtc( int32_t zone )
 {
-	// Init RTC time
+	// Initialize RTC time
 	rtc.begin();
 	rtc.setTime(0,0,0);
 	rtc.setDate(0,0,0);
@@ -73,22 +66,43 @@ error_t rtc_time_init( int32_t zone )
 	// Set the timezone
 	set_time_zone(zone);
 	
-} // rtc_time_init()
+} // init_rtc()
+#endif
+
+#if defined(STM32L4xx)
+error_cs_t init_rtc( int32_t zone )
+{
+	// Set the timezone
+	set_time_zone(zone);
+	
+} // init_rtc()
+#endif
 
 
 /*
- * @brief Get the RTC time in local time
- *
+ * @brief Get the current RTC epoch
  * 
  */
-time_t get_rtc_epoch()
+uint32_t get_rtc_epoch()
 {
-	// Convert to UTC
-	time_t epoch;
+	// Get current epoch
+	uint32_t epoch;
 	epoch = rtc.getEpoch();
 	return epoch;
 
-} // get_rtc_time()
+} // get_rtc_epoch()
+
+
+/**
+ * @brief Set RTC epoch
+ *
+ */
+void set_rtc_epoch(uint32_t epoch)
+{
+	rtc.setEpoch(epoch);
+	
+} // set_rtc_epoch()
+
 
 
 /**
@@ -152,3 +166,28 @@ void print_current_date(void)
 	println(buffer);
 	
 } // print_current_date
+
+
+/**
+ * @brief Set time zone
+ *
+ */
+error_cs_t set_time_zone( int32_t zone )
+{
+	seconds_relative_utc = zone*60*60;
+	
+} // set_time_zone
+
+
+/*
+ * @brief Get the current epoch. Stub for future portability.
+ * 
+ */
+uint32_t get_epoch()
+{
+	// Get current epoch
+	uint32_t epoch;
+	epoch = get_rtc_epoch();
+	return epoch;
+
+} // get_epoch()

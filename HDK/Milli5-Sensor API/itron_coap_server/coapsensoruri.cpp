@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -50,17 +50,17 @@ struct coap_stats coap_stats;
 
 
 // System handler forwards
-static error_t crtitle(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
+static error_cs_t crtitle(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
 
-static error_t crwellknown(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
+static error_cs_t crwellknown(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
 
-static error_t crsystem(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
+static error_cs_t crsystem(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
 
 // Dispatcher implemented in the "Sketch"
-error_t crarduino( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp );
+error_cs_t crarduino( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp );
 
 // Dispatcher implemented in the Sensor API
-error_t crsapi( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp );
+error_cs_t crsapi( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp );
 
 // Sensor API flag. Is 1 id using SAPI.
 extern uint8_t is_sapi;
@@ -113,11 +113,9 @@ static int		coap_reg_size = 0;
 // URL Classifier
 char			classifier[CLASSIFIER_MAX_LEN] = DEFAULT_CLASSIFIER;
 
-// RTC Clock
-extern RTCZero	rtc;
 
 
-error_t coap_uri_register(const char *path, coap_cb cbfunc, const char *corelink)
+error_cs_t coap_uri_register(const char *path, coap_cb cbfunc, const char *corelink)
 {
     int idx;
 
@@ -172,11 +170,11 @@ void coap_registry_init()
 
 
 // CoAP Dispatcher. Dispatch request to registered handler
-error_t coap_s_uri_proc(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
+error_cs_t coap_s_uri_proc(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
 {
     int i;
     int rs = sizeof(coap_registry) / sizeof (coap_registry[0]);
-    error_t rc;
+    error_cs_t rc;
     struct optlv *op;
 
     if ((op = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_PATH, NULL)) == NULL) 
@@ -235,7 +233,7 @@ done:
 
 
 // crtitle. Handles "/{prefix}". For example "/snsr".
-static error_t crtitle(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
+static error_cs_t crtitle(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
 {
     if (req->code == COAP_REQUEST_GET)
 	{
@@ -267,7 +265,7 @@ static error_t crtitle(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
 }
 
 
-static error_t crwellknown(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
+static error_cs_t crwellknown(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
 {
     int i;
     int rs = coap_reg_size; //sizeof(coap_registry) / sizeof (coap_registry[0]);
@@ -332,7 +330,7 @@ static error_t crwellknown(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
 
 
  // crsystem_time. Handles "/{prefix}/sys/time". For example "/snsr/sys/time".
-static error_t crsystem_time(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
+static error_cs_t crsystem_time(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
 {
     struct optlv *o;
 
@@ -390,7 +388,7 @@ static error_t crsystem_time(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp,
 			//#endif 
 			dlog(LOG_DEBUG, "Setting RTC to epoch: %08x", epoch);
 			
-			rtc.setEpoch(epoch);
+			set_rtc_epoch(epoch);
 			
 			print_current_date();
 			print_current_time();
@@ -411,7 +409,7 @@ static error_t crsystem_time(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp,
 /*
  * Get the coap_stats data, with TLV.
  */
-static error_t coap_get_coap_stats(struct mbuf *m, uint8_t *len)
+static error_cs_t coap_get_coap_stats(struct mbuf *m, uint8_t *len)
 {
     coap_sys_coap_stats_t *d = (coap_sys_coap_stats_t *) m_append(m, sizeof(coap_sys_coap_stats_t));
     if (!d) {
@@ -438,11 +436,11 @@ static error_t coap_get_coap_stats(struct mbuf *m, uint8_t *len)
 /*
  * Return or set, the specified system stats.
  */
-static error_t crsystem_stats(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
+static error_cs_t crsystem_stats(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it)
 {
     struct optlv *o;
     uint8_t len;
-    error_t rc;
+    error_cs_t rc;
 
     /* No URI path beyond /stats is supported, so reject if present. */
     if ((o = copt_get_next_opt_type((const sl_co*)&(req->oh), COAP_OPTION_URI_PATH, &it))) {
@@ -527,7 +525,7 @@ err:
 
 
 // The "sys" dispatcher.
-static error_t crsystem(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
+static error_cs_t crsystem(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp)
 {
     struct optlv *o;
     void *it = NULL;

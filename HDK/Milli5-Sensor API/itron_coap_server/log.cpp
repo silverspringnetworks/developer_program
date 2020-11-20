@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -41,13 +41,15 @@ static int log_level = LOG_DEBUG;
 static const char *label[] = {"EMRG", "ALRT", "CRIT", "ERR", "WARN", "NOTE", "INFO", "DEBG"};
 static const int numlevels = sizeof (label) / sizeof(label[0]);
 
-// Pointer to Serial class used for printing
-static Serial_ *pSerMon = NULL;
+// Pointer to Serial USB object used for logging
+//static HardwareSerial *pSerMon = NULL;
+static PORTABILITY_SERIAL_USB *pSerMon = NULL;
 #define SerMon (*pSerMon)
 static bool log_enabled = false;
 
 
-void log_init( Serial_ *pSerial, uint32_t baud, uint32_t log_level )
+//void log_init(HardwareSerial *pSerial, uint32_t baud, uint32_t log_level)
+void log_init(PORTABILITY_SERIAL_USB *pSerial, uint32_t baud, uint32_t log_level)
 {
 	// Assign pointer used for printing
 	pSerMon = pSerial;

@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc.
+Copyright (c) Itron, Inc.
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -95,12 +95,12 @@ typedef sapi_error_t (*SensorWriteCfgFuncPtr)(char *payload, uint8_t *len);
  *
  * Call this function first in your init initialization code (after the bootstrap code).
  * This function will initialize the underlying CoAP Server, the RTC, the SAPI framework
- * and will send the milli a reboot message.
+ * and will send the Itron NIC a reboot message.
  *
  * The classifier is used to identify the first level CoAP request handler. A sensor URL is composed of 
  * a {prefix} like "snsr", a {classifier} like "arduino", and a sensor resource like "temp".
  * A typical URL would look like this: /snsr/arduino/temp.
- * The {prefix} is stripped off by the Milli CoAP Proxy. 
+ * The {prefix} is stripped off by the Itron NIC CoAP Proxy. 
  *
  * @param url_classifier	URL classifier string. If NULL the default is "arduino". Max length 16 characters.
  */
@@ -110,7 +110,7 @@ void sapi_initialize(char *url_classifier);
  * @brief Idle loop run.
  *
  * Call in your sensors "idle" or "main" loop. Needed to make sure that the underlying
- * CoAP server can processor incoming messages from the milli and that notification payloads
+ * CoAP server can processor incoming messages from the Itron NIC and that notification payloads
  * are pushed up.
  */
 void sapi_run();
@@ -137,7 +137,7 @@ void sapi_run();
  * @param sensor_readcfg  Pointer to the read configuration callback function. If not supported set to NULL.
  * @param sensor_writecfg Pointer to the write configuration callback function. If not supported set to NULL.
  * @param is_observer     Set to 1 if this sensor is to generate observation notifications. Set to 0 if not.
- * @param frequency       Periodic observation generation frequency (in seconds).
+ * @param frequency       Periodic observation generation frequency (in seconds).If set to 0, no period observations will be generated.
  * @return Sensor Id.
  */
 uint8_t sapi_register_sensor(char *sensor_type, SensorInitFuncPtr sensor_init, SensorReadFuncPtr sensor_read, SensorReadCfgFuncPtr sensor_readcfg,
@@ -172,5 +172,23 @@ sapi_error_t sapi_init_sensor(uint8_t sensor_id);
  */
 sapi_error_t sapi_push_notification(uint8_t sensor_id);
 
+
+//////////////////////////////////////////////////////////////////////////
+//
+// CMSIS declarations to support polling type driver including Arduino sketch
+//
+//////////////////////////////////////////////////////////////////////////
+
+/*
+ * @brief Arduino setup function.
+ *
+ */
+void setup();
+
+/*
+ * @brief Arduino main loop function.
+ *
+ */
+void loop();
 
 #endif /* SAPI_H_ */

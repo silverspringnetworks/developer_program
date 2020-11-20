@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -62,9 +62,9 @@ uint32_t coap_max_age_in_seconds = 0;
  * @param cb: callback function to call when ACK arrives.
  * @param cbctx: callback context, param to cb.
  *
- * @return error_t.
+ * @return error_cs_t.
  */
-error_t
+error_cs_t
 coap_con_add(uint16_t mid, coap_ack_cb_info_t *cbi)
 {
     dlog(LOG_DEBUG, "Adding callback for MID: 0x%x\n", mid);
@@ -84,7 +84,7 @@ coap_con_add(uint16_t mid, coap_ack_cb_info_t *cbi)
  *
  * @return return value of cb function if entry found, or ERR_NO_ENTRY.
  */
-error_t
+error_cs_t
 coap_ack_rx(uint16_t mid, struct mbuf *m)
 {
     uint8_t i;
@@ -394,11 +394,11 @@ coap_msg_log(const struct coap_msg_ctx *ctx)
  * @return: 0 on success, nonzero error/special handling code. 
  *          special handling required for COAP_RSP_101_SILENT_IGN
  */
-static error_t
+static error_cs_t
 coap_hdr_parse(struct coap_msg_ctx *ctx, struct mbuf *m)
 {
     uint8_t *b = m->m_data;
-    error_t rc;
+    error_cs_t rc;
 
     ctx->msg = m;   /* save mbuf in context - free later */
 
@@ -440,14 +440,14 @@ err:
  * @param code: CoAP return code.
  * @return: 0 on success, nonzero error/special handling code. 
  */
-error_t coap_msg_parse(struct coap_msg_ctx *ctx, struct mbuf *m, uint8_t *code)
+error_cs_t coap_msg_parse(struct coap_msg_ctx *ctx, struct mbuf *m, uint8_t *code)
 {
     int i, osize, mdatalen;
     uint8_t *b = m->m_data; /* assuming single buffer */
     int len = m->m_pktlen;
     struct optlv opt;
     uint16_t ot;
-    error_t rc;
+    error_cs_t rc;
     uint32_t obsval;
 
     /* Default code, indicating everything okay, so far. */
@@ -601,7 +601,7 @@ err:
  * @return: 0 on success, nonzero error/special handling code. 
  *          special handling required for COAP_RSP_101_SILENT_IGN
  */
-error_t
+error_cs_t
 coap_rsp_parse(struct coap_msg_ctx *ctx, struct mbuf *m)
 {
     int i, osize;
@@ -609,7 +609,7 @@ coap_rsp_parse(struct coap_msg_ctx *ctx, struct mbuf *m)
     int len = m->m_pktlen;
     struct optlv opt;
     uint16_t ot;
-    error_t rc;
+    error_cs_t rc;
 
     ddump(LOG_DEBUG, "CoAP RSP decode", b, len);
     
@@ -738,7 +738,7 @@ coap_init_rsp(const struct coap_msg_ctx *req, struct coap_msg_ctx *rsp,
  *
  * @return: 0 - OK.
  */
-error_t
+error_cs_t
 coap_opt_rpl(struct coap_msg_ctx *ctx)
 {
     uint16_t ot = 0;    /* option type */
@@ -826,7 +826,7 @@ err:
  *
  * @return: Status; 0 - OK.
  */
-error_t
+error_cs_t
 coap_msg_response(struct coap_msg_ctx *ctx)
 {
     /* 
@@ -834,7 +834,7 @@ coap_msg_response(struct coap_msg_ctx *ctx)
      * terminator) + 4 observe option. Can be added to later, as required.
      */
     uint8_t b[COAP_OBS_HDR_SZ];  /* as above, +1 */
-    error_t rc = ERR_OK;
+    error_cs_t rc = ERR_OK;
 
     int idx = 4;
     struct mbuf *n;

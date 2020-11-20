@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -95,7 +95,7 @@ mbuf_ptr_t coap_s_proc( mbuf_ptr_t m )
     struct coap_msg_ctx cc, rcc;
     void *clt = NULL;   /* Not used on sensor, 1 HDLC connection. */
     struct optlv *op;
-    error_t rc;
+    error_cs_t rc;
     uint8_t code;
     char *pstr;
     

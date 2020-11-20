@@ -36,8 +36,6 @@
 */
 
 #include <Arduino.h>
-#include "sapi_mshield.h"
-#include "sapi_error.h"
 #include "sapi.h"
 #include "EchoSensor.h"
 
