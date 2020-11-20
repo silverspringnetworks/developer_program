@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -105,7 +105,7 @@ static void hdlcs_get_buf(int size)
 static uint32_t uart_timeout_ms		= 0;
 
 /* Open HDLCS connection */
-error_t hdlcs_open( HardwareSerial * pUART, uint32_t timeout_ms, uint32_t max_info_len )
+error_cs_t hdlcs_open( HardwareSerial * pUART, uint32_t timeout_ms, uint32_t max_info_len )
 {
 	// Check that we are not already open
     if (hss.open) 

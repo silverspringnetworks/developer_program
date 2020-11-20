@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -120,9 +120,9 @@ char *coap_pathstr(const struct coap_msg_ctx *ctx);
 
 int coap_opt_parse(struct optlv *o, const uint8_t *b, int len);
 
-error_t coap_msg_parse(struct coap_msg_ctx *ctx, struct mbuf *m, uint8_t *code);
-error_t coap_rsp_parse(struct coap_msg_ctx *ctx, struct mbuf *m);
-error_t coap_msg_response(struct coap_msg_ctx *rsp);
+error_cs_t coap_msg_parse(struct coap_msg_ctx *ctx, struct mbuf *m, uint8_t *code);
+error_cs_t coap_rsp_parse(struct coap_msg_ctx *ctx, struct mbuf *m);
+error_cs_t coap_msg_response(struct coap_msg_ctx *rsp);
 
 void coap_init_rsp(const struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, 
                     struct mbuf *m);
@@ -132,15 +132,15 @@ uint32_t co_uint32_h2n(const struct optlv *o);
 uint32_t co_uint32_n2h(const struct optlv *o);
 
 int coap_opt_add(const struct optlv *o, uint8_t *b, int len);
-error_t coap_opt_rpl(struct coap_msg_ctx *ctx);
+error_cs_t coap_opt_rpl(struct coap_msg_ctx *ctx);
 
 /* coap_opt accessor functions */
 void copt_init(struct sl_co *hd);
-error_t copt_add_opt(struct sl_co *hd, struct optlv *opt);
+error_cs_t copt_add_opt(struct sl_co *hd, struct optlv *opt);
 struct optlv *copt_get_next_opt_type(const struct sl_co *hd, uint16_t ot, 
         void **it);
-error_t copt_del_opt(struct sl_co *hd, struct optlv *opt);
-error_t copt_del_opt_type(struct sl_co *hd, uint16_t ot);
+error_cs_t copt_del_opt(struct sl_co *hd, struct optlv *opt);
+error_cs_t copt_del_opt_type(struct sl_co *hd, uint16_t ot);
 void copt_del_all(struct sl_co *hd);
 struct optlv *copt_get_next_opt(const struct sl_co *co, void **it);
 void copt_dump(struct sl_co *hd);
@@ -148,9 +148,9 @@ int coap_uristr_to_opt(const char *us, uint8_t *buf, int bufsize);
 
 /*** CON/ACK support. ***/
 /* Add entry to midcb registry. Called when sending CON. */
-error_t coap_con_add(uint16_t mid, coap_ack_cb_info_t *cbi);
+error_cs_t coap_con_add(uint16_t mid, coap_ack_cb_info_t *cbi);
 /* Notify callback when ACK rxed. */
-error_t coap_ack_rx(uint16_t mid, struct mbuf *m);
+error_cs_t coap_ack_rx(uint16_t mid, struct mbuf *m);
 
 /**
  * @brief Set Max-Age Option 14

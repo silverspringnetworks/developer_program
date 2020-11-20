@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -35,12 +35,16 @@ Networks, Inc.
 
 
 // CoAP Server Version Title
-#define COAP_SERVER_VERSION_NUMBER "1.4.6"
+#define COAP_SERVER_VERSION_NUMBER "1.4.8"
 #define COAP_SERVER_VERSION_STRING "Itron Reference CoAP Server: "
 
-// Related to URI Path
+// Classifier Max Length
 #define CLASSIFIER_MAX_LEN			16
 #define DEFAULT_CLASSIFIER			"arduino"
+
+// Device Type (sensor resource name) Max Length
+#define SAPI_MAX_DEVICE_TYPE_LEN    16
+
 
 // Longest Uri-Path+Uri-Query we'll handle
 #define MAX_URI_LEN					256
@@ -49,7 +53,7 @@ Networks, Inc.
 //#define L_URI_Q_SENS        "sens"
 
 //* \typedef coap_cb */
-typedef error_t (*coap_cb)(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
+typedef error_cs_t (*coap_cb)(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
 
 //* \struct coap_cb_reg */
 struct coap_cb_reg {
@@ -77,9 +81,9 @@ struct sensor_ctx {
  * @param[in] path URI Path
  * @param[in] cbfunc CoAP Request/Response Handler
  * @param[in] corelink corelink
- * @return error_t
+ * @return error_cs_t
  */
-error_t coap_uri_register(const char *path, coap_cb cbfunc, const char *corelink);
+error_cs_t coap_uri_register(const char *path, coap_cb cbfunc, const char *corelink);
 
 
 /**
@@ -93,8 +97,8 @@ void coap_registry_init(void);
  *
  * @param[in] req CoAP Message request
  * @param[out] rsp CoAP Response
- * @return error_t
+ * @return error_cs_t
  */
-error_t coap_s_uri_proc(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
+error_cs_t coap_s_uri_proc(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp);
 
 #endif /* INC_COAPURI_H */

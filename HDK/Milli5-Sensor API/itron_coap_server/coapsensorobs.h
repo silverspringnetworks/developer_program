@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -35,7 +35,8 @@ Networks, Inc.
 #include "hbuf.h"
 
 
-#define MAX_OBSERVE_URI_LENGTH 32
+// Max URI Length - SAPI_MAX_DEVICE_TYPE_LEN
+#define MAX_OBSERVE_URI_LENGTH 36
 
 
 /**
@@ -43,7 +44,7 @@ Networks, Inc.
  *
  * 
  */
-typedef error_t (*ObsFuncPtr)(struct mbuf *, uint8_t *, uint8_t sensor_id);
+typedef error_cs_t (*ObsFuncPtr)(struct mbuf *, uint8_t *, uint8_t sensor_id);
 
 
 /**
@@ -62,7 +63,8 @@ typedef struct observe_reg_info
 } observe_reg_info_t;
 
 
-// Observation Frequency
+// Observation Frequency. It is included for backward compatibility.
+// Note that this define is not used with SAPI.
 //
 // When observations are enabled, the amount of time between observation notifications is
 // determined by this define. The observation frequency is the number of seconds between
@@ -102,41 +104,41 @@ boolean do_observe();
 /**
  * @brief CoAP Register Observer. Called by SAPI.
  *
- * @return error_t
+ * @return error_cs_t
  */
-error_t coap_obs_reg_sapi(uint8_t observer_id);
+error_cs_t coap_obs_reg_sapi(uint8_t observer_id);
 
 /**
 * @brief CoAP Register Observer.
  *
- * @return error_t
+ * @return error_cs_t
  */
-error_t coap_obs_reg();
+error_cs_t coap_obs_reg();
 
 /**
  * @brief CoAP De-register Observer. Called by SAPI.
  *
- * @return error_t
+ * @return error_cs_t
  */
-error_t coap_obs_dereg_sapi(uint8_t observer_id);
+error_cs_t coap_obs_dereg_sapi(uint8_t observer_id);
 
 /**
  * @brief CoAP De-register Observer.
  *
- * @return error_t
+ * @return error_cs_t
  */
-error_t coap_obs_dereg();
+error_cs_t coap_obs_dereg();
 
 /**
  * Handle CoAP ACK received.
  */
-error_t observe_rx_ack(void *cbctx, struct mbuf *m);
+error_cs_t observe_rx_ack(void *cbctx, struct mbuf *m);
 
 /**
  * @brief CoAP Observe response.
  *
- * @return error_t
+ * @return error_cs_t
  */
-error_t coap_observe_rsp(uint8_t observer_id);
+error_cs_t coap_observe_rsp(uint8_t observer_id);
 
 #endif

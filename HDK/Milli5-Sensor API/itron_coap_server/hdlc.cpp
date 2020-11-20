@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -54,7 +54,7 @@ Networks, Inc.
 
 #define HDLC_SINGLE_BYTE_ADDR_ONLY
 
-// This number is fixed for the Milli Arduino Shield
+// This number is fixed for the Itron NIC
 #define UART_BAUD_RATE 38400
 
 // The max payload size

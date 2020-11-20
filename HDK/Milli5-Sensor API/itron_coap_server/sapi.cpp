@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc.
+Copyright (c) Itron, Inc.
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,9 +29,8 @@ Networks, Inc.
 
 #include "sapi.h"
 #include "sapiprivate.h"
-#include "sapi_error.h"
 #include "errors.h"
-#include "arduino_pins.h"
+#include "portability.h"
 
 
 // Used to tell CoAP Server to use the SAPI dispatcher and handler
@@ -69,7 +68,9 @@ void sapi_initialize(char *url_classifier)
 	}
 	
 	// Initialize CoAP server logging.
-	log_init(SER_MON_PTR, SER_MON_BAUD_RATE, LOG_LEVEL);
+	// Note that SER_MON_PTR may be a Serial_ or a HardwareSerial depending on the hardware configuration.
+	//log_init((HardwareSerial *)SER_MON_PTR, SER_MON_BAUD_RATE, LOG_LEVEL);
+	log_init((PORTABILITY_SERIAL_USB *)SER_MON_PTR, SER_MON_BAUD_RATE, LOG_LEVEL);
 	
 	
 	// Set mNIC wake-up pin to HIGH, so that we can toggle it 0 -> 1
@@ -78,12 +79,12 @@ void sapi_initialize(char *url_classifier)
 	
 
 	// Initialize the RTC and set the local time zone
-	rtc_time_init(LOCAL_TIME_ZONE);
+	init_rtc(LOCAL_TIME_ZONE);
 	
 	// Initialize the CoAP Server
 	coap_s_init(UART_PTR, COAP_MSG_MAX_AGE_IN_SECS, HDLC_UART_TIMEOUT_IN_MS, HDLC_MAX_PAYLOAD_LEN, "", NULL);
 	
-	// Send the reboot event to the milli nic
+	// Send the reboot event to the Itron NIC
 	coap_put_ic_reboot_event();
 	delay(50);
 
@@ -157,8 +158,8 @@ sapi_error_t sapi_init_sensor(uint8_t sensor_id)
 sapi_error_t sapi_push_notification(uint8_t sensor_id)
 {
 	// Simple here. Just make the call. Heavy lifting is done in the CoAP Server
-	// Does the milli hardware handshake if needed.
-	error_t rc = coap_observe_rsp(sensor_info[sensor_id].observer_id);
+	// Does the Itron NIC hardware handshake if needed.
+	error_cs_t rc = coap_observe_rsp(sensor_info[sensor_id].observer_id);
 
 	if (rc == ERR_NO_ENTRY)
 		return SAPI_ERR_NO_ENTRY;
@@ -174,11 +175,11 @@ sapi_error_t sapi_push_notification(uint8_t sensor_id)
 // Sensor CoAP Server Dispatcher.
 //
 //////////////////////////////////////////////////////////////////////////
-error_t crsapi( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp )
+error_cs_t crsapi( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp )
 {
 	struct optlv *o;
 	void *it = NULL;
-	error_t rc;
+	error_cs_t rc;
 
 	// Isolate the leaf of the URI. Do this by skipping the first part of the URI.
 	copt_get_next_opt_type((const sl_co*) & (req->oh), COAP_OPTION_URI_PATH, &it);
@@ -209,7 +210,7 @@ error_t crsapi( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp )
 // SAPI CoAP Server resource handler.
 //
 //////////////////////////////////////////////////////////////////////////
-error_t crresourcehandler(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it, uint8_t sensor_id)
+error_cs_t crresourcehandler(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, void *it, uint8_t sensor_id)
 {
     struct optlv *o;
 	uint8_t obs = false;
@@ -304,7 +305,7 @@ error_t crresourcehandler(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, vo
 			else
 			{
 				rsp->plen = len;
-				rsp->cf = COAP_CF_CSV;
+				rsp->cf = COAP_CF_APPLICATION_CBOR;
 				rsp->code = COAP_RSP_205_CONTENT;
 			}
         }
@@ -330,7 +331,7 @@ error_t crresourcehandler(struct coap_msg_ctx *req, struct coap_msg_ctx *rsp, vo
     {
 	    char payload[SAPI_MAX_PAYLOAD_LEN];
         uint8_t len = 0;
-        error_t rc = ERR_OK;
+        error_cs_t rc = ERR_OK;
 		
 		SensorWriteCfgFuncPtr pSetCfgSensor = sensor_info[sensor_id].writecfg;
 		len = o->ol;
@@ -381,7 +382,7 @@ err:
 // Called by coap_observe_rsp (the CoAP Server observation handler).
 //
 //////////////////////////////////////////////////////////////////////////
-error_t sapi_observation_handler(struct mbuf *m, uint8_t *len, uint8_t sensor_id)
+error_cs_t sapi_observation_handler(struct mbuf *m, uint8_t *len, uint8_t sensor_id)
 {
 	char payload[SAPI_MAX_PAYLOAD_LEN];
 	uint8_t payloadlen = 0;
@@ -391,7 +392,7 @@ error_t sapi_observation_handler(struct mbuf *m, uint8_t *len, uint8_t sensor_id
 	sapi_error_t rcode = (*pReadFunc)(payload, &payloadlen);
 	
 	// Assemble the CoAP response message
-	error_t rc = build_rsp_msg(m, len, payload, payloadlen, sensor_id);
+	error_cs_t rc = build_rsp_msg(m, len, payload, payloadlen, sensor_id);
 	return rc;
 }
 
@@ -446,14 +447,14 @@ uint8_t cbor_enc_nic_type(struct cbor_buf *cbuf, char *sensor_type)
 // A typical CBOR payload: {0:"temp",1:<text payload>"}
 //
 //////////////////////////////////////////////////////////////////////////
-error_t build_rsp_msg(struct mbuf *m, uint8_t *len, char *payload, uint32_t payloadlen, uint8_t sensor_id)
+error_cs_t build_rsp_msg(struct mbuf *m, uint8_t *len, char *payload, uint32_t payloadlen, uint8_t sensor_id)
 {
 	char		cbor_payload[SAPI_MAX_PAYLOAD_LEN];
 	char  		*p;
 	uint8_t 	l;
 	
 	// If payload needs to be in CBOR format we add the CBOR wrapper.
-	error_t	rcode = ERR_FAIL;
+	error_cs_t	rcode = ERR_FAIL;
 	struct cbor_buf cbuf;
 		
 	cbor_enc_init(&cbuf, cbor_payload, SAPI_MAX_PAYLOAD_LEN);
@@ -497,7 +498,7 @@ error_t build_rsp_msg(struct mbuf *m, uint8_t *len, char *payload, uint32_t payl
 //   Prior to version 1.4.6. We include it here for backward compatibility. Do not remove!
 //
 //////////////////////////////////////////////////////////////////////////
-error_t crarduino( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp )
+error_cs_t crarduino( struct coap_msg_ctx *req, struct coap_msg_ctx *rsp )
 {
 	// Dummy. Should not be called!
 	rsp->code = COAP_RSP_404_NOT_FOUND;

@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -31,39 +31,29 @@ Networks, Inc.
 #define ARDUINO_TIME_H_
 
 #include <arduino.h>
+#include "portability.h"
 #include "errors.h"
 
-#if defined(ARDUINO_ARCH_SAMD)
-#include <RTCZero.h>
-extern RTCZero rtc;
-#endif
-
-#if defined(ARDUINO_ARCH_SAM)
-#include <RTCDue.h>
-extern RTCDue rtc;
-#define getEpoch unixtime
-#define setEpoch setClock
-#endif
-
-
-/**
- * @brief Set time zone
- *
- */
-error_t set_time_zone( int32_t zone );
 
 /**
  * @brief
  *
  */
-error_t rtc_time_init( int32_t zone );
+error_cs_t init_rtc( int32_t zone );
 
 /**
  *
  * @brief Get RTC epoch
  *
  */
-time_t get_rtc_epoch();
+uint32_t get_rtc_epoch();
+
+
+/**
+ * @brief Set RTC epoch
+ *
+ */
+ void set_rtc_epoch(uint32_t epoch);
 
 /**
 * @brief
@@ -88,5 +78,11 @@ void print_log_time(void);
 *
 */
 void print_current_date(void);
+
+/**
+ * @brief Set time zone
+ *
+ */
+error_cs_t set_time_zone( int32_t zone );
 
 #endif /* ARDUINO_TIME_H_ */

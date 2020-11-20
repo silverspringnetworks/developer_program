@@ -1,7 +1,7 @@
 ## Itron Sensor API
 
 ### Current Version Info
-Current version is 1.0.0.
+Current version is 1.0.2.
 See the changes.md file for details.
 
 ### Repository Structure

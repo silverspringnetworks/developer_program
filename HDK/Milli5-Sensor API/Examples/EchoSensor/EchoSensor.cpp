@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc.
+Copyright (c) Itron, Inc.
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -28,7 +28,7 @@ Networks, Inc.
 */
 
 
-/*
+/*!
  * EchoSensor returns a string with a message count. The sensor uses a default string.
  * The string may be changed via a CoAP PUT on using the "cfg" query string.
  *
@@ -75,7 +75,7 @@ sapi_error_t echo_read_sensor(char *payload, uint8_t *len)
 	strcpy(payload, echostring);
 	sprintf(count, " %d", echocount++);
 	strcat(payload, count);
-	*len = strlen(payload);
+	*len = (uint8_t)strlen(payload);
 	
 	return SAPI_ERR_OK;
 }

@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -45,7 +45,7 @@ Networks, Inc.
  * @param [in] unit		A string containing the unit of measure e.g. "F" for Fahrenheit
  *
  */ 
-error_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading, const char * unit );
+error_cs_t rsp_msg( struct mbuf * m, uint8_t *len, uint32_t count, float * reading, const char * unit );
 
 #endif /* COAP_RSP_MSG_H */
 

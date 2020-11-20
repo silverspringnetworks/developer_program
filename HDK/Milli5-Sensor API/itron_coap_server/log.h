@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -54,6 +54,7 @@ Networks, Inc.
 #define INC_LOG_H
 
 #include <arduino.h>
+#include "portability.h"
 
 #define PRINTF_LEN		256
 
@@ -71,11 +72,12 @@ Networks, Inc.
 * @brief
 * Init logging
 *
-* @param Serial_ pointer to Serial object used for printing to console
+* @param HardwareSerial pointer to Serial object used for printing to console
 * @param baun The baud rate for printing to console
 *
 */
-void log_init( Serial_ * pSerial, uint32_t baud, uint32_t log_level );
+//void log_init(HardwareSerial *pSerial, uint32_t baud, uint32_t log_level);
+void log_init(PORTABILITY_SERIAL_USB *pSerial, uint32_t baud, uint32_t log_level);
 
 
 /**

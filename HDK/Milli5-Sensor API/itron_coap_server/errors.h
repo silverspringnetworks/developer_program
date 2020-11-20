@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -38,7 +38,7 @@ Networks, Inc.
 #ifndef _ERRORS_H_
 #define _ERRORS_H_
 
-typedef enum error_e {
+typedef enum error_cs_e {
     ERR_OK          = 0,
     ERR_OP_NOT_SUPP = 1,    /**< Operation not available */
     ERR_AGAIN       = 2,    /**< Resource busy or empty, try again */
@@ -58,6 +58,6 @@ typedef enum error_e {
     ERR_VER_NOT_SUPP= 29,   /**< Unsupported version number */
 
     ERR_FAIL        = 99,   /**< Unspecified failure */
-} error_t;
+} error_cs_t;
 
 #endif /* _ERRORS_H_ */

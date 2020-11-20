@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc. 
+Copyright (c) Itron, Inc. 
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -163,13 +163,13 @@ copt_del_all(struct sl_co *hd)
  *
  * @return: 0 on sucess.
  */
-error_t
+error_cs_t
 copt_add_opt(struct sl_co *hd, struct optlv *opt)
 {
     assert(hd);
     coap_opt *nco;       /* New coap option */
     coap_opt *o, *po;    /* option iterator, previous option. */
-    error_t rc = ERR_OK;
+    error_cs_t rc = ERR_OK;
 
     assert(hd);
     assert(opt);
@@ -216,10 +216,10 @@ done:
  *
  * @return: 0 for success.
  */
-error_t
+error_cs_t
 copt_del_opt(struct sl_co *hd, struct optlv *opt)
 {
-    error_t rc = ERR_OK;
+    error_cs_t rc = ERR_OK;
     assert(hd);
     coap_opt *o, *tmp; /* option list iterator, and tmp ptr. */
     assert(opt);
@@ -324,10 +324,10 @@ copt_get_next_opt(const struct sl_co *hd, void **it)
  *
  * @return: 0 if anything deleted.
  */
-error_t
+error_cs_t
 copt_del_opt_type(struct sl_co *hd, uint16_t ot)
 {
-    error_t rc = ERR_NO_ENTRY;
+    error_cs_t rc = ERR_NO_ENTRY;
     assert(hd);
     coap_opt *o, *tmp;
 

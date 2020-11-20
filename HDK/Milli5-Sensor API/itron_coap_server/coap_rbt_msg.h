@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) Silver Spring Networks, Inc.
+Copyright (c) Itron, Inc.
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -32,9 +32,9 @@ Networks, Inc.
 
 
 /**
- * @brief CoAP put IC reboot event. CoAP request sent to the milli CoAP Server.
+ * @brief CoAP put IC reboot event. CoAP request sent to the Itron NIC CoAP Server.
  *
  */
-error_t coap_put_ic_reboot_event(void);
+error_cs_t coap_put_ic_reboot_event(void);
 
 #endif /* COAP_RBT_MSG_H_ */
