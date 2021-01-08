@@ -3,6 +3,11 @@
 
 ### Changes
 
+#### Version 1.4.6
+- Released on Jan 8, 2021
+- Added the devicePayload option (--devicePayload). This allows a payload to be specified on a PUT or POST request.
+This causes a CoAP request with an actual payload marker followed by octets. The payload is a Hex encoded string.
+
 #### Version 1.4.3
 - Released on May 26, 2020
 - Fixed issues in the POM that might affect future build stability.

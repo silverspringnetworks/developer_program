@@ -2,7 +2,7 @@
 ### Itron Developer Program SDK
 
 ### Current Version Info
-Current version is 1.4.3.
+Current version is 1.4.6.
 See the changes.md file for details.
 
 #### Overview
@@ -173,6 +173,7 @@ responses (when observing a resource) to the Starfish Data Platform.
 | devicePort | UDP port of your devices CoAP server URI. Default is 5683. |
 | devicePath | Path part of your devices CoAP server resource URI. Default is "/". |
 | deviceQuery | Query part of your devices CoAP server resource URI (the stuff that follows the ?). |
+| devicePayload | Hex encoded string to be used as a payload for PUT/POST. |
 
 **Note**: The host name will typically have this form: SSN+**mac-address**+.+**network-domain**.
 An example host name follows for the Starfish network domain follows:

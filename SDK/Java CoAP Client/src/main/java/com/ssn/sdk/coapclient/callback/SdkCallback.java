@@ -83,7 +83,8 @@ public class SdkCallback extends ClientCallback
         }
 
         // Select the payload transformer to use based on the resource path (i.e. a sensor)
-        if (payloadAsStr.length() > 0)
+
+        if (payloadAsStr.length() > 0 && !arguments.isTestEnv())
         {
             if (arguments.getDevicePath().equalsIgnoreCase("/snsr/arduino/temp"))
             {

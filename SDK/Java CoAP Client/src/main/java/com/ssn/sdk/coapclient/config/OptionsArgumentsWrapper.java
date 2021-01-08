@@ -54,6 +54,10 @@ public class OptionsArgumentsWrapper
             usage = "Sets the query of the target URI (empty string))")
     private String deviceQuery = "";
 
+    @Option(name = "--devicePayload",
+            usage = "Hex encoded string to be used as a payload for PUT/POST ('')")
+    private String devicePayload = "";
+
     @Option(name = "--deviceId",
             usage="Devices starfish device id (empty string)")
     private String deviceId = "";
@@ -249,6 +253,12 @@ public class OptionsArgumentsWrapper
                 log.debug("Conf deviceQuery: {}", deviceQuery);
             }
 
+            soption = darray.getJSONObject(0).optString("devicePayload");
+            if (soption != null && !soption.equals("")) {
+                devicePayload = soption;
+                log.debug("Conf devicePayload: {}", devicePayload);
+            }
+
             soption = darray.getJSONObject(0).optString("apMacAddress");
             if (soption != null && !soption.equals("")) {
                 apMacAddress = soption;
@@ -305,6 +315,11 @@ public class OptionsArgumentsWrapper
     public String getDeviceQuery() {
         return deviceQuery;
     }
+
+    /**
+     * @return hex-encoded payload for PUT/POST operations
+     */
+    public String getDevicePayload() { return devicePayload; }
 
     /**
      * @return the starfish device id associated with the device <code>""</code> if not set

@@ -106,9 +106,18 @@ public class SdkCoapClient extends CoapClient
                     coapRequest = new CoapRequest(messageType, messageCode, resourceURI, false);
                 }
             }
+            // Resource path is NOT /sessions
             else
             {
+                // Form the octet stream for the payload. Note that this is a string of hex characters.
+                // Two per octet. Thus, the payload string will always be even length.
                 coapRequest = new CoapRequest(messageType, messageCode, resourceURI, useProxy);
+                String payload = arguments.getDevicePayload();
+                if (payload != null && !payload.equals(""))
+                {
+                    byte[] decodedPayload = hexStringToByteArray(arguments.getDevicePayload());
+                    coapRequest.setContent(decodedPayload, ContentFormat.APP_OCTET_STREAM);
+                }
             }
         }
         else
@@ -206,5 +215,15 @@ public class SdkCoapClient extends CoapClient
 
         // wait for shutdown criterion and shutdown...
         client.waitAndShutdown();
+    }
+
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
     }
 }
