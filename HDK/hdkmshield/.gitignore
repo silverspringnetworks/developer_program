@@ -1,0 +1,9 @@
+# CMake build directory
+cmake-build-hdkbasic
+
+# CLion related
+.idea
+
+
+#Exempt directories
+.DS_Store
