@@ -1,7 +1,7 @@
-## Itron Arduino Milli-Shield
+## Itron Milli5 Milli-Shield CoAP Reference Package
 
 ### Current Version Info
-Current version is 1.4.4.
+Please Note: This version is obsolete. It is left for reference only!
 See the changes.md file for details.
 
 ### Repository Structure
