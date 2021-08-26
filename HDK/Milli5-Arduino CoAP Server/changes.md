@@ -1,7 +1,8 @@
 
-### Milli5 Arduino CoAP Server
+### Itron Milli5 Milli-Shield CoAP Reference Package
 
-### Changes
+### Change Log
+Please Note: This version is obsolete. It is left for reference only!
 
 #### Version 1.4.5
 - Released on Apr 18, 2019

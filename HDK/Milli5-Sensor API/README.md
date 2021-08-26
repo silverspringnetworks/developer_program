@@ -1,7 +1,7 @@
-## Itron Sensor API
+## Itron MIlli5 Sensor API Reference Package
 
 ### Current Version Info
-Current version is 1.0.2.
+Please Note: This version is obsolete. It is left for reference only!
 See the changes.md file for details.
 
 ### Repository Structure

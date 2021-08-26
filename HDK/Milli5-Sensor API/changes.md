@@ -1,6 +1,7 @@
 ### Milli5 Sensor API
 
 ### Change Log
+Please Note: This version is obsolete. It is left for reference only!
 
 #### Version 1.0.2 (CoAP Server Version 1.4.8)
 - Released on Nov 19, 2020
