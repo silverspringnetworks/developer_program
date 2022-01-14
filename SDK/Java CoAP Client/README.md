@@ -2,7 +2,7 @@
 ### Itron Developer Program SDK
 
 ### Current Version Info
-Current version is 1.4.6.
+Current version is 1.4.7.
 See the changes.md file for details.
 
 #### Overview
@@ -15,12 +15,12 @@ parameters and the IoT device as well as command line options. You can run the c
 
 To run the client use a command of this form in a command shell (in this case to get the list of options):
 ```$xslt
-java -jar sdkcoapclient-1.4.3.one-jar.jar --help
+java -jar sdkcoapclient-1.4.7.one-jar.jar --help
 ```
 To run the client with a config file use the following command form (in this case to issue the CoAP
 activity defined by the coap.json file):
 ```$xslt
-java -jar sdkcoapclient-1.4.3.one-jar.jar --conf coap.json
+java -jar sdkcoapclient-1.4.7.one-jar.jar --conf coap.json
 ```
 
 #### Prerequisites 
@@ -75,7 +75,7 @@ This will build the Java CoAP Client. The resultant jar can found in the target 
 (using the sample directory used above):
 
 ```$xslt
-C:\projects\developer_program\SDK\Java CoAP Client\target\sdkcoapclient-1.4.3.one-jar.jar
+C:\projects\developer_program\SDK\Java CoAP Client\target\sdkcoapclient-1.4.7.one-jar.jar
 ```
 The jar is built as an all in one jar, it contains all libraries and dependencies need to run the
 client. To test the client, move the jar file from the target directory to a working directory
@@ -83,7 +83,7 @@ client. To test the client, move the jar file from the target directory to a wor
 following command:
 
 ```$xslt
-java -jar C:\tools\sdkcoapclient-1.4.3.one-jar.jar --help
+java -jar C:\tools\sdkcoapclient-1.4.7.one-jar.jar --help
 ```
 
 #### Determine Starfish Client Id and Client Secret

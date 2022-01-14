@@ -15,7 +15,7 @@
 
     <groupId>com.ssn.sdk</groupId>
     <artifactId>sdkcoapclient</artifactId>
-    <version>1.4.6</version>
+    <version>1.4.7</version>
     <packaging>jar</packaging>
 
     <name>sdkcoapclient</name>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.6.6</version>
+            <version>1.7.33</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

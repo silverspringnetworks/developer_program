@@ -3,6 +3,10 @@
 
 ### Changes
 
+#### Version 1.0.5
+- Released on Jan 14, 2022
+- Updated log4j components to address security vulnerabilities.
+
 #### Version 1.0.4
 - Released on May 26, 2020
 - Updated the POM. Minor cleanups and updated dependencies.

@@ -3,6 +3,10 @@
 
 ### Changes
 
+#### Version 1.4.7
+- Released on Jan 14, 2022
+- Updated log4j components to address security vulnerabilities.
+
 #### Version 1.4.6
 - Released on Jan 8, 2021
 - Added the devicePayload option (--devicePayload). This allows a payload to be specified on a PUT or POST request.
