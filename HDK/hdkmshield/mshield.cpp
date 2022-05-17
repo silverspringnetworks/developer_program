@@ -79,7 +79,6 @@
 static uint8_t temp_sensor_id;
 static uint8_t echo_sensor_id;
 
-#define LONG_TEMP_SENSOR_TYPE	"bl-snsr-temp"
 
 
 //
@@ -104,7 +103,7 @@ void setup()
     //dlog(LOG_DEBUG, "After sapi_initialize");
 	
 	// Register temp sensor
-	temp_sensor_id = sapi_register_sensor(LONG_TEMP_SENSOR_TYPE, temp_init_sensor, temp_read_sensor, temp_read_cfg, temp_write_cfg, 1, 60);
+	temp_sensor_id = sapi_register_sensor(TEMP_SENSOR_TYPE, temp_init_sensor, temp_read_sensor, temp_read_cfg, temp_write_cfg, 1, 120);
 	
 	// Initialize temp sensor
 	rcode = sapi_init_sensor(temp_sensor_id);
