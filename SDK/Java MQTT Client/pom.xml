@@ -17,7 +17,7 @@
         <testng.version>6.3.1</testng.version>
         <mockito-version>1.9.5</mockito-version>
         <paho.version>1.2.1</paho.version>
-        <jackson.version>2.10.4</jackson.version>
+        <jackson.version>2.12.7.1</jackson.version>
         <jdk.version>1.7</jdk.version>
     </properties>
 
